@@ -1,0 +1,31 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Update SSL certificates and install pnpm
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    update-ca-certificates && \
+    npm config set strict-ssl false && \
+    npm install -g pnpm@latest && \
+    npm config set strict-ssl true && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy all source files first (pnpm needs workspace packages present)
+COPY . .
+
+# Install dependencies (using http registry to bypass SSL issues)
+RUN pnpm install
+
+# Generate Prisma client (disable SSL for binary downloads)
+# Install openssl to ensure proper binary detection
+RUN apt-get update && apt-get install -y openssl && apt-get clean
+RUN cd packages/db && NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm exec prisma generate
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=development
+
+CMD ["pnpm", "--filter", "@fire/web", "dev"]

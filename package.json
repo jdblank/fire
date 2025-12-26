@@ -1,0 +1,68 @@
+{
+  "name": "fire",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Social community platform with event management and documentation",
+  "scripts": {
+    "dev": "pnpm --filter @fire/web dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:integration:watch": "vitest tests/integration",
+    "test:e2e": "playwright test",
+    "test:load": "k6 run tests/load/basic-load.js",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:infrastructure": "vitest run tests/integration/infrastructure.test.ts tests/integration/docker.test.ts",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "pnpm -r --if-present type-check",
+    "prepare": "husky install",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:rebuild": "docker-compose up -d --build",
+    "docker:clean": "docker-compose down -v",
+    "logto:configure": "docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm logto-config",
+    "logto:setup-roles": "./scripts/setup-logto-roles.sh",
+    "db:migrate:docker": "docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm db-migrate",
+    "db:studio:docker": "docker-compose -f docker-compose.yml -f docker-compose.tools.yml up db-studio",
+    "test:infrastructure:docker": "docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-infrastructure",
+    "test:integration:docker": "docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-integration",
+    "test:unit:docker": "docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-unit",
+    "db:generate": "pnpm --filter @fire/db db:generate",
+    "db:push": "pnpm --filter @fire/db db:push",
+    "db:migrate": "pnpm --filter @fire/db db:migrate",
+    "db:studio": "pnpm --filter @fire/db db:studio"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@prisma/client": "^7.2.0",
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.16.0",
+    "@vitejs/plugin-react": "^5.1.2",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "pg": "^8.13.3",
+    "prettier": "^3.7.4",
+    "prisma": "^7.2.0",
+    "redis": "^5.10.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "pnpm": {
+    "overrides": {
+      "glob": "^10.5.0",
+      "esbuild": "^0.25.0",
+      "js-yaml": "^4.1.1",
+      "cookie": "^0.7.0"
+    }
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

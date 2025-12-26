@@ -1,0 +1,41 @@
+{
+  "name": "Gemini-Claude Agent Stack",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": false,
+      "azureDnsAutoDetection": false,
+      "installDockerBuildx": true
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "saoudrizwan.claude-dev",       // Cline
+        "dbaeumer.vscode-eslint",       // ESLint (Quality)
+        "esbenp.prettier-vscode",       // Formatting
+        "ms-playwright.playwright",     // E2E Testing
+        "humao.rest-client"             // API Testing
+      ],
+      "settings": {
+        "cline.apiProvider": "google",
+        "cline.model": "gemini-3-pro-preview",
+        "terminal.integrated.env.linux": {
+           "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+           "GEMINI_API_KEY": "${localEnv:GEMINI_API_KEY}"
+        },
+        "editor.formatOnSave": true
+      }
+    }
+  },
+
+  // SIMPLIFIED SETUP SCRIPT:
+  // 1. Installs Claude Code, ESLint, SonarJS (NPM)
+  // 2. Installs Trivy (Security) via curl/sudo
+  // 3. SKIPS K6 (Load Testing) to avoid the keyserver network error
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code eslint eslint-plugin-sonarjs && (curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin) && echo '✅ Stack Ready'"
+}

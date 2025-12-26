@@ -1,0 +1,147 @@
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  🔥 Fire Platform - Quick Start Commands                     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 1: Start Docker Desktop                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  1. Open Docker Desktop from Applications (Cmd+Space → "Docker")
+  2. Wait for Docker to fully start (check menu bar icon)
+  3. Verify: docker info
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 2: Start All Services                                  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  ./start-services.sh
+
+  OR manually:
+
+  docker-compose up -d
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 3: Verify System                                       ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  ./test-system.sh
+
+  OR check manually:
+
+  docker-compose ps
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 4: Test Login                                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Open: http://localhost:3000/login
+
+  Test credentials:
+    Email:    demo@fire.test
+    Password: Demo123!Pass
+
+  OR register new user:
+    http://localhost:3000/register
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  🌐 Service URLs                                             ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Next.js App:      http://localhost:3000
+  LogTo Admin:      http://localhost:3002
+  Outline Wiki:     http://localhost:3004
+  MinIO Console:    http://localhost:9101
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  📊 Useful Commands                                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  View logs:                docker-compose logs -f
+  View app logs only:       docker-compose logs -f app
+  Check service status:     docker-compose ps
+  Restart app:              docker-compose restart app
+  Stop all services:        docker-compose down
+  Complete reset:           docker-compose down -v
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  🐛 Quick Troubleshooting                                    ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  ❌ Docker not running:
+     → Start Docker Desktop
+
+  ❌ Port already in use:
+     → lsof -i :3000
+     → Kill process or change port
+
+  ❌ Invalid password:
+     → Go to LogTo Admin: http://localhost:3002
+     → Users → your user → Set Password
+     → Use exact password to login
+
+  ❌ Services won't start:
+     → docker-compose logs -f
+     → docker-compose down && docker-compose up -d
+
+  ❌ Prisma errors:
+     → docker-compose exec app npx prisma generate
+     → docker-compose restart app
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  ✅ Success Checklist                                        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  [ ] Docker Desktop running
+  [ ] docker-compose ps shows 6+ services
+  [ ] http://localhost:3000 loads
+  [ ] http://localhost:3002 loads
+  [ ] Can login successfully
+  [ ] Dashboard displays after login
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  📖 Documentation                                            ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  START_HERE.md              Complete setup guide
+  GET_IT_WORKING.md          Detailed troubleshooting
+  LOGTO_SETUP_GUIDE.md       LogTo configuration
+  ARCHITECTURE.md            System architecture
+  TESTING.md                 Testing guide
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  🎯 Next Steps After It Works                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  1. Create admin users in LogTo
+  2. Configure roles (admin, moderator)
+  3. Start building features
+  4. Run tests: docker-compose exec app npm test
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  🔥 Let's Go!                                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Your system is configured and ready. Just need to start Docker!
+
+  ./start-services.sh
+
+
+
+
+
+
+
+
+
+
+

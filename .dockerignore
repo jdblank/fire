@@ -1,0 +1,59 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+.next
+**/.next
+dist
+build
+*.tsbuildinfo
+
+# Development files
+.env.local
+.env*.local
+*.log
+npm-debug.log*
+
+# Testing
+coverage
+.nyc_output
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile.dev
+docker-compose*.yml
+!Dockerfile.prod
+
+# Scripts
+scripts/
+*.sh
+
+# Misc
+.prettierrc
+.eslintrc
+.editorconfig

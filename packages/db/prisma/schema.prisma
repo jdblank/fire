@@ -1,0 +1,470 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id            String    @id @default(cuid())
+  logtoId       String?   @unique // Links to LogTo user ID
+  
+  // Core identity
+  email         String    @unique
+  emailVerified DateTime?
+  
+  // Profile information
+  firstName     String?
+  lastName      String?
+  displayName   String?
+  username      String?   @unique
+  image         String?
+  
+  // Additional profile fields
+  dateOfBirth   DateTime?
+  mobilePhone   String?   // Full phone number with country code
+  countryCode   String?   // e.g., "+1", "+44"
+  hometown      String?
+  
+  // Account management
+  role          UserRole  @default(USER)
+  accountStatus AccountStatus @default(PENDING_INVITE)
+  
+  // Referral system (self-referential)
+  referredBy    User?     @relation("UserReferrals", fields: [referredById], references: [id])
+  referredById  String?
+  referrals     User[]    @relation("UserReferrals")
+  
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  // Relations
+  profile       Profile?
+  posts         Post[]
+  comments      Comment[]
+  postLikes     PostLike[]
+  eventRegistrations EventRegistration[]
+  payments      Payment[]
+  inviteTokens  InviteToken[]
+  
+  // Event management relations
+  eventsCreated Event[] @relation("EventsCreated")
+  registrationsCreated EventRegistration[] @relation("RegistrationsCreated")
+  discountsApplied Discount[] @relation("DiscountsApplied")
+
+  @@index([email])
+  @@index([logtoId])
+  @@index([username])
+  @@index([role])
+  @@index([accountStatus])
+  @@index([referredById])
+  @@map("users")
+}
+
+// Note: Passwords are stored in LogTo, not our database
+
+// User roles enum
+enum UserRole {
+  USER        // Regular user
+  MODERATOR   // Can moderate content
+  ADMIN       // Full admin access
+}
+
+// Account status enum
+enum AccountStatus {
+  PENDING_INVITE  // Created by admin, waiting for user to accept invite
+  ACTIVE          // User has completed registration and is active
+  SUSPENDED       // Account temporarily suspended
+  DEACTIVATED     // Account deactivated by user or admin
+}
+
+// Invite tokens for user onboarding
+model InviteToken {
+  id        String   @id @default(cuid())
+  token     String   @unique @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  expiresAt DateTime
+  usedAt    DateTime?
+  
+  createdAt DateTime @default(now())
+  
+  @@index([token])
+  @@index([userId])
+  @@map("invite_tokens")
+}
+
+// User Profile
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bio       String?  @db.Text
+  location  String?
+  website   String?
+  avatar    String?
+  banner    String?
+  
+  // Social links
+  twitter   String?
+  github    String?
+  linkedin  String?
+  
+  // Settings
+  isPublic  Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+// Posts for news feed
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content   String   @db.Text
+  images    String[] // Array of image URLs
+  videos    String[] // Array of video URLs
+  
+  // Link preview (Open Graph metadata)
+  linkUrl          String? // Original link URL
+  linkTitle        String? // OG title
+  linkDescription  String? // OG description
+  linkImage        String? // OG image URL
+  
+  likes     Int      @default(0)
+  dislikes  Int      @default(0)
+  isPinned  Boolean  @default(false) // Pin important posts to top
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  comments  Comment[]
+  postLikes PostLike[]
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([isPinned])
+  @@map("posts")
+}
+
+// Comments on posts
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content   String   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+// Post Reactions - track who liked/disliked what
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  isLike    Boolean  // true = like (thumbs up), false = dislike (thumbs down)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId]) // User can only react once per post
+  @@index([postId])
+  @@index([userId])
+  @@map("post_likes")
+}
+
+// Events
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  banner      String?
+  
+  // Date and location
+  startDate   DateTime
+  endDate     DateTime?
+  timezone    String?  // e.g., "America/New_York", "America/Los_Angeles"
+  location    String?
+  isOnline    Boolean  @default(false)
+  
+  // Event type and pricing
+  eventType   EventType @default(FREE)
+  currency    String   @default("USD")
+  
+  // Deposit requirements
+  requiresDeposit Boolean @default(false)
+  depositAmount   Decimal? @db.Decimal(10, 2)
+  
+  // Capacity
+  maxAttendees Int? // 0 or null = unlimited
+  
+  // Status
+  status      EventStatus @default(DRAFT)
+  
+  // Audit
+  createdById String?
+  createdBy   User?    @relation("EventsCreated", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  registrations EventRegistration[]
+  lineItems     EventLineItem[]
+
+  @@index([startDate])
+  @@index([status])
+  @@index([eventType])
+  @@index([createdById])
+  @@map("events")
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum EventType {
+  FREE
+  PAID
+}
+
+// Event Line Items (pricing components)
+model EventLineItem {
+  id          String   @id @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?  @db.Text
+  
+  // Line item configuration
+  lineItemType LineItemType
+  isRequired   Boolean  @default(false)
+  calculationMethod CalculationMethod
+  
+  // Amounts
+  baseAmount   Decimal? @db.Decimal(10, 2) // For fixed or multiplier base
+  minAmount    Decimal? @db.Decimal(10, 2) // For age-based min
+  maxAmount    Decimal? @db.Decimal(10, 2) // For age-based max
+  multiplier   Decimal? @db.Decimal(10, 2) // For age-based (e.g., 60)
+  
+  // Display order
+  sortOrder    Int      @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  registrationLineItems RegistrationLineItem[]
+
+  @@index([eventId])
+  @@index([lineItemType])
+  @@map("event_line_items")
+}
+
+enum LineItemType {
+  AGE_BASED        // Calculated based on user age (e.g., annual dues)
+  FIXED            // Required fixed amount
+  OPTIONAL_FIXED   // Optional fixed amount (e.g., bike deposit)
+  OPTIONAL_VARIABLE // Optional variable amount
+}
+
+enum CalculationMethod {
+  FIXED_AMOUNT     // Simple fixed price
+  AGE_MULTIPLIER   // Age x multiplier with min/max
+  PERCENTAGE       // Percentage of total
+}
+
+// Registration Line Items (actual amounts per registration)
+model RegistrationLineItem {
+  id            String   @id @default(cuid())
+  
+  registrationId String
+  registration   EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  lineItemId     String
+  lineItem       EventLineItem @relation(fields: [lineItemId], references: [id])
+  
+  quantity       Int      @default(1)
+  calculatedAmount Decimal @db.Decimal(10, 2)
+  userAge        Int?     // Snapshot for age-based calculations
+  notes          String?  @db.Text
+  
+  createdAt      DateTime @default(now())
+
+  @@index([registrationId])
+  @@index([lineItemId])
+  @@map("registration_line_items")
+}
+
+// Discounts applied to registrations
+model Discount {
+  id            String   @id @default(cuid())
+  
+  registrationId String
+  registration   EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  name          String
+  discountType  DiscountType
+  amount        Decimal  @db.Decimal(10, 2)
+  
+  appliedById   String?
+  appliedBy     User?    @relation("DiscountsApplied", fields: [appliedById], references: [id])
+  
+  createdAt     DateTime @default(now())
+
+  @@index([registrationId])
+  @@index([appliedById])
+  @@map("discounts")
+}
+
+enum DiscountType {
+  FIXED_AMOUNT  // Dollar amount off
+  PERCENTAGE    // Percent off
+}
+
+// Event registrations
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Registration status
+  status    RegistrationStatus @default(PENDING)
+  
+  // Financial tracking
+  totalAmount   Decimal  @default(0) @db.Decimal(10, 2)
+  depositPaid   Decimal  @default(0) @db.Decimal(10, 2)
+  balanceDue    Decimal  @default(0) @db.Decimal(10, 2)
+  paymentStatus RegistrationPaymentStatus @default(UNPAID)
+  
+  // Admin controls
+  adminOverride Boolean  @default(false)
+  overrideNote  String?  @db.Text
+  registeredById String?
+  registeredBy  User?    @relation("RegistrationsCreated", fields: [registeredById], references: [id])
+  
+  // Payment info (legacy - keeping for backwards compatibility)
+  paymentId String?
+  payment   Payment? @relation(fields: [paymentId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  lineItems RegistrationLineItem[]
+  discounts Discount[]
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([paymentStatus])
+  @@index([registeredById])
+  @@map("event_registrations")
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  WAITLIST
+}
+
+enum RegistrationPaymentStatus {
+  UNPAID
+  DEPOSIT_PAID
+  FULLY_PAID
+  REFUNDED
+}
+
+// Payments
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount    Float
+  currency  String   @default("USD")
+  
+  status    PaymentStatus @default(PENDING)
+  
+  // Payment provider details
+  provider  String   // stripe, paypal, etc.
+  providerId String? // External payment ID
+  
+  metadata  Json?    // Additional payment data
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  eventRegistrations EventRegistration[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// File uploads
+model Upload {
+  id        String   @id @default(cuid())
+  filename  String
+  originalName String
+  mimeType  String
+  size      Int
+  url       String
+  
+  // S3/MinIO details
+  bucket    String
+  key       String
+  
+  uploadedBy String?
+  
+  createdAt DateTime @default(now())
+
+  @@index([uploadedBy])
+  @@map("uploads")
+}
+
+
+
+

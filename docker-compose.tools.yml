@@ -1,0 +1,190 @@
+# Additional Docker Compose services for tooling and configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.tools.yml run <service>
+
+version: '3.8'
+
+services:
+  # Test Runner - Infrastructure Tests
+  test-infrastructure:
+    image: node:20-slim
+    container_name: fire-test-infrastructure
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://fireuser:firepass@postgres:5432/fire_db
+      REDIS_URL: redis://redis:6379
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    networks:
+      - fire_fire-network
+    command: sh -c "apt-get update -qq && apt-get install -y -qq openssl ca-certificates > /dev/null 2>&1 && npm config set strict-ssl false && npm install && npm run test:infrastructure"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  # Test Runner - Integration Tests
+  test-integration:
+    image: node:20-slim
+    container_name: fire-test-integration
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://fireuser:firepass@postgres:5432/fire_db
+      REDIS_URL: redis://redis:6379
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    networks:
+      - fire_fire-network
+    command: sh -c "apt-get update -qq && apt-get install -y -qq openssl ca-certificates > /dev/null 2>&1 && npm config set strict-ssl false && npm install && npx prisma generate --schema=packages/db/prisma/schema.prisma && npm run test:integration"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      logto:
+        condition: service_started
+      outline:
+        condition: service_healthy
+      app:
+        condition: service_started
+    profiles:
+      - tools
+
+  # Test Runner - Unit Tests
+  test-unit:
+    image: node:20-slim
+    container_name: fire-test-unit
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    command: sh -c "apt-get update -qq && apt-get install -y -qq openssl ca-certificates > /dev/null 2>&1 && npm config set strict-ssl false && npm install && npm run test:unit"
+    profiles:
+      - tools
+
+  # Load Test Runner - k6
+  test-load:
+    image: grafana/k6:latest
+    container_name: fire-test-load
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      BASE_URL: http://app:3000
+    networks:
+      - fire_fire-network
+    command: run /app/tests/load/basic-load.js
+    depends_on:
+      app:
+        condition: service_started
+    profiles:
+      - tools
+
+  # LogTo Configuration Tool
+  logto-config:
+    image: node:20-alpine
+    container_name: fire-logto-config
+    working_dir: /app
+    volumes:
+      - ./infrastructure/docker/logto:/app
+    environment:
+      LOGTO_ENDPOINT: http://logto:3001
+      LOGTO_ADMIN_ENDPOINT: http://logto:3002
+    networks:
+      - fire_fire-network
+    command: node configure-via-api.js
+    depends_on:
+      - logto
+    profiles:
+      - tools
+
+  # LogTo Role Setup Tool
+  logto-setup-roles:
+    image: node:20-alpine
+    container_name: fire-logto-setup-roles
+    working_dir: /app
+    volumes:
+      - ./infrastructure/docker/logto:/app
+    environment:
+      LOGTO_ENDPOINT: http://logto:3001
+      LOGTO_M2M_APP_ID: ${LOGTO_M2M_APP_ID}
+      LOGTO_M2M_APP_SECRET: ${LOGTO_M2M_APP_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-josh@lemonade.art}
+    networks:
+      - fire_fire-network
+    command: node setup-roles.js
+    depends_on:
+      - logto
+    profiles:
+      - tools
+
+  # Prisma Migration Tool
+  db-migrate:
+    image: node:20-slim
+    container_name: fire-db-migrate
+    working_dir: /app
+    volumes:
+      - ./packages/db:/app
+      - ./package.json:/root/package.json
+    environment:
+      DATABASE_URL: postgres://fireuser:firepass@postgres:5432/fire_db
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    networks:
+      - fire_fire-network
+    command: sh -c "apt-get update && apt-get install -y openssl ca-certificates && npm config set strict-ssl false && npm install && npx prisma generate && npx prisma migrate deploy"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  # Prisma DB Push Tool (for development/testing)
+  db-push:
+    image: node:20-slim
+    container_name: fire-db-push
+    working_dir: /app/packages/db
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://fireuser:firepass@postgres:5432/fire_db
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+    networks:
+      - fire_fire-network
+    command: sh -c "apt-get update -qq && apt-get install -y -qq openssl ca-certificates libssl3 > /dev/null 2>&1 && npm config set strict-ssl false && npm install --silent && npx prisma generate && npx prisma db push --skip-generate --accept-data-loss"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  # Prisma Studio (Database GUI)
+  db-studio:
+    image: node:20-alpine
+    container_name: fire-db-studio
+    working_dir: /app
+    volumes:
+      - ./packages/db:/app
+    environment:
+      DATABASE_URL: postgres://fireuser:firepass@postgres:5432/fire_db
+    ports:
+      - "5555:5555"
+    networks:
+      - fire_fire-network
+    command: sh -c "npm install && npx prisma studio --port 5555 --hostname 0.0.0.0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+networks:
+  fire_fire-network:
+    external: true
+

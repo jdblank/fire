@@ -1,0 +1,48 @@
+# Railway Configuration for Fire Platform
+# Documentation: https://docs.railway.app/deploy/config-as-code
+
+# Main Next.js Application
+[[services]]
+name = "fire-app"
+
+[services.build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile.prod"
+
+[services.deploy]
+startCommand = "pnpm --filter @fire/web start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Scaling configuration (adjust based on needs)
+[[services.deploy.replicas]]
+min = 1
+max = 3
+
+# Port configuration
+[[services.ports]]
+port = 3000
+
+# LogTo Authentication Service
+[[services]]
+name = "logto"
+
+[services.build]
+image = "svhd/logto:latest"
+
+[services.deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[[services.ports]]
+port = 3001
+
+# Note: You'll need to add PostgreSQL and Redis via Railway Dashboard
+# Railway doesn't support defining databases in railway.toml
+# Use: railway add --database postgres
+# Use: railway add --database redis
+
