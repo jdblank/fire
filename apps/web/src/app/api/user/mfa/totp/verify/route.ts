@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
@@ -8,7 +8,7 @@ const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 // POST /api/user/mfa/totp/verify - Verify TOTP code and enable 2FA
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

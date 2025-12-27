@@ -1,14 +1,14 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect, notFound } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect, notFound } from "next/navigation"
 import { Header } from '@/components/Header'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/pricing'
 import { formatDateShort } from '@/lib/date-utils'
 
-export default async function EventRegistrationsPage({ params }: { params: { eventId: string } }) {
-  const session = await getServerSession(authOptions)
+export default async function EventRegistrationsPage({ params }: { params: Promise<{ eventId: string }> }) {
+  const { eventId } = await params
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
@@ -20,7 +20,7 @@ export default async function EventRegistrationsPage({ params }: { params: { eve
 
   // Fetch event with registrations
   const event = await prisma.event.findUnique({
-    where: { id: params.eventId },
+    where: { id: eventId },
     include: {
       registrations: {
         include: {
@@ -238,4 +238,3 @@ export default async function EventRegistrationsPage({ params }: { params: { eve
     </div>
   )
 }
-

@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@fire/db'
+import { NextResponse } from "next/server"
+import { auth } from "@/auth"
+import { prisma } from "@fire/db"
 
 // POST /api/admin/users/[userId]/invite - Generate and send invite
 export async function POST(
@@ -10,10 +9,10 @@ export async function POST(
 ) {
   try {
     const { userId } = await params
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!session || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
     // Get user
@@ -22,13 +21,13 @@ export async function POST(
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     // Check if user is already active
-    if (user.accountStatus === 'ACTIVE') {
+    if (user.accountStatus === "ACTIVE") {
       return NextResponse.json(
-        { error: 'User account is already active' },
+        { error: "User account is already active" },
         { status: 400 }
       )
     }
@@ -57,17 +56,17 @@ export async function POST(
 
     // TODO: Send email with invite link
     // For now, we'll just return the invite URL
-    const inviteUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/invite/${inviteToken.token}`
+    const inviteUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/invite/${inviteToken.token}`
 
     return NextResponse.json({
       success: true,
       inviteToken: inviteToken.token,
       inviteUrl,
       expiresAt: inviteToken.expiresAt,
-      message: 'Invite generated successfully'
+      message: "Invite generated successfully"
     })
   } catch (error) {
-    console.error('Error generating invite:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Error generating invite:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -44,7 +44,7 @@ async function getM2MToken() {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json(

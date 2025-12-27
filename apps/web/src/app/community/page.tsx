@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 import { Header } from '@/components/Header'
 import { ReferralNetworkGraph } from '@/components/ReferralNetworkGraph'
 import { NetworkUser } from '@/lib/network-utils'
@@ -67,7 +66,7 @@ async function getNetworkData(): Promise<NetworkUser[]> {
 }
 
 export default async function CommunityPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
@@ -86,4 +85,3 @@ export default async function CommunityPage() {
     </div>
   )
 }
-

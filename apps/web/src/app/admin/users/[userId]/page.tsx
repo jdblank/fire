@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect, notFound } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect, notFound } from "next/navigation"
 import { Header } from '@/components/Header'
 import { UserForm } from '../UserForm'
 import { RegisterUserForm } from './RegisterUserForm'
@@ -12,7 +11,7 @@ import { formatDateShort } from '@/lib/date-utils'
 
 export default async function EditUserPage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')

@@ -1,14 +1,14 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect, notFound } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect, notFound } from "next/navigation"
 import { Header } from '@/components/Header'
 import { EventForm } from '../EventForm'
 import { LineItemsEditor } from './LineItemsEditor'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 
-export default async function EditEventPage({ params }: { params: { eventId: string } }) {
-  const session = await getServerSession(authOptions)
+export default async function EditEventPage({ params }: { params: Promise<{ eventId: string }> }) {
+  const { eventId } = await params
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
@@ -20,7 +20,7 @@ export default async function EditEventPage({ params }: { params: { eventId: str
 
   // Fetch event data
   const event = await prisma.event.findUnique({
-    where: { id: params.eventId },
+    where: { id: eventId },
     include: {
       lineItems: {
         orderBy: { sortOrder: 'asc' }
@@ -71,4 +71,3 @@ export default async function EditEventPage({ params }: { params: { eventId: str
     </div>
   )
 }
-

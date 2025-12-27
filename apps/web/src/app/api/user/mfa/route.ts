@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
@@ -11,7 +11,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 // GET /api/user/mfa - Get user's MFA status
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -77,5 +77,4 @@ export async function GET() {
     )
   }
 }
-
 

@@ -1,18 +1,17 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-import { Header } from '@/components/Header'
-import { NewsFeed } from '@/components/NewsFeed'
-import Link from 'next/link'
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
+import { Header } from "@/components/Header"
+import { NewsFeed } from "@/components/NewsFeed"
+import Link from "next/link"
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
-    redirect('/login')
+    redirect("/login")
   }
 
-  const isAdmin = session.user.role === 'ADMIN'
+  const isAdmin = session.user.role === "ADMIN"
 
   return (
     <div className="min-h-screen bg-gray-50">

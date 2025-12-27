@@ -1,12 +1,11 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 import { Header } from '@/components/Header'
 import Link from 'next/link'
 import { UsersTable } from './UsersTable'
 
 export default async function AdminUsersPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')

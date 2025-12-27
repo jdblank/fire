@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 // POST /api/registrations/[registrationId]/discounts - Apply discount
@@ -9,7 +9,7 @@ export async function POST(
   { params }: { params: { registrationId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
@@ -107,7 +107,7 @@ export async function DELETE(
   { params }: { params: { registrationId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })

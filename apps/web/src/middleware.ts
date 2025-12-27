@@ -1,43 +1,41 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import NextAuth from "next-auth"
+import { authConfig } from "./auth.config"
 
-// Define protected routes that require authentication
-const protectedRoutes = [
-  '/dashboard',
-  '/profile',
-  '/events',
-  '/community',
-  '/wiki',
-  '/admin',
-  '/registrations'
-]
+const { auth } = NextAuth(authConfig)
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+export default auth((req) => {
+  const { nextUrl } = req
+  const isLoggedIn = !!req.auth
 
-  // Check if the route is protected
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+  console.log('[MIDDLEWARE]', {
+    path: nextUrl.pathname,
+    isLoggedIn,
+    hasUser: !!req.auth?.user,
+    userEmail: req.auth?.user?.email,
+    userRole: req.auth?.user?.role
+  })
+
+  // Public routes that don't require authentication
+  const publicRoutes = ['/', '/login', '/register', '/forgot-password']
+  const isPublicRoute = publicRoutes.some(route => 
+    nextUrl.pathname === route || nextUrl.pathname.startsWith(route + '/')
   )
 
-  if (isProtectedRoute) {
-    // Check for NextAuth session token
-    const token = await getToken({ 
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET 
-    })
-
-    if (!token) {
-      // Redirect to sign in with callback URL
-      const url = new URL('/api/auth/signin', request.url)
-      url.searchParams.set('callbackUrl', pathname)
-      return NextResponse.redirect(url)
-    }
+  // Allow public routes without authentication
+  if (isPublicRoute) {
+    return
   }
 
-  return NextResponse.next()
-}
+  // For protected routes, require authentication
+  if (!isLoggedIn) {
+    const loginUrl = new URL('/login', nextUrl.origin)
+    loginUrl.searchParams.set('callbackUrl', nextUrl.pathname)
+    return Response.redirect(loginUrl)
+  }
+
+  // User is authenticated, allow the request
+  return
+})
 
 export const config = {
   matcher: [
@@ -47,8 +45,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - api/auth (NextAuth routes)
+     * - api routes (they handle their own auth)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
-

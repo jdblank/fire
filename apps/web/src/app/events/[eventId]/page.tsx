@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect, notFound } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect, notFound } from "next/navigation"
 import { Header } from '@/components/Header'
 import { prisma } from '@fire/db'
 import { RegisterForm } from './RegisterForm'
@@ -8,15 +7,16 @@ import { CancelRegistrationButton } from './CancelRegistrationButton'
 import { formatDateInternational, formatTime } from '@/lib/date-utils'
 import Link from 'next/link'
 
-export default async function EventDetailPage({ params }: { params: { eventId: string } }) {
-  const session = await getServerSession(authOptions)
+export default async function EventDetailPage({ params }: { params: Promise<{ eventId: string }> }) {
+  const { eventId } = await params
+  const session = await auth()
 
-  if (!session) {
+  if (!session?.user) {
     redirect('/login')
   }
 
   // Fetch full user profile with dateOfBirth
-  const user = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
@@ -28,13 +28,19 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
     }
   })
 
-  if (!user) {
+  if (!dbUser) {
     redirect('/login')
   }
 
+  // Cast dbUser to compatible type for RegisterForm
+  const userForForm: any = {
+    ...dbUser,
+    dateOfBirth: dbUser.dateOfBirth?.toISOString()
+  }
+
   // Fetch event
-  const event = await prisma.event.findUnique({
-    where: { id: params.eventId },
+  const eventData = await prisma.event.findUnique({
+    where: { id: eventId },
     include: {
       lineItems: {
         orderBy: { sortOrder: 'asc' }
@@ -47,8 +53,14 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
     }
   })
 
-  if (!event) {
+  if (!eventData) {
     notFound()
+  }
+
+  // Cast event to compatible type
+  const event: any = {
+    ...eventData,
+    depositAmount: eventData.depositAmount?.toString()
   }
 
   // Check if event is published (admins can view any status)
@@ -59,7 +71,7 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
   // Check if user is already registered (exclude cancelled)
   const existingRegistration = await prisma.eventRegistration.findFirst({
     where: {
-      eventId: params.eventId,
+      eventId: eventId,
       userId: session.user.id,
       status: {
         not: 'CANCELLED'
@@ -206,10 +218,9 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
             </div>
           </div>
         ) : (
-          <RegisterForm event={event} user={user} />
+          <RegisterForm event={event} user={userForForm} />
         )}
       </main>
     </div>
   )
 }
-

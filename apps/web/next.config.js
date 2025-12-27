@@ -13,8 +13,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Transpile packages from monorepo
-  transpilePackages: ['@fire/db', '@fire/types'],
+  // Transpile packages from monorepo and next-auth for Next.js 16 compatibility
+  transpilePackages: ['@fire/db', '@fire/types', 'next-auth'],
   
   // Image optimization
   images: {
@@ -53,5 +53,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
-

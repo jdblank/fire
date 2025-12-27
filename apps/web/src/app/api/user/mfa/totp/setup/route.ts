@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
@@ -11,7 +11,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 // POST /api/user/mfa/totp/setup - Generate TOTP secret and QR code
 export async function POST() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

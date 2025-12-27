@@ -1,11 +1,10 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 import { Header } from '@/components/Header'
 import { EventForm } from '../EventForm'
 
 export default async function CreateEventPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
@@ -34,4 +33,3 @@ export default async function CreateEventPage() {
     </div>
   )
 }
-

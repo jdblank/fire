@@ -1,30 +1,12 @@
-'use client'
+import { auth } from "@/auth"
+import { Header } from "@/components/Header"
+import { redirect } from "next/navigation"
 
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { Header } from '@/components/Header'
-import { useEffect } from 'react'
+export default async function WikiPage() {
+  const session = await auth()
 
-export default function WikiPage() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
-    }
-  }, [status, router])
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
-    )
-  }
-
-  if (!session) {
-    return null
+  if (!session?.user) {
+    redirect("/login")
   }
 
   return (
@@ -60,4 +42,3 @@ export default function WikiPage() {
     </div>
   )
 }
-

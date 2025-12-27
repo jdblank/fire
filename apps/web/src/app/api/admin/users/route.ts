@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 // GET /api/admin/users - List all users
 export async function GET(request: Request) {
   try {
     console.log('GET /api/admin/users - Starting...')
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     console.log('Session:', session ? `User: ${session.user.email}, Role: ${session.user.role}` : 'No session')
     
     if (!session || session.user.role !== 'ADMIN') {
@@ -95,7 +95,7 @@ export async function GET(request: Request) {
 // POST /api/admin/users - Create a new user
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })

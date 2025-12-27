@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 
 const OUTLINE_INTERNAL_URL = 'http://outline:3000'
 const OUTLINE_PUBLIC_URL = 'http://localhost:3004'
@@ -8,7 +8,7 @@ const OUTLINE_PUBLIC_URL = 'http://localhost:3004'
 export async function GET(request: NextRequest) {
   try {
     // Check if user is authenticated in Fire
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url))
