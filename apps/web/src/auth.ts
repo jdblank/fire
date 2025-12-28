@@ -39,14 +39,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async jwt({ token, user, account }: any) {
         // On initial sign in, add user info from the provider
         if (user) {
-          token.id = user.id
-          
           // Sync user to database on initial sign-in
           if (user.email) {
             try {
               const existingDbUser = await prisma.user.findUnique({
                 where: { email: user.email },
-                select: { role: true }
+                select: { id: true, role: true }
               })
 
               let userRole: UserRole = (existingDbUser?.role || UserRole.USER) as UserRole
@@ -74,7 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               const lastName = nameParts.slice(1).join(" ") || ""
 
               // Sync user to database
-              await prisma.user.upsert({
+              const syncedUser = await prisma.user.upsert({
                 where: { email: user.email },
                 update: {
                   logtoId: user.id,
@@ -95,10 +93,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                   role: userRole,
                   accountStatus: "ACTIVE",
                 },
+                select: { id: true }
               })
 
+              // Use the database user ID (not the LogTo ID) for session
+              token.id = syncedUser.id
               token.role = userRole
-              console.log(`[AUTH JWT] User synced to database: ${user.email} -> ${userRole}`)
+              console.log(`[AUTH JWT] User synced to database: ${user.email} -> DB ID: ${syncedUser.id}, role: ${userRole}`)
             } catch (error) {
               console.error('[AUTH JWT] Database sync error:', error)
               token.role = user?.role || 'USER'
@@ -116,10 +117,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           try {
             const dbUser = await prisma.user.findUnique({
               where: { id: token.id as string },
-              select: { role: true }
+              select: { id: true, role: true }
             })
             
             if (dbUser) {
+              token.id = dbUser.id  // Ensure we always use the database ID
               token.role = dbUser.role
               console.log(`[AUTH JWT] Refreshed role from database: ${token.id} -> ${dbUser.role}`)
             }

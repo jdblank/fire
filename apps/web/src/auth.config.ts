@@ -1,28 +1,26 @@
 import { UserRole } from "@fire/types"
 
 // LogTo configuration from environment
-const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || "http://logto:3001"
 const LOGTO_ISSUER = process.env.LOGTO_ISSUER || "http://localhost:3001/oidc"
 const LOGTO_APP_ID = process.env.LOGTO_APP_ID
 const LOGTO_APP_SECRET = process.env.LOGTO_APP_SECRET
 
 function LogtoProvider(options: any = {}): any {
-  const defaultAuthorization = {
-    url: `${LOGTO_ISSUER}/auth`,
-    params: { scope: "openid profile email" },
-  }
-
   return {
-    id: "logto",
-    name: "Fire",
+    id: options.id || "logto",
+    name: options.name || "Fire",
     type: "oidc",
+    // In NextAuth v5, providing just the issuer enables automatic OIDC discovery
     issuer: LOGTO_ISSUER,
-    token: `${LOGTO_ENDPOINT}/oidc/token`,
-    userinfo: `${LOGTO_ENDPOINT}/oidc/me`,
-    jwks_endpoint: `${LOGTO_ENDPOINT}/oidc/jwks`,
     clientId: LOGTO_APP_ID,
     clientSecret: LOGTO_APP_SECRET,
     checks: ["pkce", "state"],
+    authorization: {
+      params: { 
+        scope: "openid profile email",
+        ...(options.authParams || {})
+      },
+    },
     profile(profile: any) {
       return {
         id: profile.sub,
@@ -30,15 +28,6 @@ function LogtoProvider(options: any = {}): any {
         name: profile.name || profile.username,
         image: profile.picture,
         role: (profile.role as UserRole) || UserRole.USER,
-      }
-    },
-    ...options,
-    authorization: {
-      ...defaultAuthorization,
-      ...(options.authorization || {}),
-      params: {
-        ...defaultAuthorization.params,
-        ...(options.authorization?.params || {}),
       }
     },
   }
@@ -50,12 +39,8 @@ export const authConfig = {
     LogtoProvider({
       id: "logto-signup",
       name: "Fire Register",
-      authorization: {
-        url: `${LOGTO_ISSUER}/auth`,
-        params: {
-          scope: "openid profile email",
-          interaction_mode: "signUp"
-        },
+      authParams: {
+        interaction_mode: "signUp"
       },
     }),
   ],

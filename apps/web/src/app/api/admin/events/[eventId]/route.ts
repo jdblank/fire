@@ -6,7 +6,7 @@ import { prisma } from '@fire/db'
 // GET /api/admin/events/[eventId] - Get event by ID
 export async function GET(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const session = await auth()
@@ -15,8 +15,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
+    const { eventId } = await params
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId },
+      where: { id: eventId },
       include: {
         createdBy: {
           select: {
@@ -64,7 +65,7 @@ export async function GET(
 // PUT /api/admin/events/[eventId] - Update event
 export async function PUT(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const session = await auth()
@@ -73,6 +74,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
+    const { eventId } = await params
     const body = await request.json()
     const {
       title,
@@ -92,7 +94,7 @@ export async function PUT(
 
     // Check if event exists
     const existing = await prisma.event.findUnique({
-      where: { id: params.eventId }
+      where: { id: eventId }
     })
 
     if (!existing) {
@@ -101,7 +103,7 @@ export async function PUT(
 
     // Update event
     const event = await prisma.event.update({
-      where: { id: params.eventId },
+      where: { id: eventId },
       data: {
         ...(title && { title }),
         ...(description && { description }),
@@ -141,7 +143,7 @@ export async function PUT(
 // DELETE /api/admin/events/[eventId] - Delete event
 export async function DELETE(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const session = await auth()
@@ -150,9 +152,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
+    const { eventId } = await params
     // Check if event exists
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId },
+      where: { id: eventId },
       include: {
         _count: {
           select: { registrations: true }
@@ -174,7 +177,7 @@ export async function DELETE(
 
     // Delete event (cascade will handle line items)
     await prisma.event.delete({
-      where: { id: params.eventId }
+      where: { id: eventId }
     })
 
     return NextResponse.json({ success: true })
@@ -183,4 +186,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
