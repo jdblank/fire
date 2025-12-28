@@ -12,7 +12,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function GET() {
   try {
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -20,13 +20,13 @@ export async function GET() {
     // Get user's LogTo ID
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { logtoId: true }
+      select: { logtoId: true },
     })
 
     if (!user?.logtoId) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         mfaEnabled: false,
-        methods: []
+        methods: [],
       })
     }
 
@@ -39,19 +39,22 @@ export async function GET() {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
     const accessToken = tokenData.access_token
 
     // Get user's MFA verifications from LogTo
-    const mfaResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
+    const mfaResponse = await fetch(
+      `${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
-    })
+    )
 
     if (mfaResponse.ok) {
       const mfaData = await mfaResponse.json()
@@ -59,21 +62,17 @@ export async function GET() {
         mfaEnabled: mfaData.length > 0,
         methods: mfaData.map((m: any) => ({
           type: m.type,
-          createdAt: m.createdAt
-        }))
+          createdAt: m.createdAt,
+        })),
       })
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       mfaEnabled: false,
-      methods: []
+      methods: [],
     })
-
   } catch (error) {
     console.error('Error fetching MFA status:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch MFA status' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch MFA status' }, { status: 500 })
   }
 }

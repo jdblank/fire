@@ -44,8 +44,9 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
   const [dislikeCount, setDislikeCount] = useState(post.dislikes)
   const [reacting, setReacting] = useState(false)
 
-  const authorName = post.author.displayName || 
-    `${post.author.firstName} ${post.author.lastName}`.trim() || 
+  const authorName =
+    post.author.displayName ||
+    `${post.author.firstName} ${post.author.lastName}`.trim() ||
     'Unknown User'
 
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })
@@ -159,7 +160,7 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
           )}
         </Link>
         <div className="flex-1">
-          <Link 
+          <Link
             href={`/users/${post.author.id}`}
             className="font-semibold text-gray-900 hover:text-blue-600"
           >
@@ -180,7 +181,12 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
             title="Delete post"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
             </svg>
           </button>
         )}
@@ -190,28 +196,27 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
       <div className="mb-4">
         {/* If there's a link preview, hide the URL from content */}
         <p className="text-gray-900 whitespace-pre-wrap">
-          {post.linkUrl 
-            ? post.content.replace(post.linkUrl, '').trim()
-            : post.content
-          }
+          {post.linkUrl ? post.content.replace(post.linkUrl, '').trim() : post.content}
         </p>
       </div>
 
       {/* Images */}
       {post.images && post.images.length > 0 && (
-        <div className={`mb-4 grid gap-2 ${
-          post.images.length === 1 ? 'grid-cols-1' : 
-          post.images.length === 2 ? 'grid-cols-2' : 
-          'grid-cols-2'
-        }`}>
+        <div
+          className={`mb-4 grid gap-2 ${
+            post.images.length === 1
+              ? 'grid-cols-1'
+              : post.images.length === 2
+                ? 'grid-cols-2'
+                : 'grid-cols-2'
+          }`}
+        >
           {post.images.map((url, index) => (
-            <div key={index} className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
-              <Image
-                src={url}
-                alt={`Post image ${index + 1}`}
-                fill
-                className="object-cover"
-              />
+            <div
+              key={index}
+              className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden"
+            >
+              <Image src={url} alt={`Post image ${index + 1}`} fill className="object-cover" />
             </div>
           ))}
         </div>
@@ -265,17 +270,25 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
           )}
           <div className="p-4 bg-white">
             <div className="flex items-start gap-2 mb-2">
-              <svg className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <svg
+                className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
               </svg>
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-gray-900 mb-1 hover:text-blue-600">
                   {post.linkTitle || new URL(post.linkUrl).hostname}
                 </h4>
                 {post.linkDescription && (
-                  <p className="text-sm text-gray-600 line-clamp-3 mb-2">
-                    {post.linkDescription}
-                  </p>
+                  <p className="text-sm text-gray-600 line-clamp-3 mb-2">{post.linkDescription}</p>
                 )}
                 <p className="text-xs text-gray-500 uppercase font-medium">
                   🔗 {new URL(post.linkUrl).hostname}
@@ -289,52 +302,48 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
       {/* Footer - Thumbs Up/Down */}
       <div className="flex items-center gap-4 text-sm pt-3 border-t border-gray-100">
         {/* Thumbs Up */}
-        <button 
+        <button
           onClick={() => handleReaction(true)}
           disabled={reacting}
           className={`flex items-center gap-2 transition-colors ${
-            reaction === 'like' 
-              ? 'text-blue-600' 
-              : 'text-gray-500 hover:text-blue-600'
+            reaction === 'like' ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'
           }`}
         >
-          <svg 
-            className={`w-5 h-5 ${reaction === 'like' ? 'fill-current' : ''}`} 
+          <svg
+            className={`w-5 h-5 ${reaction === 'like' ? 'fill-current' : ''}`}
             fill={reaction === 'like' ? 'currentColor' : 'none'}
-            stroke="currentColor" 
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={reaction === 'like' ? 0 : 2} 
-              d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" 
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={reaction === 'like' ? 0 : 2}
+              d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
             />
           </svg>
           <span className="font-medium">{likeCount}</span>
         </button>
 
         {/* Thumbs Down */}
-        <button 
+        <button
           onClick={() => handleReaction(false)}
           disabled={reacting}
           className={`flex items-center gap-2 transition-colors ${
-            reaction === 'dislike' 
-              ? 'text-red-600' 
-              : 'text-gray-500 hover:text-red-600'
+            reaction === 'dislike' ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
           }`}
         >
-          <svg 
-            className={`w-5 h-5 ${reaction === 'dislike' ? 'fill-current' : ''}`} 
+          <svg
+            className={`w-5 h-5 ${reaction === 'dislike' ? 'fill-current' : ''}`}
             fill={reaction === 'dislike' ? 'currentColor' : 'none'}
-            stroke="currentColor" 
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={reaction === 'dislike' ? 0 : 2} 
-              d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" 
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={reaction === 'dislike' ? 0 : 2}
+              d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"
             />
           </svg>
           <span className="font-medium">{dislikeCount}</span>
@@ -343,4 +352,3 @@ export function PostCard({ post, isAdmin, onDelete }: PostCardProps) {
     </div>
   )
 }
-

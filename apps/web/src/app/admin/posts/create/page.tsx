@@ -16,7 +16,7 @@ interface LinkPreview {
 }
 
 export default function CreatePostPage() {
-  const { data: session } = useSession()
+  const { data: session } = useSession({ required: true })
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [content, setContent] = useState('')
@@ -76,18 +76,18 @@ export default function CreatePostPage() {
   // Auto-detect URLs in content with debouncing
   const handleContentChange = (newContent: string) => {
     setContent(newContent)
-    
+
     // Clear existing timer
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current)
     }
-    
+
     // Debounce URL detection (wait 1 second after typing stops)
     debounceTimer.current = setTimeout(() => {
       // Find URLs in text
       const urlRegex = /(https?:\/\/[^\s]+)/gi
       const urls = newContent.match(urlRegex)
-      
+
       if (urls && urls.length > 0) {
         const firstUrl = urls[0]
         // Only fetch preview if URL changed
@@ -114,7 +114,7 @@ export default function CreatePostPage() {
       })
 
       const data = await response.json()
-      
+
       if (response.ok && data.preview) {
         setLinkPreview(data.preview)
       } else {
@@ -172,18 +172,22 @@ export default function CreatePostPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-8">
-          <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block">
+          <Link
+            href="/dashboard"
+            className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block"
+          >
             ← Back
           </Link>
-          <h1 className="text-3xl font-semibold text-gray-900">
-            Create Post
-          </h1>
+          <h1 className="text-3xl font-semibold text-gray-900">Create Post</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-lg border border-gray-200 p-6 space-y-6"
+        >
           {/* Content */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -204,9 +208,7 @@ export default function CreatePostPage() {
 
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Images
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
             <input
               type="file"
               accept="image/*"
@@ -221,10 +223,8 @@ export default function CreatePostPage() {
                 hover:file:bg-gray-200
                 file:cursor-pointer cursor-pointer"
             />
-            {uploadingMedia && (
-              <p className="text-sm text-blue-600 mt-2">Uploading...</p>
-            )}
-            
+            {uploadingMedia && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
+
             {/* Image Previews */}
             {images.length > 0 && (
               <div className="mt-4 grid grid-cols-3 gap-3">
@@ -242,8 +242,18 @@ export default function CreatePostPage() {
                       onClick={() => setImages(images.filter((_, i) => i !== index))}
                       className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -276,7 +286,8 @@ export default function CreatePostPage() {
               <button
                 type="button"
                 onClick={(e) => {
-                  const input = (e.target as HTMLButtonElement).previousElementSibling as HTMLInputElement
+                  const input = (e.target as HTMLButtonElement)
+                    .previousElementSibling as HTMLInputElement
                   if (input.value) {
                     setVideos([...videos, input.value])
                     input.value = ''
@@ -287,7 +298,7 @@ export default function CreatePostPage() {
                 Add
               </button>
             </div>
-            
+
             {videos.length > 0 && (
               <div className="mt-3 space-y-2">
                 {videos.map((url, index) => (
@@ -309,9 +320,7 @@ export default function CreatePostPage() {
           {/* Link Preview - Auto-detected */}
           {linkPreview && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Link Preview
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Link Preview</label>
               <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
                 {linkPreview.image && (
                   <div className="h-48 bg-gray-100">
@@ -329,11 +338,11 @@ export default function CreatePostPage() {
                     {linkPreview.title || linkPreview.url}
                   </h4>
                   {linkPreview.description && (
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {linkPreview.description}
-                    </p>
+                    <p className="text-sm text-gray-600 line-clamp-2">{linkPreview.description}</p>
                   )}
-                  <p className="text-xs text-gray-500 mt-2">{linkPreview.siteName || new URL(linkPreview.url).hostname}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {linkPreview.siteName || new URL(linkPreview.url).hostname}
+                  </p>
                 </div>
                 <button
                   type="button"

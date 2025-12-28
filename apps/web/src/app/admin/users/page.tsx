@@ -1,5 +1,5 @@
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import Link from 'next/link'
 import { UsersTable } from './UsersTable'
@@ -18,17 +18,13 @@ export default async function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-              User Management
-            </h1>
-            <p className="text-gray-500">
-              Create, edit, and manage user accounts
-            </p>
+            <h1 className="text-3xl font-semibold text-gray-900 mb-2">User Management</h1>
+            <p className="text-gray-500">Create, edit, and manage user accounts</p>
           </div>
           <div className="flex gap-3">
             <Link

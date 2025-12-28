@@ -21,10 +21,7 @@ export default function TestMFAPage() {
       <Header user={session.user} />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-2xl mb-4">Enforce MFA Policy</h1>
-        <button
-          onClick={enforceMFA}
-          className="bg-red-600 text-white px-6 py-3 rounded-lg"
-        >
+        <button onClick={enforceMFA} className="bg-red-600 text-white px-6 py-3 rounded-lg">
           Set MFA Policy to Mandatory
         </button>
         <pre className="mt-4 p-4 bg-gray-100 text-xs">{result}</pre>
@@ -35,5 +32,3 @@ export default function TestMFAPage() {
     </div>
   )
 }
-
-

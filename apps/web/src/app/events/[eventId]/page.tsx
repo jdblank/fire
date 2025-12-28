@@ -1,5 +1,5 @@
-import { auth } from "@/auth"
-import { redirect, notFound } from "next/navigation"
+import { auth } from '@/auth'
+import { redirect, notFound } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { prisma } from '@fire/db'
 import { RegisterForm } from './RegisterForm'
@@ -7,7 +7,11 @@ import { CancelRegistrationButton } from './CancelRegistrationButton'
 import { formatDateInternational, formatTime } from '@/lib/date-utils'
 import Link from 'next/link'
 
-export default async function EventDetailPage({ params }: { params: Promise<{ eventId: string }> }) {
+export default async function EventDetailPage({
+  params,
+}: {
+  params: Promise<{ eventId: string }>
+}) {
   const { eventId } = await params
   const session = await auth()
 
@@ -25,7 +29,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
       lastName: true,
       displayName: true,
       dateOfBirth: true,
-    }
+    },
   })
 
   if (!dbUser) {
@@ -35,7 +39,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   // Cast dbUser to compatible type for RegisterForm
   const userForForm: any = {
     ...dbUser,
-    dateOfBirth: dbUser.dateOfBirth?.toISOString()
+    dateOfBirth: dbUser.dateOfBirth?.toISOString(),
   }
 
   // Fetch event
@@ -43,14 +47,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
     where: { id: eventId },
     include: {
       lineItems: {
-        orderBy: { sortOrder: 'asc' }
+        orderBy: { sortOrder: 'asc' },
       },
       _count: {
         select: {
-          registrations: true
-        }
-      }
-    }
+          registrations: true,
+        },
+      },
+    },
   })
 
   if (!eventData) {
@@ -60,7 +64,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   // Cast event to compatible type
   const event: any = {
     ...eventData,
-    depositAmount: eventData.depositAmount?.toString()
+    depositAmount: eventData.depositAmount?.toString(),
   }
 
   // Check if event is published (admins can view any status)
@@ -74,17 +78,17 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
       eventId: eventId,
       userId: session.user.id,
       status: {
-        not: 'CANCELLED'
-      }
+        not: 'CANCELLED',
+      },
     },
     include: {
       lineItems: {
         include: {
-          lineItem: true
-        }
+          lineItem: true,
+        },
       },
-      discounts: true
-    }
+      discounts: true,
+    },
   })
 
   // Check capacity
@@ -94,15 +98,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Event Header */}
         <div className="bg-white rounded-lg border border-gray-200 p-8 mb-8">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-                {event.title}
-              </h1>
+              <h1 className="text-3xl font-semibold text-gray-900 mb-2">{event.title}</h1>
               {event.eventType === 'PAID' ? (
                 <span className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded font-medium">
                   PAID EVENT
@@ -142,9 +144,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
                 <span className="text-2xl">📍</span>
                 <div>
                   <p className="font-medium text-gray-900">{event.location}</p>
-                  {event.isOnline && (
-                    <p className="text-sm text-gray-600">Online event</p>
-                  )}
+                  {event.isOnline && <p className="text-sm text-gray-600">Online event</p>}
                 </div>
               </div>
             )}
@@ -157,9 +157,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
                     {event._count.registrations} registered
                     {event.maxAttendees && ` / ${event.maxAttendees} capacity`}
                   </p>
-                  {isFull && (
-                    <p className="text-sm text-red-600">Event is at full capacity</p>
-                  )}
+                  {isFull && <p className="text-sm text-red-600">Event is at full capacity</p>}
                 </div>
               </div>
             )}
@@ -175,9 +173,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
         {/* Registration Section */}
         {existingRegistration ? (
           <div className="bg-white rounded-lg border border-gray-200 p-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Your Registration
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Registration</h2>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
               <p className="text-green-800 font-medium">✓ You&apos;re registered for this event!</p>
               {existingRegistration.status === 'CANCELLED' && (
@@ -214,7 +210,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ ev
         ) : event.status !== 'PUBLISHED' ? (
           <div className="bg-white rounded-lg border border-gray-200 p-8">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="text-yellow-800 font-medium">This event is not yet open for registration</p>
+              <p className="text-yellow-800 font-medium">
+                This event is not yet open for registration
+              </p>
             </div>
           </div>
         ) : (

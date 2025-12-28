@@ -33,21 +33,15 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-8">
-          Settings
-        </h1>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-8">Settings</h1>
 
         <div className="space-y-6">
           {/* Profile Settings */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Profile
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Update your personal information and profile photo
-            </p>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile</h2>
+            <p className="text-gray-600 mb-4">Update your personal information and profile photo</p>
             <Link
               href="/profile"
               className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -58,21 +52,22 @@ export default function SettingsPage() {
 
           {/* Security Settings */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Security & Authentication
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Security & Authentication</h2>
             <p className="text-gray-600 mb-6">
               Enhance your account security with advanced authentication methods
             </p>
-            
+
             <div className="space-y-4">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <span className="text-2xl">🔐</span>
                   <div className="flex-1">
-                    <h3 className="font-medium text-blue-900 mb-1">Two-Factor Authentication (2FA)</h3>
+                    <h3 className="font-medium text-blue-900 mb-1">
+                      Two-Factor Authentication (2FA)
+                    </h3>
                     <p className="text-sm text-blue-800 mb-3">
-                      Add an extra layer of security with Google Authenticator, Authy, or similar apps
+                      Add an extra layer of security with Google Authenticator, Authy, or similar
+                      apps
                     </p>
                     <button
                       onClick={() => setActiveModal('2fa')}
@@ -88,9 +83,12 @@ export default function SettingsPage() {
                 <div className="flex items-start gap-3">
                   <span className="text-2xl">🔑</span>
                   <div className="flex-1">
-                    <h3 className="font-medium text-purple-900 mb-1">Passkeys (Face ID / Touch ID)</h3>
+                    <h3 className="font-medium text-purple-900 mb-1">
+                      Passkeys (Face ID / Touch ID)
+                    </h3>
                     <p className="text-sm text-purple-800 mb-3">
-                      Use biometric authentication or hardware security keys for secure, password-free login
+                      Use biometric authentication or hardware security keys for secure,
+                      password-free login
                     </p>
                     <button
                       onClick={() => setActiveModal('passkey')}
@@ -120,22 +118,17 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Privacy Settings */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Privacy
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Privacy</h2>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">Public Profile</p>
                 <p className="text-sm text-gray-600">Allow others to view your profile</p>
               </div>
-              <div className="text-sm text-gray-500">
-                Currently: Public
-              </div>
+              <div className="text-sm text-gray-500">Currently: Public</div>
             </div>
           </div>
         </div>

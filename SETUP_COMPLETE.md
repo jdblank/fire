@@ -8,14 +8,14 @@ All core infrastructure is now operational and ready for feature development.
 
 ### 🚀 Running Services
 
-| Service | URL | Status | Credentials |
-|---------|-----|--------|-------------|
-| **LogTo Admin** | http://localhost:3002 | ✅ Running | Create on first visit |
-| **LogTo API** | http://localhost:3001 | ✅ Running | - |
-| **Outline Wiki** | http://localhost:3004 | ✅ Running | Configure with LogTo |
+| Service           | URL                   | Status     | Credentials                |
+| ----------------- | --------------------- | ---------- | -------------------------- |
+| **LogTo Admin**   | http://localhost:3002 | ✅ Running | Create on first visit      |
+| **LogTo API**     | http://localhost:3001 | ✅ Running | -                          |
+| **Outline Wiki**  | http://localhost:3004 | ✅ Running | Configure with LogTo       |
 | **MinIO Console** | http://localhost:9101 | ✅ Running | minioadmin / minioadmin123 |
-| **PostgreSQL** | localhost:5432 | ✅ Running | fireuser / firepass |
-| **Redis** | localhost:6379 | ✅ Running | No password |
+| **PostgreSQL**    | localhost:5432        | ✅ Running | fireuser / firepass        |
+| **Redis**         | localhost:6379        | ✅ Running | No password                |
 
 ### 📝 Next Steps
 
@@ -27,6 +27,7 @@ open http://localhost:3002
 ```
 
 **Steps:**
+
 1. Create your admin account
 2. Go to "Applications" → "Create Application"
 3. Select "Machine-to-Machine"
@@ -128,12 +129,14 @@ All scaffolding is complete. You can now:
 ### 🔧 Troubleshooting
 
 **If LogTo isn't accessible:**
+
 ```bash
 docker-compose restart logto
 docker logs fire-logto
 ```
 
 **If database issues occur:**
+
 ```bash
 docker exec -it fire-postgres psql -U fireuser
 \l  # List databases
@@ -142,6 +145,7 @@ docker exec -it fire-postgres psql -U fireuser
 ```
 
 **To reset everything:**
+
 ```bash
 docker-compose down -v  # WARNING: Deletes all data
 docker-compose up -d
@@ -156,4 +160,3 @@ docker-compose up -d
 ---
 
 **🎉 Congratulations!** Your Fire Platform infrastructure is fully operational and ready for feature development.
-

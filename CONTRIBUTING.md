@@ -5,22 +5,26 @@ Thank you for your interest in contributing to Fire! This document provides guid
 ## Development Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <repo-url>
    cd fire
    ```
 
 2. **Start Docker services**
+
    ```bash
    npm run docker:up
    ```
 
 3. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 4. **Run migrations**
+
    ```bash
    npm run db:migrate
    ```
@@ -35,6 +39,7 @@ Thank you for your interest in contributing to Fire! This document provides guid
 ### Before Starting Work
 
 1. Create a new branch from `develop`:
+
    ```bash
    git checkout develop
    git pull origin develop
@@ -57,11 +62,13 @@ Thank you for your interest in contributing to Fire! This document provides guid
 ### Code Style
 
 We use:
+
 - **ESLint** for JavaScript/TypeScript linting
 - **Prettier** for code formatting
 - **TypeScript strict mode** for type safety
 
 Format your code before committing:
+
 ```bash
 npm run format
 ```
@@ -69,6 +76,7 @@ npm run format
 ### Commit Messages
 
 Follow conventional commits:
+
 - `feat: add user profile page`
 - `fix: resolve login redirect issue`
 - `docs: update API documentation`
@@ -79,6 +87,7 @@ Follow conventional commits:
 ### Testing
 
 Run all tests before submitting:
+
 ```bash
 # Unit tests
 npm run test:unit
@@ -93,6 +102,7 @@ npm run test:load
 ### Submitting a Pull Request
 
 1. **Push your branch**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -187,5 +197,3 @@ Be respectful, inclusive, and professional.
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
-
-

@@ -17,5 +17,3 @@ describe('Example Test Suite', () => {
     expect(arr).toContain(3)
   })
 })
-
-

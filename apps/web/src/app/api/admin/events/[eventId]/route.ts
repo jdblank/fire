@@ -4,13 +4,10 @@ import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 // GET /api/admin/events/[eventId] - Get event by ID
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ eventId: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -24,10 +21,10 @@ export async function GET(
             id: true,
             email: true,
             displayName: true,
-          }
+          },
         },
         lineItems: {
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
         registrations: {
           include: {
@@ -38,17 +35,17 @@ export async function GET(
                 displayName: true,
                 firstName: true,
                 lastName: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         _count: {
           select: {
             registrations: true,
             lineItems: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     if (!event) {
@@ -63,13 +60,10 @@ export async function GET(
 }
 
 // PUT /api/admin/events/[eventId] - Update event
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ eventId: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -94,7 +88,7 @@ export async function PUT(
 
     // Check if event exists
     const existing = await prisma.event.findUnique({
-      where: { id: eventId }
+      where: { id: eventId },
     })
 
     if (!existing) {
@@ -125,12 +119,12 @@ export async function PUT(
             id: true,
             email: true,
             displayName: true,
-          }
+          },
         },
         lineItems: {
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
-      }
+      },
     })
 
     return NextResponse.json({ event })
@@ -142,12 +136,12 @@ export async function PUT(
 
 // DELETE /api/admin/events/[eventId] - Delete event
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -158,9 +152,9 @@ export async function DELETE(
       where: { id: eventId },
       include: {
         _count: {
-          select: { registrations: true }
-        }
-      }
+          select: { registrations: true },
+        },
+      },
     })
 
     if (!event) {
@@ -170,14 +164,16 @@ export async function DELETE(
     // Warn if event has registrations
     if (event._count.registrations > 0) {
       return NextResponse.json(
-        { error: `Cannot delete event with ${event._count.registrations} registrations. Cancel the event instead.` },
+        {
+          error: `Cannot delete event with ${event._count.registrations} registrations. Cancel the event instead.`,
+        },
         { status: 400 }
       )
     }
 
     // Delete event (cascade will handle line items)
     await prisma.event.delete({
-      where: { id: eventId }
+      where: { id: eventId },
     })
 
     return NextResponse.json({ success: true })

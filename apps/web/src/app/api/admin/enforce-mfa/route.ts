@@ -10,7 +10,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function POST() {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -24,8 +24,8 @@ export async function POST() {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
@@ -34,8 +34,8 @@ export async function POST() {
     // Get current sign-in experience
     const signInExpResponse = await fetch(`${LOGTO_ENDPOINT}/api/sign-in-exp`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
 
     const currentSignInExp = await signInExpResponse.json()
@@ -45,29 +45,28 @@ export async function POST() {
       ...currentSignInExp,
       mfa: {
         ...currentSignInExp.mfa,
-        policy: 'Mandatory' // Change from UserControlled to Mandatory
-      }
+        policy: 'Mandatory', // Change from UserControlled to Mandatory
+      },
     }
 
     const updateResponse = await fetch(`${LOGTO_ENDPOINT}/api/sign-in-exp`, {
       method: 'PATCH',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(updatedSignInExp)
+      body: JSON.stringify(updatedSignInExp),
     })
 
     const result = await updateResponse.text()
 
     return NextResponse.json({
       success: updateResponse.ok,
-      message: updateResponse.ok 
+      message: updateResponse.ok
         ? 'MFA is now mandatory for users who have it set up!'
         : 'Failed to update MFA policy',
-      details: result
+      details: result,
     })
-
   } catch (error) {
     console.error('Error:', error)
     return NextResponse.json(
@@ -76,4 +75,3 @@ export async function POST() {
     )
   }
 }
-

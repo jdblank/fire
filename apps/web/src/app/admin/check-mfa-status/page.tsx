@@ -17,25 +17,25 @@ export default function CheckMFAStatus() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          logtoId: 'amys6q4nfr6n'
-        })
+          logtoId: 'amys6q4nfr6n',
+        }),
       })
 
       const data = await response.json()
-      
+
       // Also check user object
       const userResponse = await fetch('/api/admin/check-user-object', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          logtoId: 'amys6q4nfr6n'
-        })
+          logtoId: 'amys6q4nfr6n',
+        }),
       })
       const userData = await userResponse.json()
-      
+
       setResult({
         mfaVerifications: data,
-        userObject: userData
+        userObject: userData,
       })
     } catch (error) {
       setResult({ error: (error as Error).message })
@@ -51,10 +51,10 @@ export default function CheckMFAStatus() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-semibold mb-4">Check MFA Status</h1>
-        
+
         <button
           onClick={checkStatus}
           disabled={loading}

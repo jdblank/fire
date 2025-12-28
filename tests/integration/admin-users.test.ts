@@ -2,7 +2,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL || 'postgresql://fireuser:firepass@localhost:5432/fire_db'
+  datasourceUrl:
+    process.env.DATABASE_URL || 'postgresql://fireuser:firepass@localhost:5432/fire_db',
 })
 
 describe('Admin User Management', () => {
@@ -27,7 +28,7 @@ describe('Admin User Management', () => {
           displayName: 'Test User',
           role: 'USER',
           accountStatus: 'PENDING_INVITE',
-        }
+        },
       })
 
       expect(user).toBeDefined()
@@ -35,13 +36,13 @@ describe('Admin User Management', () => {
       expect(user.firstName).toBe('Test')
       expect(user.lastName).toBe('User')
       expect(user.accountStatus).toBe('PENDING_INVITE')
-      
+
       testUserId = user.id
     })
 
     it('should retrieve user by ID', async () => {
       const user = await prisma.user.findUnique({
-        where: { id: testUserId }
+        where: { id: testUserId },
       })
 
       expect(user).toBeDefined()
@@ -55,7 +56,7 @@ describe('Admin User Management', () => {
           hometown: 'New York',
           mobilePhone: '+1-555-1234',
           countryCode: '+1',
-        }
+        },
       })
 
       expect(updated.hometown).toBe('New York')
@@ -64,7 +65,7 @@ describe('Admin User Management', () => {
 
     it('should list all users', async () => {
       const users = await prisma.user.findMany()
-      
+
       expect(users.length).toBeGreaterThan(0)
       expect(users[0]).toHaveProperty('email')
       expect(users[0]).toHaveProperty('firstName')
@@ -88,8 +89,8 @@ describe('Admin User Management', () => {
           referredById: referrer!.id,
         },
         include: {
-          referredBy: true
-        }
+          referredBy: true,
+        },
       })
 
       expect(referred.referredById).toBe(referrer!.id)
@@ -104,9 +105,9 @@ describe('Admin User Management', () => {
       const user = await prisma.user.findFirst({
         include: {
           _count: {
-            select: { referrals: true }
-          }
-        }
+            select: { referrals: true },
+          },
+        },
       })
 
       expect(user).toBeDefined()
@@ -123,21 +124,21 @@ describe('Admin User Management', () => {
         data: {
           userId: testUserId,
           expiresAt,
-        }
+        },
       })
 
       expect(token).toBeDefined()
       expect(token.token).toBeDefined()
       expect(token.userId).toBe(testUserId)
       expect(token.usedAt).toBeNull()
-      
+
       inviteToken = token.id
     })
 
     it('should retrieve invite token', async () => {
       const token = await prisma.inviteToken.findUnique({
         where: { id: inviteToken },
-        include: { user: true }
+        include: { user: true },
       })
 
       expect(token).toBeDefined()
@@ -148,7 +149,7 @@ describe('Admin User Management', () => {
     it('should mark token as used', async () => {
       const updated = await prisma.inviteToken.update({
         where: { id: inviteToken },
-        data: { usedAt: new Date() }
+        data: { usedAt: new Date() },
       })
 
       expect(updated.usedAt).toBeDefined()
@@ -162,8 +163,8 @@ describe('Admin User Management', () => {
           usedAt: null,
         },
         data: {
-          usedAt: new Date()
-        }
+          usedAt: new Date(),
+        },
       })
 
       // Should be 0 since we already used the token above
@@ -175,7 +176,7 @@ describe('Admin User Management', () => {
     it('should update account status', async () => {
       const user = await prisma.user.update({
         where: { id: testUserId },
-        data: { accountStatus: 'ACTIVE' }
+        data: { accountStatus: 'ACTIVE' },
       })
 
       expect(user.accountStatus).toBe('ACTIVE')
@@ -183,21 +184,21 @@ describe('Admin User Management', () => {
 
     it('should filter by account status', async () => {
       const activeUsers = await prisma.user.findMany({
-        where: { accountStatus: 'ACTIVE' }
+        where: { accountStatus: 'ACTIVE' },
       })
 
       expect(activeUsers.length).toBeGreaterThan(0)
-      activeUsers.forEach(user => {
+      activeUsers.forEach((user) => {
         expect(user.accountStatus).toBe('ACTIVE')
       })
     })
 
     it('should support all account statuses', async () => {
       const statuses = ['PENDING_INVITE', 'ACTIVE', 'SUSPENDED', 'DEACTIVATED']
-      
+
       for (const status of statuses) {
         const users = await prisma.user.findMany({
-          where: { accountStatus: status as any }
+          where: { accountStatus: status as any },
         })
         // Should not error
         expect(Array.isArray(users)).toBe(true)
@@ -209,12 +210,12 @@ describe('Admin User Management', () => {
     it('should search by email', async () => {
       const users = await prisma.user.findMany({
         where: {
-          email: { contains: 'example.com', mode: 'insensitive' }
-        }
+          email: { contains: 'example.com', mode: 'insensitive' },
+        },
       })
 
       expect(users.length).toBeGreaterThan(0)
-      users.forEach(user => {
+      users.forEach((user) => {
         expect(user.email.toLowerCase()).toContain('example.com')
       })
     })
@@ -225,12 +226,11 @@ describe('Admin User Management', () => {
           OR: [
             { firstName: { contains: 'Test', mode: 'insensitive' } },
             { lastName: { contains: 'User', mode: 'insensitive' } },
-          ]
-        }
+          ],
+        },
       })
 
       expect(users.length).toBeGreaterThan(0)
     })
   })
 })
-

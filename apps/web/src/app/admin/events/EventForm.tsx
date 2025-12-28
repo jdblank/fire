@@ -16,11 +16,13 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
   const [citySearch, setCitySearch] = useState(initialData?.location || '')
   const [cityResults, setCityResults] = useState<City[]>([])
   const [showCityResults, setShowCityResults] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
-    startDate: initialData?.startDate ? new Date(initialData.startDate).toISOString().slice(0, 16) : '',
+    startDate: initialData?.startDate
+      ? new Date(initialData.startDate).toISOString().slice(0, 16)
+      : '',
     endDate: initialData?.endDate ? new Date(initialData.endDate).toISOString().slice(0, 16) : '',
     location: initialData?.location || '',
     timezone: initialData?.timezone || 'America/New_York',
@@ -31,13 +33,13 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
     maxAttendees: initialData?.maxAttendees?.toString() || '',
     status: initialData?.status || 'DRAFT',
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const handleCitySearch = (query: string) => {
     setCitySearch(query)
     setFormData({ ...formData, location: query })
-    
+
     if (query.length >= 2) {
       const results = searchCities(query)
       setCityResults(results)
@@ -50,10 +52,10 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
 
   const selectCity = (city: City) => {
     setCitySearch(city.displayName)
-    setFormData({ 
-      ...formData, 
+    setFormData({
+      ...formData,
       location: city.displayName,
-      timezone: city.timezone 
+      timezone: city.timezone,
     })
     setShowCityResults(false)
   }
@@ -123,7 +125,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Basic Information */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
-        
+
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -179,7 +181,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Date and Location */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Date & Location</h2>
-        
+
         <div className="grid md:grid-cols-2 gap-4">
           {/* Start Date */}
           <div>
@@ -226,7 +228,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
             placeholder="Search city..."
             autoComplete="off"
           />
-          
+
           {/* City Results Dropdown */}
           {showCityResults && cityResults.length > 0 && (
             <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -243,10 +245,8 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
               ))}
             </div>
           )}
-          
-          <p className="mt-1 text-xs text-gray-500">
-            Timezone: {formData.timezone}
-          </p>
+
+          <p className="mt-1 text-xs text-gray-500">Timezone: {formData.timezone}</p>
         </div>
 
         {/* Online Event */}
@@ -267,7 +267,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Pricing */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Pricing</h2>
-        
+
         {/* Event Type */}
         <div>
           <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-2">
@@ -283,7 +283,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
             <option value="PAID">Paid Event</option>
           </select>
           <p className="mt-1 text-sm text-gray-500">
-            {formData.eventType === 'PAID' 
+            {formData.eventType === 'PAID'
               ? 'Pricing will be configured with line items after creating the event'
               : 'Free events have no registration fees'}
           </p>
@@ -307,7 +307,10 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
 
             {formData.requiresDeposit && (
               <div>
-                <label htmlFor="depositAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="depositAmount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Deposit Amount ($)
                 </label>
                 <input
@@ -332,7 +335,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Capacity */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Capacity</h2>
-        
+
         <div>
           <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-700 mb-2">
             Maximum Attendees
@@ -373,7 +376,8 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {eventId && formData.eventType === 'PAID' && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-900">
-            💡 After saving, scroll down to manage line items (dues, deposits, supplements) for this paid event.
+            💡 After saving, scroll down to manage line items (dues, deposits, supplements) for this
+            paid event.
           </p>
         </div>
       )}

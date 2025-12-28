@@ -74,13 +74,14 @@ export function ApplyDiscountForm({ registrationId, subtotal, onSuccess }: Apply
           + Apply Discount
         </button>
       ) : (
-        <form onSubmit={handleSubmit} className="border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50">
+        <form
+          onSubmit={handleSubmit}
+          className="border border-gray-200 rounded-lg p-4 space-y-3 bg-gray-50"
+        >
           <h4 className="font-medium text-gray-900 text-sm">Apply Discount</h4>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Discount Name
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Discount Name</label>
             <input
               type="text"
               value={name}
@@ -92,9 +93,7 @@ export function ApplyDiscountForm({ registrationId, subtotal, onSuccess }: Apply
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Type
-              </label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Type</label>
               <select
                 value={discountType}
                 onChange={(e) => setDiscountType(e.target.value as any)}
@@ -123,7 +122,8 @@ export function ApplyDiscountForm({ registrationId, subtotal, onSuccess }: Apply
 
           {amount && (
             <div className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded p-2">
-              Discount amount: <span className="font-medium text-blue-900">{formatCurrency(previewAmount())}</span>
+              Discount amount:{' '}
+              <span className="font-medium text-blue-900">{formatCurrency(previewAmount())}</span>
             </div>
           )}
 
@@ -152,4 +152,3 @@ export function ApplyDiscountForm({ registrationId, subtotal, onSuccess }: Apply
     </div>
   )
 }
-

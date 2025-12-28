@@ -10,7 +10,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
@@ -36,16 +36,15 @@ export async function POST(request: NextRequest) {
     // Get user object
     const userResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${logtoId}`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
 
     const userData = await userResponse.json()
 
     return NextResponse.json({
-      user: userData
+      user: userData,
     })
-
   } catch (error) {
     console.error('Error checking user:', error)
     return NextResponse.json(
@@ -54,4 +53,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

@@ -7,7 +7,7 @@ import { prisma } from '@fire/db'
 export async function GET(request: Request) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     // Build where clause
     const where: any = {}
-    
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -30,11 +30,11 @@ export async function GET(request: Request) {
         { location: { contains: search, mode: 'insensitive' } },
       ]
     }
-    
+
     if (status) {
       where.status = status
     }
-    
+
     if (eventType) {
       where.eventType = eventType
     }
@@ -48,14 +48,14 @@ export async function GET(request: Request) {
               id: true,
               email: true,
               displayName: true,
-            }
+            },
           },
           _count: {
             select: {
               registrations: true,
               lineItems: true,
-            }
-          }
+            },
+          },
         },
         orderBy: { startDate: 'desc' },
         skip,
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
         limit,
         total,
         pages: Math.ceil(total / limit),
-      }
+      },
     })
   } catch (error) {
     console.error('Error fetching events:', error)
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -107,10 +107,7 @@ export async function POST(request: Request) {
 
     // Validate required fields
     if (!title || !startDate) {
-      return NextResponse.json(
-        { error: 'Title and start date are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Title and start date are required' }, { status: 400 })
     }
 
     // Create event
@@ -137,9 +134,9 @@ export async function POST(request: Request) {
             id: true,
             email: true,
             displayName: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     return NextResponse.json({ event }, { status: 201 })
@@ -148,4 +145,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

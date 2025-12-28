@@ -35,7 +35,7 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
 
       const data = await response.json()
       console.log('TOTP setup response:', data)
-      
+
       if (!data.secret || !data.qrCode) {
         throw new Error('Invalid response from server')
       }
@@ -73,15 +73,15 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
 
     try {
       console.log('Verifying with:', { code, verificationId, hasSecret: !!secret })
-      
+
       const response = await fetch('/api/user/mfa/totp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           code,
           verificationId: verificationId || secret, // Use secret as fallback
-          secret
-        })
+          secret,
+        }),
       })
 
       const data = await response.json()
@@ -114,9 +114,7 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
       {step === 'scan' && (
         <>
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Step 1: Scan QR Code
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Step 1: Scan QR Code</h3>
             <p className="text-sm text-gray-600 mb-4">
               Use Google Authenticator, Authy, or any TOTP app
             </p>
@@ -129,9 +127,7 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
 
             <div className="mt-4 bg-gray-50 p-3 rounded-lg">
               <p className="text-xs text-gray-600 mb-1">Or enter this code manually:</p>
-              <code className="text-sm font-mono text-gray-900 break-all">
-                {secret}
-              </code>
+              <code className="text-sm font-mono text-gray-900 break-all">{secret}</code>
             </div>
           </div>
 
@@ -155,9 +151,7 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
               autoFocus
             />
 
-            {error && (
-              <p className="mt-2 text-sm text-red-600 text-center">{error}</p>
-            )}
+            {error && <p className="mt-2 text-sm text-red-600 text-center">{error}</p>}
 
             <div className="flex gap-3 mt-6">
               <button
@@ -181,9 +175,7 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
       {step === 'success' && (
         <div className="text-center py-8">
           <div className="text-6xl mb-4">✅</div>
-          <h3 className="text-xl font-semibold text-green-900 mb-2">
-            2FA Enabled Successfully!
-          </h3>
+          <h3 className="text-xl font-semibold text-green-900 mb-2">2FA Enabled Successfully!</h3>
           <p className="text-gray-600">
             Your account is now protected with two-factor authentication
           </p>
@@ -192,4 +184,3 @@ export function TOTPEnrollment({ onSuccess, onCancel }: TOTPEnrollmentProps) {
     </div>
   )
 }
-

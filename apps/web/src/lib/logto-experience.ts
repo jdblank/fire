@@ -37,7 +37,7 @@ export async function verifyPasswordWithLogTo(email: string, password: string) {
     const usersResponse = await fetch(
       `${LOGTO_ENDPOINT}/api/users?search=${encodeURIComponent(email)}`,
       {
-        headers: { 'Authorization': `Bearer ${access_token}` },
+        headers: { Authorization: `Bearer ${access_token}` },
       }
     )
 
@@ -55,17 +55,14 @@ export async function verifyPasswordWithLogTo(email: string, password: string) {
     }
 
     // Verify password
-    const verifyResponse = await fetch(
-      `${LOGTO_ENDPOINT}/api/users/${user.id}/password/verify`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${access_token}`,
-        },
-        body: JSON.stringify({ password }),
-      }
-    )
+    const verifyResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${user.id}/password/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: JSON.stringify({ password }),
+    })
 
     // LogTo returns 204 (No Content) for successful verification
     if (verifyResponse.status === 204) {
@@ -121,7 +118,7 @@ export async function registerUserWithLogTo(email: string, password: string, nam
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
       body: JSON.stringify({
         primaryEmail: email,
@@ -142,7 +139,7 @@ export async function registerUserWithLogTo(email: string, password: string, nam
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${access_token}`,
+        Authorization: `Bearer ${access_token}`,
       },
       body: JSON.stringify({ password }),
     })
@@ -187,7 +184,15 @@ export async function getLogToManagementToken() {
 /**
  * Create LogTo user with password
  */
-export async function createLogToUser({ email, password, name }: { email: string; password: string; name?: string }) {
+export async function createLogToUser({
+  email,
+  password,
+  name,
+}: {
+  email: string
+  password: string
+  name?: string
+}) {
   try {
     const accessToken = await getLogToManagementToken()
 
@@ -196,7 +201,7 @@ export async function createLogToUser({ email, password, name }: { email: string
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
         primaryEmail: email,
@@ -217,7 +222,7 @@ export async function createLogToUser({ email, password, name }: { email: string
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ password }),
     })
@@ -244,7 +249,7 @@ export async function getUserFromLogTo(userId: string) {
       hasAppId: !!process.env.LOGTO_M2M_APP_ID,
       hasAppSecret: !!process.env.LOGTO_M2M_APP_SECRET,
     })
-    
+
     const tokenResponse = await fetch(`${LOGTO_ENDPOINT}/oidc/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -268,12 +273,12 @@ export async function getUserFromLogTo(userId: string) {
 
     const tokenData = await tokenResponse.json()
     const { access_token } = tokenData
-    
+
     console.log('[getUserFromLogTo] Got M2M token, fetching user', { userId })
 
     // Get user
     const userResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${userId}`, {
-      headers: { 'Authorization': `Bearer ${access_token}` },
+      headers: { Authorization: `Bearer ${access_token}` },
     })
 
     if (!userResponse.ok) {
@@ -290,7 +295,7 @@ export async function getUserFromLogTo(userId: string) {
 
     // Get roles
     const rolesResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${userId}/roles`, {
-      headers: { 'Authorization': `Bearer ${access_token}` },
+      headers: { Authorization: `Bearer ${access_token}` },
     })
 
     if (!rolesResponse.ok) {
@@ -311,5 +316,3 @@ export async function getUserFromLogTo(userId: string) {
     throw error
   }
 }
-
-

@@ -20,9 +20,7 @@ export default function ImportUsersPage() {
       <div className="min-h-screen bg-gray-50">
         <Header user={session?.user} />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-red-600">
-            Admin access required
-          </div>
+          <div className="text-center text-red-600">Admin access required</div>
         </div>
       </div>
     )
@@ -75,15 +73,16 @@ export default function ImportUsersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
-          <Link href="/admin/users" className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block">
+          <Link
+            href="/admin/users"
+            className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block"
+          >
             ← Back to Users
           </Link>
-          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-            Import Users from CSV
-          </h1>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Import Users from CSV</h1>
           <p className="text-gray-600">
             Bulk import users and automatically generate invite tokens
           </p>
@@ -149,7 +148,7 @@ export default function ImportUsersPage() {
           {result && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-6 space-y-4">
               <h3 className="text-lg font-semibold text-green-900">Import Complete!</h3>
-              
+
               {/* Summary */}
               <div className="grid md:grid-cols-4 gap-4">
                 <div className="bg-white p-3 rounded border border-green-300">
@@ -191,7 +190,10 @@ export default function ImportUsersPage() {
                   <h4 className="font-medium text-gray-900 mb-2">Skipped:</h4>
                   <div className="bg-white rounded border border-yellow-300 max-h-40 overflow-y-auto">
                     {result.results.skipped.map((item: any, i: number) => (
-                      <div key={i} className="px-3 py-2 border-b border-gray-100 last:border-0 text-sm">
+                      <div
+                        key={i}
+                        className="px-3 py-2 border-b border-gray-100 last:border-0 text-sm"
+                      >
                         <span className="text-gray-900">{item.email}</span>
                         <span className="text-yellow-700 ml-2">- {item.reason}</span>
                       </div>
@@ -206,7 +208,10 @@ export default function ImportUsersPage() {
                   <h4 className="font-medium text-gray-900 mb-2">Errors:</h4>
                   <div className="bg-white rounded border border-red-300 max-h-40 overflow-y-auto">
                     {result.results.errors.map((item: any, i: number) => (
-                      <div key={i} className="px-3 py-2 border-b border-gray-100 last:border-0 text-sm">
+                      <div
+                        key={i}
+                        className="px-3 py-2 border-b border-gray-100 last:border-0 text-sm"
+                      >
                         <span className="text-gray-900">{item.email}</span>
                         <span className="text-red-700 ml-2">- {item.error}</span>
                       </div>
@@ -221,8 +226,13 @@ export default function ImportUsersPage() {
                   <h4 className="font-medium text-gray-900 mb-2">CSV Format Errors:</h4>
                   <div className="bg-white rounded border border-red-300 max-h-40 overflow-y-auto">
                     {result.parseErrors.map((item: any, i: number) => (
-                      <div key={i} className="px-3 py-2 border-b border-gray-100 last:border-0 text-sm">
-                        <span className="text-red-700">Row {item.row}: {item.error}</span>
+                      <div
+                        key={i}
+                        className="px-3 py-2 border-b border-gray-100 last:border-0 text-sm"
+                      >
+                        <span className="text-red-700">
+                          Row {item.row}: {item.error}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -244,13 +254,17 @@ export default function ImportUsersPage() {
             <div className="mt-8 pt-6 border-t border-gray-200">
               <h3 className="font-medium text-gray-900 mb-3">CSV Format:</h3>
               <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-2">
-                <p className="text-gray-700"><strong>Required columns:</strong></p>
+                <p className="text-gray-700">
+                  <strong>Required columns:</strong>
+                </p>
                 <ul className="list-disc list-inside text-gray-600 space-y-1 ml-2">
                   <li>firstName</li>
                   <li>lastName</li>
                   <li>email</li>
                 </ul>
-                <p className="text-gray-700 mt-3"><strong>Optional columns:</strong></p>
+                <p className="text-gray-700 mt-3">
+                  <strong>Optional columns:</strong>
+                </p>
                 <ul className="list-disc list-inside text-gray-600 space-y-1 ml-2">
                   <li>hometown</li>
                   <li>dateOfBirth (format: YYYY-MM-DD)</li>
@@ -265,5 +279,3 @@ export default function ImportUsersPage() {
     </div>
   )
 }
-
-

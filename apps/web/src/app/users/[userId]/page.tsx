@@ -6,7 +6,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatDateShort } from '@/lib/date-utils'
 
-export default async function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+export default async function PublicProfilePage({
+  params,
+}: {
+  params: Promise<{ userId: string }>
+}) {
   const { userId } = await params
   const session = await auth()
 
@@ -64,9 +68,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
       <div className="min-h-screen bg-gray-50">
         <Header user={session.user} />
         <main className="container mx-auto px-4 py-8">
-          <div className="text-center text-gray-600">
-            User not found
-          </div>
+          <div className="text-center text-gray-600">User not found</div>
         </main>
       </div>
     )
@@ -82,9 +84,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
       <div className="min-h-screen bg-gray-50">
         <Header user={session.user} />
         <main className="container mx-auto px-4 py-8">
-          <div className="text-center text-gray-600">
-            This profile is private
-          </div>
+          <div className="text-center text-gray-600">This profile is private</div>
         </main>
       </div>
     )
@@ -93,7 +93,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Profile Header */}
         <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
@@ -120,30 +120,17 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
             {/* User Info */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-semibold text-gray-900">
-                  {displayName}
-                </h1>
+                <h1 className="text-3xl font-semibold text-gray-900">{displayName}</h1>
                 {isOwnProfile && (
-                  <Link
-                    href="/profile"
-                    className="text-sm text-blue-600 hover:text-blue-700"
-                  >
+                  <Link href="/profile" className="text-sm text-blue-600 hover:text-blue-700">
                     Edit Profile
                   </Link>
                 )}
               </div>
 
-              {user.hometown && (
-                <p className="text-gray-600 mb-3">
-                  📍 {user.hometown}
-                </p>
-              )}
+              {user.hometown && <p className="text-gray-600 mb-3">📍 {user.hometown}</p>}
 
-              {user.profile?.bio && (
-                <p className="text-gray-700 mb-4">
-                  {user.profile.bio}
-                </p>
-              )}
+              {user.profile?.bio && <p className="text-gray-700 mb-4">{user.profile.bio}</p>}
 
               {/* Social Links */}
               {(user.profile?.twitter || user.profile?.github || user.profile?.linkedin) && (
@@ -187,10 +174,8 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Referral Info */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Network
-            </h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Network</h2>
+
             {user.referredBy && (
               <div className="mb-4">
                 <p className="text-sm text-gray-600 mb-2">Referred by:</p>
@@ -198,14 +183,17 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                   href={`/users/${user.referredBy.id}`}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  {user.referredBy.displayName || `${user.referredBy.firstName} ${user.referredBy.lastName}`}
+                  {user.referredBy.displayName ||
+                    `${user.referredBy.firstName} ${user.referredBy.lastName}`}
                 </Link>
               </div>
             )}
 
             {user.referrals.length > 0 && (
               <div>
-                <p className="text-sm text-gray-600 mb-2">Referred members ({user.referrals.length}):</p>
+                <p className="text-sm text-gray-600 mb-2">
+                  Referred members ({user.referrals.length}):
+                </p>
                 <div className="space-y-2">
                   {user.referrals.slice(0, 5).map((referral) => (
                     <Link
@@ -230,9 +218,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                     </Link>
                   ))}
                   {user.referrals.length > 5 && (
-                    <p className="text-xs text-gray-500">
-                      and {user.referrals.length - 5} more...
-                    </p>
+                    <p className="text-xs text-gray-500">and {user.referrals.length - 5} more...</p>
                   )}
                 </div>
               </div>
@@ -245,14 +231,15 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
           {/* Event History */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Events Attended
-            </h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Events Attended</h2>
+
             {user.eventRegistrations.length > 0 ? (
               <div className="space-y-3">
                 {user.eventRegistrations.slice(0, 5).map((reg) => (
-                  <div key={reg.id} className="border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+                  <div
+                    key={reg.id}
+                    className="border-b border-gray-100 last:border-0 pb-2 last:pb-0"
+                  >
                     <Link
                       href={`/events/${reg.event.id}`}
                       className="text-blue-600 hover:text-blue-700 font-medium text-sm"

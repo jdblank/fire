@@ -34,6 +34,7 @@ cd my-new-project
 ```
 
 The setup script will:
+
 - ✅ Prompt for project name
 - ✅ Update all configuration files
 - ✅ Generate new secrets
@@ -47,12 +48,12 @@ The setup script will:
 
 ```yaml
 services:
-  - postgres:16-alpine      # Database
-  - redis:7-alpine          # Cache/Sessions
-  - minio                   # S3 Storage
-  - logto                   # Authentication
-  - outline                 # Team Wiki
-  - app                     # Your Next.js app
+  - postgres:16-alpine # Database
+  - redis:7-alpine # Cache/Sessions
+  - minio # S3 Storage
+  - logto # Authentication
+  - outline # Team Wiki
+  - app # Your Next.js app
 ```
 
 ### 🧪 Testing Infrastructure
@@ -93,6 +94,7 @@ your-project/
 ### 1. Update Project Metadata
 
 Edit these files:
+
 - `package.json` - Project name, description, version
 - `apps/web/package.json` - Web app metadata
 - `README.md` - Project-specific documentation
@@ -113,6 +115,7 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm db-pus
 ### 3. Configure Ports (if needed)
 
 Edit `docker-compose.yml` to change ports:
+
 - PostgreSQL: 5432
 - Redis: 6379
 - MinIO: 9100-9101
@@ -123,6 +126,7 @@ Edit `docker-compose.yml` to change ports:
 ### 4. Add Your Features
 
 The template provides:
+
 - ✅ Authentication flow (login/logout/register)
 - ✅ Protected routes with middleware
 - ✅ Database models (User, Event, Post, etc.)
@@ -133,6 +137,7 @@ Build on top with your business logic!
 ## What Makes This Template Different
 
 ### 🚀 Compared to create-next-app:
+
 - ✅ Complete backend infrastructure
 - ✅ Authentication pre-configured
 - ✅ Database and ORM set up
@@ -141,6 +146,7 @@ Build on top with your business logic!
 - ✅ Production-ready Docker setup
 
 ### 🚀 Compared to other templates:
+
 - ✅ Everything runs in Docker (consistent environments)
 - ✅ No vendor lock-in (open source stack)
 - ✅ Full test coverage from day one
@@ -150,12 +156,14 @@ Build on top with your business logic!
 ## Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 14 (App Router)
 - **Auth**: NextAuth.js with LogTo OIDC
 - **Styling**: Tailwind CSS
 - **State**: React Server Components
 
 ### Backend
+
 - **Runtime**: Node.js 20
 - **Database**: PostgreSQL 16
 - **ORM**: Prisma 5
@@ -163,6 +171,7 @@ Build on top with your business logic!
 - **Storage**: MinIO (S3-compatible)
 
 ### DevOps
+
 - **Containers**: Docker Compose
 - **Testing**: Vitest + k6
 - **CI/CD**: GitHub Actions ready
@@ -171,27 +180,32 @@ Build on top with your business logic!
 ## Using This Template for Different Types of Apps
 
 ### SaaS Application
+
 - ✅ Multi-tenant support ready (add tenant_id to models)
 - ✅ Subscription tracking (add to Prisma schema)
 - ✅ Usage metering (Redis counters)
 
 ### E-commerce Platform
+
 - ✅ Product catalog (extend Post model)
 - ✅ File uploads (MinIO for images)
 - ✅ Payment integration (Stripe webhook routes ready)
 
 ### Social Network
+
 - ✅ User profiles (already in schema)
 - ✅ Posts and comments (implemented)
 - ✅ File uploads (profile pics, media)
 - ✅ Real-time features (add Socket.io)
 
 ### Internal Tools
+
 - ✅ Team authentication (LogTo SSO)
 - ✅ Documentation (Outline wiki)
 - ✅ Admin dashboard (add RBAC)
 
 ### API-First Product
+
 - ✅ GraphQL or REST ready
 - ✅ API versioning structure
 - ✅ Rate limiting (Redis)
@@ -200,6 +214,7 @@ Build on top with your business logic!
 ## Maintenance & Updates
 
 ### Update Dependencies
+
 ```bash
 # Check for updates
 npm outdated
@@ -212,6 +227,7 @@ docker-compose pull
 ```
 
 ### Database Migrations
+
 ```bash
 # Create migration
 npm run db:migrate
@@ -221,6 +237,7 @@ npm run db:migrate:docker
 ```
 
 ### Run Tests
+
 ```bash
 # Full test suite
 ./scripts/test-all-docker.sh
@@ -250,4 +267,3 @@ npm run test:load
 **Created from**: Fire Platform Infrastructure Template
 **License**: MIT (or your choice)
 **Maintained by**: Your Team
-

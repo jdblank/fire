@@ -24,7 +24,9 @@ export default function ForgotPasswordPage() {
 
       if (response.ok) {
         setStatus('success')
-        setMessage('If an account exists with this email, you will receive password reset instructions.')
+        setMessage(
+          'If an account exists with this email, you will receive password reset instructions.'
+        )
       } else {
         setStatus('error')
         setMessage(data.error || 'An error occurred. Please try again.')
@@ -96,7 +98,10 @@ export default function ForgotPasswordPage() {
               <Link href="/login" className="block text-sm text-primary hover:underline">
                 ← Back to login
               </Link>
-              <Link href="/register" className="block text-sm text-muted-foreground hover:text-primary">
+              <Link
+                href="/register"
+                className="block text-sm text-muted-foreground hover:text-primary"
+              >
                 Don&apos;t have an account? Sign up
               </Link>
             </div>

@@ -13,7 +13,7 @@ All required environment variables are configured in `docker-compose.override.ym
 
 - ✅ `NEXTAUTH_SECRET`: Configured
 - ✅ `LOGTO_APP_ID`: Web application credentials
-- ✅ `LOGTO_APP_SECRET`: Web application credentials  
+- ✅ `LOGTO_APP_SECRET`: Web application credentials
 - ✅ `LOGTO_M2M_APP_ID`: Machine-to-Machine credentials
 - ✅ `LOGTO_M2M_APP_SECRET`: Machine-to-Machine credentials
 - ✅ `LOGTO_ENDPOINT`: http://logto:3001
@@ -40,6 +40,7 @@ All required environment variables are configured in `docker-compose.override.ym
 ```
 
 **Verification**:
+
 - User created in LogTo with unique ID
 - Password securely stored in LogTo
 - User can be retrieved via LogTo Management API
@@ -55,6 +56,7 @@ POST /api/auth/signin/credentials 200 in 66ms
 ```
 
 **Verification**:
+
 - Password verification via LogTo ROPC flow
 - JWT tokens received (access_token, id_token)
 - User information decoded from ID token
@@ -124,6 +126,7 @@ POST /api/auth/signin/credentials 200 in 66ms
 ## How to Test Manually
 
 ### 1. Test Registration (Browser)
+
 ```bash
 # Open in browser
 http://localhost:3000/register
@@ -138,6 +141,7 @@ Name: Your Name
 ```
 
 ### 2. Test Login (Browser)
+
 ```bash
 # Open in browser
 http://localhost:3000/login
@@ -151,6 +155,7 @@ Password: YourPassword123!
 ```
 
 ### 3. Test Protected Routes
+
 ```bash
 # Try accessing dashboard without login
 http://localhost:3000/dashboard
@@ -165,6 +170,7 @@ http://localhost:3000/dashboard
 ```
 
 ### 4. Test Admin Features
+
 ```bash
 # Login as admin user (if configured in LogTo)
 # Dashboard should show:
@@ -175,23 +181,23 @@ http://localhost:3000/dashboard
 
 ## API Endpoints Available
 
-| Endpoint | Method | Purpose | Status |
-|----------|--------|---------|--------|
-| `/api/auth/register` | POST | Create new user | ✅ Working |
-| `/api/auth/signin/credentials` | POST | User login | ✅ Working |
-| `/api/auth/signout` | POST | User logout | ✅ Working |
-| `/api/auth/session` | GET | Get current session | ✅ Working |
-| `/api/auth/user` | GET | Get user details | ✅ Working |
+| Endpoint                       | Method | Purpose             | Status     |
+| ------------------------------ | ------ | ------------------- | ---------- |
+| `/api/auth/register`           | POST   | Create new user     | ✅ Working |
+| `/api/auth/signin/credentials` | POST   | User login          | ✅ Working |
+| `/api/auth/signout`            | POST   | User logout         | ✅ Working |
+| `/api/auth/session`            | GET    | Get current session | ✅ Working |
+| `/api/auth/user`               | GET    | Get user details    | ✅ Working |
 
 ## Pages Available
 
-| Page | Route | Auth Required | Status |
-|------|-------|---------------|--------|
-| Home | `/` | No | ✅ Working |
-| Register | `/register` | No | ✅ Working |
-| Login | `/login` | No | ✅ Working |
-| Dashboard | `/dashboard` | Yes | ✅ Working |
-| Admin Users | `/admin/users` | Yes (Admin) | ✅ Working |
+| Page        | Route          | Auth Required | Status     |
+| ----------- | -------------- | ------------- | ---------- |
+| Home        | `/`            | No            | ✅ Working |
+| Register    | `/register`    | No            | ✅ Working |
+| Login       | `/login`       | No            | ✅ Working |
+| Dashboard   | `/dashboard`   | Yes           | ✅ Working |
+| Admin Users | `/admin/users` | Yes (Admin)   | ✅ Working |
 
 ## Next Steps
 
@@ -215,12 +221,14 @@ http://localhost:3000/dashboard
 ## Troubleshooting
 
 ### If login fails:
+
 1. Check LogTo is running: `docker-compose ps logto`
 2. Check app logs: `docker-compose logs app`
 3. Verify environment variables: `docker exec fire-app env | grep LOGTO`
 4. Test LogTo endpoint: `curl http://localhost:3001/api/status`
 
 ### If registration fails:
+
 1. Check if user already exists in LogTo admin console
 2. Verify M2M credentials have Management API permissions
 3. Check app logs for detailed error messages
@@ -228,15 +236,3 @@ http://localhost:3000/dashboard
 ---
 
 **Status**: Authentication system is production-ready for development/testing. 🎉
-
-
-
-
-
-
-
-
-
-
-
-

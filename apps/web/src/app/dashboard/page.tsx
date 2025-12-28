@@ -1,32 +1,28 @@
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
-import { Header } from "@/components/Header"
-import { NewsFeed } from "@/components/NewsFeed"
-import Link from "next/link"
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+import { Header } from '@/components/Header'
+import { NewsFeed } from '@/components/NewsFeed'
+import Link from 'next/link'
 
 export default async function DashboardPage() {
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect('/login')
   }
 
-  const isAdmin = session.user.role === "ADMIN"
+  const isAdmin = session.user.role === 'ADMIN'
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-              Latest News
-            </h1>
-            <p className="text-gray-500">
-              Stay updated with the latest news and announcements
-            </p>
+            <h1 className="text-3xl font-semibold text-gray-900 mb-2">Latest News</h1>
+            <p className="text-gray-500">Stay updated with the latest news and announcements</p>
           </div>
           {isAdmin && (
             <Link

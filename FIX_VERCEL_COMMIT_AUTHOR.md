@@ -1,6 +1,7 @@
 # Fix "Commit Author is Required" Error
 
 ## Problem
+
 Vercel shows "A commit author is required" because commits use a local email (`infrastructure@fire-platform.local`) that doesn't match a GitHub account.
 
 ## Solution 1: Fix Git Config for Future Commits
@@ -31,6 +32,7 @@ The "commit author required" error only affects **manual deployments**. If the w
 ### If Webhook Doesn't Exist
 
 The webhook should be created when you:
+
 1. Connect GitHub in Vercel project settings
 2. Complete the configuration step
 3. Click "Deploy"
@@ -62,9 +64,9 @@ vercel --prod
 ## Most Important: Get Webhook Working
 
 The webhook is the key - once it's working:
+
 - Automatic deployments happen on every `git push`
 - No need for manual deployments
 - Commit author doesn't matter
 
 **Check GitHub webhooks right now** - do you see a Vercel webhook? If not, that's the root cause.
-

@@ -3,14 +3,11 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ eventId: string }> }
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
     const { eventId } = await params
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -23,9 +20,9 @@ export async function POST(
       where: { id: eventId },
       include: {
         _count: {
-          select: { registrations: true }
-        }
-      }
+          select: { registrations: true },
+        },
+      },
     })
 
     if (!event) {
@@ -42,13 +39,16 @@ export async function POST(
         eventId: eventId,
         userId: session.user.id,
         status: {
-          not: 'CANCELLED'
-        }
-      }
+          not: 'CANCELLED',
+        },
+      },
     })
 
     if (existing) {
-      return NextResponse.json({ error: 'You are already registered for this event' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'You are already registered for this event' },
+        { status: 400 }
+      )
     }
 
     // Check capacity
@@ -74,24 +74,27 @@ export async function POST(
             calculatedAmount: item.calculatedAmount,
             userAge: item.userAge,
             notes: item.notes || null,
-          }))
-        }
+          })),
+        },
       },
       include: {
         lineItems: {
           include: {
-            lineItem: true
-          }
+            lineItem: true,
+          },
         },
-        event: true
-      }
+        event: true,
+      },
     })
 
-    return NextResponse.json({ 
-      success: true,
-      registration,
-      message: 'Registration successful!'
-    }, { status: 201 })
+    return NextResponse.json(
+      {
+        success: true,
+        registration,
+        message: 'Registration successful!',
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Error creating registration:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

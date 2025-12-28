@@ -11,7 +11,7 @@ export async function PUT(
   try {
     const { eventId, itemId } = await params
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -34,8 +34,8 @@ export async function PUT(
     const existing = await prisma.eventLineItem.findFirst({
       where: {
         id: itemId,
-        eventId: eventId
-      }
+        eventId: eventId,
+      },
     })
 
     if (!existing) {
@@ -56,7 +56,7 @@ export async function PUT(
         ...(maxAmount !== undefined && { maxAmount }),
         ...(multiplier !== undefined && { multiplier }),
         ...(sortOrder !== undefined && { sortOrder }),
-      }
+      },
     })
 
     return NextResponse.json({ lineItem })
@@ -68,13 +68,13 @@ export async function PUT(
 
 // DELETE /api/admin/events/[eventId]/line-items/[itemId] - Delete line item
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ eventId: string; itemId: string }> }
 ) {
   try {
     const { eventId, itemId } = await params
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -83,13 +83,13 @@ export async function DELETE(
     const lineItem = await prisma.eventLineItem.findFirst({
       where: {
         id: itemId,
-        eventId: eventId
+        eventId: eventId,
       },
       include: {
         _count: {
-          select: { registrationLineItems: true }
-        }
-      }
+          select: { registrationLineItems: true },
+        },
+      },
     })
 
     if (!lineItem) {
@@ -99,14 +99,16 @@ export async function DELETE(
     // Warn if line item is used in registrations
     if (lineItem._count.registrationLineItems > 0) {
       return NextResponse.json(
-        { error: `Cannot delete line item used in ${lineItem._count.registrationLineItems} registrations` },
+        {
+          error: `Cannot delete line item used in ${lineItem._count.registrationLineItems} registrations`,
+        },
         { status: 400 }
       )
     }
 
     // Delete line item
     await prisma.eventLineItem.delete({
-      where: { id: itemId }
+      where: { id: itemId },
     })
 
     return NextResponse.json({ success: true })

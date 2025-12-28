@@ -1,6 +1,7 @@
 # Railway MinIO Setup - 10 Minute Guide
 
 ## Why MinIO on Railway?
+
 - ✅ Works with existing code (AWS SDK v2)
 - ✅ Same setup as dev (no compatibility issues)
 - ✅ S3-compatible API
@@ -34,6 +35,7 @@ MINIO_ROOT_PASSWORD=<generate-secure-password-here>
 ```
 
 Generate password with:
+
 ```bash
 openssl rand -base64 24
 ```
@@ -118,6 +120,7 @@ mc anonymous set download railway/fire-uploads
 ## Cost
 
 Railway MinIO usage:
+
 - Execution time: ~$5-10/month
 - Storage: Included in Railway plan
 - Bandwidth: Included
@@ -129,6 +132,7 @@ Much simpler than debugging R2!
 ## Next Steps
 
 After it works:
+
 1. Consider adding a custom domain: `uploads.fire.lemonade.art`
 2. Configure bucket policies for security
 3. Set up backups
@@ -136,4 +140,3 @@ After it works:
 ---
 
 **This will definitely work - it's the same as dev!**
-

@@ -1,5 +1,5 @@
-import NextAuth from "next-auth"
-import { authConfig } from "./auth.config"
+import NextAuth from 'next-auth'
+import { authConfig } from './auth.config'
 
 const { auth } = NextAuth(authConfig)
 
@@ -11,13 +11,13 @@ export default auth((req) => {
     path: nextUrl.pathname,
     isLoggedIn,
     hasUser: !!req.auth?.user,
-    userRole: req.auth?.user?.role
+    userRole: req.auth?.user?.role,
   })
 
   // Public routes that don't require authentication
   const publicRoutes = ['/', '/login', '/register', '/forgot-password']
-  const isPublicRoute = publicRoutes.some(route => 
-    nextUrl.pathname === route || nextUrl.pathname.startsWith(route + '/')
+  const isPublicRoute = publicRoutes.some(
+    (route) => nextUrl.pathname === route || nextUrl.pathname.startsWith(route + '/')
   )
 
   // Allow public routes without authentication

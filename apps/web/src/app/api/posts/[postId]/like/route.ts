@@ -11,7 +11,7 @@ export async function POST(
   try {
     const { postId } = await params
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -25,8 +25,8 @@ export async function POST(
         postId_userId: {
           postId: postId,
           userId: session.user.id,
-        }
-      }
+        },
+      },
     })
 
     if (existing) {
@@ -39,14 +39,14 @@ export async function POST(
       await prisma.$transaction([
         prisma.postLike.update({
           where: { id: existing.id },
-          data: { isLike }
+          data: { isLike },
         }),
         prisma.post.update({
           where: { id: postId },
-          data: existing.isLike 
+          data: existing.isLike
             ? { likes: { decrement: 1 }, dislikes: { increment: 1 } } // Was like, now dislike
-            : { dislikes: { decrement: 1 }, likes: { increment: 1 } } // Was dislike, now like
-        })
+            : { dislikes: { decrement: 1 }, likes: { increment: 1 } }, // Was dislike, now like
+        }),
       ])
 
       return NextResponse.json({ success: true, reaction: isLike ? 'like' : 'dislike' })
@@ -59,36 +59,30 @@ export async function POST(
           postId: postId,
           userId: session.user.id,
           isLike,
-        }
+        },
       }),
       prisma.post.update({
         where: { id: postId },
-        data: isLike 
-          ? { likes: { increment: 1 } }
-          : { dislikes: { increment: 1 } }
-      })
+        data: isLike ? { likes: { increment: 1 } } : { dislikes: { increment: 1 } },
+      }),
     ])
 
     return NextResponse.json({ success: true, reaction: isLike ? 'like' : 'dislike' })
-
   } catch (error) {
     console.error('Error reacting to post:', error)
-    return NextResponse.json(
-      { error: 'Failed to react to post' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to react to post' }, { status: 500 })
   }
 }
 
 // DELETE /api/posts/[postId]/like - Remove reaction from a post
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
     const { postId } = await params
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -99,8 +93,8 @@ export async function DELETE(
         postId_userId: {
           postId: postId,
           userId: session.user.id,
-        }
-      }
+        },
+      },
     })
 
     if (!existing) {
@@ -110,23 +104,17 @@ export async function DELETE(
     // Delete reaction and decrement appropriate counter
     await prisma.$transaction([
       prisma.postLike.delete({
-        where: { id: existing.id }
+        where: { id: existing.id },
       }),
       prisma.post.update({
         where: { id: postId },
-        data: existing.isLike
-          ? { likes: { decrement: 1 } }
-          : { dislikes: { decrement: 1 } }
-      })
+        data: existing.isLike ? { likes: { decrement: 1 } } : { dislikes: { decrement: 1 } },
+      }),
     ])
 
     return NextResponse.json({ success: true, reaction: null })
-
   } catch (error) {
     console.error('Error removing reaction:', error)
-    return NextResponse.json(
-      { error: 'Failed to remove reaction' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to remove reaction' }, { status: 500 })
   }
 }

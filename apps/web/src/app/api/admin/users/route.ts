@@ -8,13 +8,16 @@ export async function GET(request: Request) {
   try {
     console.log('GET /api/admin/users - Starting...')
     const session = await auth()
-    console.log('Session:', session ? `User: ${session.user.email}, Role: ${session.user.role}` : 'No session')
-    
+    console.log(
+      'Session:',
+      session ? `User: ${session.user.email}, Role: ${session.user.role}` : 'No session'
+    )
+
     if (!session || session.user.role !== 'ADMIN') {
       console.log('Unauthorized access attempt')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
-    
+
     console.log('Admin authenticated, fetching users...')
 
     const { searchParams } = new URL(request.url)
@@ -26,7 +29,7 @@ export async function GET(request: Request) {
 
     // Build where clause
     const where: any = {}
-    
+
     if (search) {
       where.OR = [
         { email: { contains: search, mode: 'insensitive' } },
@@ -35,13 +38,13 @@ export async function GET(request: Request) {
         { displayName: { contains: search, mode: 'insensitive' } },
       ]
     }
-    
+
     if (status) {
       where.accountStatus = status
     }
 
     console.log('Querying Prisma with where:', JSON.stringify(where))
-    
+
     let users, total
     try {
       const result = await Promise.all([
@@ -55,13 +58,13 @@ export async function GET(request: Request) {
                 displayName: true,
                 firstName: true,
                 lastName: true,
-              }
+              },
             },
             _count: {
               select: {
                 referrals: true,
-              }
-            }
+              },
+            },
           },
           orderBy: { createdAt: 'desc' },
           skip,
@@ -84,7 +87,7 @@ export async function GET(request: Request) {
         limit,
         total,
         pages: Math.ceil(total / limit),
-      }
+      },
     })
   } catch (error) {
     console.error('Error fetching users:', error)
@@ -96,7 +99,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -125,14 +128,11 @@ export async function POST(request: Request) {
 
     // Check if user already exists
     const existing = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     })
 
     if (existing) {
-      return NextResponse.json(
-        { error: 'User with this email already exists' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 })
     }
 
     // Create user
@@ -156,9 +156,9 @@ export async function POST(request: Request) {
             id: true,
             email: true,
             displayName: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     return NextResponse.json({ user }, { status: 201 })
@@ -167,4 +167,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

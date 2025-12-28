@@ -1,24 +1,24 @@
-import { UserRole } from "@fire/types"
+import { UserRole } from '@fire/types'
 
 // LogTo configuration from environment
-const LOGTO_ISSUER = process.env.LOGTO_ISSUER || "http://localhost:3001/oidc"
+const LOGTO_ISSUER = process.env.LOGTO_ISSUER || 'http://localhost:3001/oidc'
 const LOGTO_APP_ID = process.env.LOGTO_APP_ID
 const LOGTO_APP_SECRET = process.env.LOGTO_APP_SECRET
 
 function LogtoProvider(options: any = {}): any {
   return {
-    id: options.id || "logto",
-    name: options.name || "Fire",
-    type: "oidc",
+    id: options.id || 'logto',
+    name: options.name || 'Fire',
+    type: 'oidc',
     // In NextAuth v5, providing just the issuer enables automatic OIDC discovery
     issuer: LOGTO_ISSUER,
     clientId: LOGTO_APP_ID,
     clientSecret: LOGTO_APP_SECRET,
-    checks: ["pkce", "state"],
+    checks: ['pkce', 'state'],
     authorization: {
-      params: { 
-        scope: "openid profile email",
-        ...(options.authParams || {})
+      params: {
+        scope: 'openid profile email',
+        ...(options.authParams || {}),
       },
     },
     profile(profile: any) {
@@ -37,15 +37,15 @@ export const authConfig = {
   providers: [
     LogtoProvider(),
     LogtoProvider({
-      id: "logto-signup",
-      name: "Fire Register",
+      id: 'logto-signup',
+      name: 'Fire Register',
       authParams: {
-        interaction_mode: "signUp"
+        interaction_mode: 'signUp',
       },
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
   callbacks: {
     // Edge-compatible callbacks (no database operations)
@@ -73,23 +73,20 @@ export const authConfig = {
     },
     async authorized({ auth, request }: any) {
       const { pathname } = request.nextUrl
-      
+
       // Public routes that don't require authentication
-      const publicRoutes = [
-        '/',
-        '/login',
-        '/register',
-        '/forgot-password',
-      ]
-      
+      const publicRoutes = ['/', '/login', '/register', '/forgot-password']
+
       // Check if the current path is public
-      const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
-      
+      const isPublicRoute = publicRoutes.some(
+        (route) => pathname === route || pathname.startsWith(route + '/')
+      )
+
       // Allow public routes without authentication
       if (isPublicRoute) {
         return true
       }
-      
+
       // For all other routes, require authentication
       return !!auth?.user
     },

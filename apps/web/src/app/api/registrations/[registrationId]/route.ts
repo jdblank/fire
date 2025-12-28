@@ -5,13 +5,13 @@ import { prisma } from '@fire/db'
 
 // GET /api/registrations/[registrationId] - Get registration details
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ registrationId: string }> }
 ) {
   try {
     const { registrationId } = await params
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -28,22 +28,22 @@ export async function GET(
             lastName: true,
             displayName: true,
             mobilePhone: true,
-          }
+          },
         },
         lineItems: {
           include: {
-            lineItem: true
+            lineItem: true,
           },
           orderBy: {
-            createdAt: 'asc'
-          }
+            createdAt: 'asc',
+          },
         },
         discounts: {
           orderBy: {
-            createdAt: 'asc'
-          }
-        }
-      }
+            createdAt: 'asc',
+          },
+        },
+      },
     })
 
     if (!registration) {

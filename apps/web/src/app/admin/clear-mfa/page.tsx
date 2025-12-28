@@ -18,8 +18,8 @@ export default function ClearMFAPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: session?.user?.id
-        })
+          userId: session?.user?.id,
+        }),
       })
 
       const data = await response.json()
@@ -42,10 +42,10 @@ export default function ClearMFAPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-2xl font-semibold mb-4">Clear 2FA for Josh</h1>
-        
+
         <div className="bg-white p-6 rounded-lg border">
           <button
             onClick={clearMFA}
@@ -69,5 +69,3 @@ export default function ClearMFAPage() {
     </div>
   )
 }
-
-

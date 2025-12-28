@@ -11,7 +11,7 @@ Successfully implemented seamless email/password authentication using Logto as t
 
 ### 1. User Management via Logto Management API
 
-- **User Created:** 
+- **User Created:**
   - Email: `josh@lemonade.art`
   - Username: `josh648`
   - Name: Josh Blank
@@ -147,7 +147,7 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 ✅ **Secure Password Storage:** Passwords never leave Logto  
 ✅ **M2M Authentication:** Secure server-to-server communication  
 ✅ **JWT Tokens:** Stateless session management  
-✅ **No Password Exposure:** Verification happens server-side only  
+✅ **No Password Exposure:** Verification happens server-side only
 
 ## Testing
 
@@ -157,7 +157,7 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 ✅ User login with incorrect credentials → Error message displayed  
 ✅ Session persistence across page refreshes  
 ✅ Protected routes redirect to login when not authenticated  
-✅ Dashboard access after successful login  
+✅ Dashboard access after successful login
 
 ### Test Credentials
 
@@ -193,7 +193,8 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 
 **Cause:** Logto's password verification endpoint may not be enabled or accessible.
 
-**Solution:** 
+**Solution:**
+
 1. Check Logto admin console for password verification settings
 2. Verify M2M app has proper permissions
 3. Check app logs for detailed error messages
@@ -203,6 +204,7 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 **Cause:** Cookie settings may be misconfigured.
 
 **Solution:**
+
 1. Verify `NEXTAUTH_SECRET` is set
 2. Check cookie domain and path settings
 3. Ensure HTTPS in production
@@ -212,6 +214,7 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 **Cause:** Middleware may be blocking authenticated users.
 
 **Solution:**
+
 1. Check `middleware.ts` configuration
 2. Verify session is being created properly
 3. Check browser cookies to confirm session token exists
@@ -225,5 +228,3 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 ---
 
 **Implementation completed successfully on October 9, 2025**
-
-

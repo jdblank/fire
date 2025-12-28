@@ -4,13 +4,10 @@ import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 // POST /api/registrations/[registrationId]/discounts - Apply discount
-export async function POST(
-  request: Request,
-  { params }: { params: { registrationId: string } }
-) {
+export async function POST(request: Request, { params }: { params: { registrationId: string } }) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -32,7 +29,7 @@ export async function POST(
       include: {
         lineItems: true,
         discounts: true,
-      }
+      },
     })
 
     if (!registration) {
@@ -40,8 +37,9 @@ export async function POST(
     }
 
     // Calculate subtotal (sum of line items)
-    const subtotal = registration.lineItems.reduce((sum, item) => 
-      sum + parseFloat(item.calculatedAmount.toString()), 0
+    const subtotal = registration.lineItems.reduce(
+      (sum, item) => sum + parseFloat(item.calculatedAmount.toString()),
+      0
     )
 
     // Calculate discount amount
@@ -60,12 +58,13 @@ export async function POST(
         discountType,
         amount: discountAmount,
         appliedById: session.user.id,
-      }
+      },
     })
 
     // Recalculate registration totals
-    const existingDiscounts = registration.discounts.reduce((sum, d) => 
-      sum + parseFloat(d.amount.toString()), 0
+    const existingDiscounts = registration.discounts.reduce(
+      (sum, d) => sum + parseFloat(d.amount.toString()),
+      0
     )
     const totalDiscounts = existingDiscounts + discountAmount
     const newTotal = Math.max(0, subtotal - totalDiscounts)
@@ -83,17 +82,17 @@ export async function POST(
         discounts: true,
         lineItems: {
           include: {
-            lineItem: true
-          }
-        }
-      }
+            lineItem: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json({
       success: true,
       discount,
       registration: updatedRegistration,
-      message: 'Discount applied successfully'
+      message: 'Discount applied successfully',
     })
   } catch (error) {
     console.error('Error applying discount:', error)
@@ -102,13 +101,10 @@ export async function POST(
 }
 
 // DELETE /api/registrations/[registrationId]/discounts/[discountId] - Remove discount
-export async function DELETE(
-  request: Request,
-  { params }: { params: { registrationId: string } }
-) {
+export async function DELETE(request: Request, { params }: { params: { registrationId: string } }) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -122,7 +118,7 @@ export async function DELETE(
 
     // Get discount and registration
     const discount = await prisma.discount.findUnique({
-      where: { id: discountId }
+      where: { id: discountId },
     })
 
     if (!discount || discount.registrationId !== params.registrationId) {
@@ -131,7 +127,7 @@ export async function DELETE(
 
     // Delete discount
     await prisma.discount.delete({
-      where: { id: discountId }
+      where: { id: discountId },
     })
 
     // Recalculate registration totals
@@ -140,15 +136,17 @@ export async function DELETE(
       include: {
         lineItems: true,
         discounts: true,
-      }
+      },
     })
 
     if (registration) {
-      const subtotal = registration.lineItems.reduce((sum, item) => 
-        sum + parseFloat(item.calculatedAmount.toString()), 0
+      const subtotal = registration.lineItems.reduce(
+        (sum, item) => sum + parseFloat(item.calculatedAmount.toString()),
+        0
       )
-      const totalDiscounts = registration.discounts.reduce((sum, d) => 
-        sum + parseFloat(d.amount.toString()), 0
+      const totalDiscounts = registration.discounts.reduce(
+        (sum, d) => sum + parseFloat(d.amount.toString()),
+        0
       )
       const newTotal = Math.max(0, subtotal - totalDiscounts)
       const currentDepositPaid = parseFloat(registration.depositPaid.toString())
@@ -159,7 +157,7 @@ export async function DELETE(
         data: {
           totalAmount: newTotal,
           balanceDue: newBalanceDue,
-        }
+        },
       })
     }
 

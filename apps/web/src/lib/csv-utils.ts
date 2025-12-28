@@ -104,7 +104,15 @@ export function parseUsersCSV(csvText: string): ParsedCSVResult {
  * Generate CSV template
  */
 export function generateCSVTemplate(): string {
-  const headers = ['firstName', 'lastName', 'email', 'hometown', 'dateOfBirth', 'referredByEmail', 'mobilePhone']
+  const headers = [
+    'firstName',
+    'lastName',
+    'email',
+    'hometown',
+    'dateOfBirth',
+    'referredByEmail',
+    'mobilePhone',
+  ]
   const exampleRow = [
     'John',
     'Doe',
@@ -112,7 +120,7 @@ export function generateCSVTemplate(): string {
     'Austin, TX',
     '1990-01-15',
     'referrer@example.com',
-    '+1-555-123-4567'
+    '+1-555-123-4567',
   ]
 
   return Papa.unparse({
@@ -136,5 +144,3 @@ export function downloadCSVTemplate() {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
-
-

@@ -19,5 +19,3 @@ export function formatCurrency(amount: number, currency: string = 'USD'): string
     currency,
   }).format(amount)
 }
-
-

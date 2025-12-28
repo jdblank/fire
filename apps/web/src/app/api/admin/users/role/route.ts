@@ -13,9 +13,9 @@ const roleSchema = z.object({
 
 // Map our role enum to LogTo role names (lowercase)
 const ROLE_MAP = {
-  'USER': 'user',
-  'MODERATOR': 'moderator',
-  'ADMIN': 'admin',
+  USER: 'user',
+  MODERATOR: 'moderator',
+  ADMIN: 'admin',
 }
 
 // Get M2M access token for LogTo Management API
@@ -45,12 +45,9 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 403 })
     }
 
     // Parse and validate request body
@@ -68,10 +65,7 @@ export async function POST(request: NextRequest) {
 
     // Prevent changing your own role
     if (userId === session.user.id) {
-      return NextResponse.json(
-        { error: 'Cannot change your own role' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Cannot change your own role' }, { status: 400 })
     }
 
     // Get M2M token for LogTo Management API
@@ -80,13 +74,13 @@ export async function POST(request: NextRequest) {
 
     // Get all role definitions from LogTo
     const rolesResponse = await fetch(`${logtoEndpoint}/api/roles`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
     const allRoles = await rolesResponse.json()
-    
+
     // Find the role ID for the desired role
     const targetRole = allRoles.find((r: any) => r.name === ROLE_MAP[role])
-    
+
     if (!targetRole) {
       return NextResponse.json(
         { error: `Role ${role} not found in LogTo. Run: npm run logto:setup-roles` },
@@ -96,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     // Get user's current roles
     const userRolesResponse = await fetch(`${logtoEndpoint}/api/users/${userId}/roles`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
     const currentRoles = await userRolesResponse.json()
 
@@ -104,7 +98,7 @@ export async function POST(request: NextRequest) {
     for (const currentRole of currentRoles) {
       await fetch(`${logtoEndpoint}/api/users/${userId}/roles/${currentRole.id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
     }
 
@@ -112,7 +106,7 @@ export async function POST(request: NextRequest) {
     await fetch(`${logtoEndpoint}/api/users/${userId}/roles`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ roleIds: [targetRole.id] }),
@@ -125,7 +119,9 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         email: true,
-        name: true,
+        displayName: true,
+        firstName: true,
+        lastName: true,
         role: true,
       },
     })
@@ -143,4 +139,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

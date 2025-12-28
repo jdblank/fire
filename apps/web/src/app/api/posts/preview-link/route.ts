@@ -6,7 +6,7 @@ import { fetchLinkPreview } from '@/lib/link-preview'
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -29,23 +29,18 @@ export async function POST(request: NextRequest) {
 
     // Always return something useful, even if preview failed
     if (!preview) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         preview: {
           url,
           title: new URL(url).hostname,
-          description: 'Click to view'
-        }
+          description: 'Click to view',
+        },
       })
     }
 
     return NextResponse.json({ preview })
-
   } catch (error) {
     console.error('Link preview error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch preview' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch preview' }, { status: 500 })
   }
 }
-

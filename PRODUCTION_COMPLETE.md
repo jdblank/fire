@@ -13,13 +13,15 @@ Last updated: November 20, 2025
 ## Features Working
 
 ### Authentication & Security
+
 - ✅ Email-based registration via LogTo
 - ✅ User sign in/sign out
 - ✅ Password change functionality
 - ✅ Admin/moderator/user roles
 - ✅ Role-based access control
 
-### User Features  
+### User Features
+
 - ✅ Profile management
 - ✅ Secure photo upload (authenticated users only)
 - ✅ News feed
@@ -27,12 +29,14 @@ Last updated: November 20, 2025
 - ✅ Community features
 
 ### Admin Features
+
 - ✅ User management
 - ✅ Event management
 - ✅ Admin dashboard
 - ✅ Role assignment
 
 ### Infrastructure
+
 - ✅ Railway: PostgreSQL, Redis, LogTo, MinIO
 - ✅ Vercel: Next.js app deployment
 - ✅ Cloudflare: DNS
@@ -43,6 +47,7 @@ Last updated: November 20, 2025
 ## Services
 
 ### Vercel (App Hosting)
+
 - **Domain:** https://fire.lemonade.art
 - **Auto-deploys:** On push to `main` branch
 - **Environment variables:** Configured
@@ -51,21 +56,25 @@ Last updated: November 20, 2025
 ### Railway (Backend Services)
 
 **LogTo (Authentication)**
+
 - API: https://auth.lemonade.art
 - Admin: https://admin.auth.lemonade.art
 - Roles: admin, moderator, user
 - Email-based registration enabled
 
 **PostgreSQL (Database)**
+
 - Database: `fire_db`
 - All migrations applied
 - Prisma ORM
 
 **Redis (Cache)**
+
 - Session storage
 - Cache layer
 
 **MinIO (File Storage)**
+
 - Bucket: `fire-files`
 - Authenticated access only
 - Stores: avatars, post images, event banners
@@ -75,6 +84,7 @@ Last updated: November 20, 2025
 ## Image Upload (Secure)
 
 ### How It Works
+
 1. User uploads photo → Stored in MinIO `fire-files` bucket (private)
 2. Database saves proxied URL: `/api/images/{key}`
 3. When displaying: `/api/images/` route checks authentication
@@ -112,6 +122,7 @@ Dev → git push → GitHub → Webhook → Vercel → Production
 ## What's Next
 
 ### Optional Improvements
+
 - Migrate dev users to production (if needed)
 - Set up monitoring/alerts
 - Configure automated backups
@@ -124,12 +135,12 @@ Dev → git push → GitHub → Webhook → Vercel → Production
 See `PRODUCTION_CREDENTIALS.md` (gitignored, local only)
 
 Includes:
+
 - LogTo credentials
-- Railway database credentials  
+- Railway database credentials
 - MinIO credentials
 - Vercel environment variables
 
 ---
 
 **Everything is working perfectly!** 🚀
-

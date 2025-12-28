@@ -134,4 +134,3 @@ export function InviteAcceptForm({ token, user }: InviteAcceptFormProps) {
     </form>
   )
 }
-

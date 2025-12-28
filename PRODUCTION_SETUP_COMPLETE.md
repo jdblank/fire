@@ -7,6 +7,7 @@
 ## Prerequisites Checklist
 
 Before starting, ensure you have:
+
 - [ ] Railway project created with Postgres, Redis, and LogTo services
 - [ ] LogTo admin console accessible at `https://admin.auth.lemonade.art`
 - [ ] Vercel project connected to your GitHub repository
@@ -59,26 +60,27 @@ Copy the output - you'll need it in Step 2.
 
 ### Add These Variables (Set for Production ✅)
 
-| Variable Name | Value | Notes |
-|--------------|-------|-------|
-| `NODE_ENV` | `production` | |
-| `NEXT_TELEMETRY_DISABLED` | `1` | Optional but recommended |
-| `NEXTAUTH_URL` | `https://fire.lemonade.art` | Your app domain |
-| `NEXTAUTH_SECRET` | `<paste-from-step-1c>` | Generated secret |
-| `DATABASE_URL` | `<paste-from-step-1a>` | Public Postgres URL |
-| `REDIS_URL` | `<paste-from-step-1a>` | Public Redis URL (if using) |
-| `LOGTO_ENDPOINT` | `https://auth.lemonade.art` | LogTo API endpoint |
-| `LOGTO_ISSUER` | `https://auth.lemonade.art/oidc` | LogTo OIDC issuer |
-| `LOGTO_APP_ID` | `x0icr7qtjw9wrgecbjcj5` | From LogTo console |
-| `LOGTO_APP_SECRET` | `#internal:wytIYoddLcT3DElicZGGeO5pR7Zx4fDk` | From LogTo console (include `#internal:` prefix!) |
-| `NEXT_PUBLIC_LOGTO_ENDPOINT` | `https://auth.lemonade.art` | For client-side components |
-| `LOGTO_M2M_APP_ID` | `<optional>` | Only if using M2M |
-| `LOGTO_M2M_APP_SECRET` | `<optional>` | Only if using M2M |
-| `LOGTO_API_RESOURCE` | `https://api.fire-platform.com` | Optional |
+| Variable Name                | Value                                        | Notes                                             |
+| ---------------------------- | -------------------------------------------- | ------------------------------------------------- |
+| `NODE_ENV`                   | `production`                                 |                                                   |
+| `NEXT_TELEMETRY_DISABLED`    | `1`                                          | Optional but recommended                          |
+| `NEXTAUTH_URL`               | `https://fire.lemonade.art`                  | Your app domain                                   |
+| `NEXTAUTH_SECRET`            | `<paste-from-step-1c>`                       | Generated secret                                  |
+| `DATABASE_URL`               | `<paste-from-step-1a>`                       | Public Postgres URL                               |
+| `REDIS_URL`                  | `<paste-from-step-1a>`                       | Public Redis URL (if using)                       |
+| `LOGTO_ENDPOINT`             | `https://auth.lemonade.art`                  | LogTo API endpoint                                |
+| `LOGTO_ISSUER`               | `https://auth.lemonade.art/oidc`             | LogTo OIDC issuer                                 |
+| `LOGTO_APP_ID`               | `x0icr7qtjw9wrgecbjcj5`                      | From LogTo console                                |
+| `LOGTO_APP_SECRET`           | `#internal:wytIYoddLcT3DElicZGGeO5pR7Zx4fDk` | From LogTo console (include `#internal:` prefix!) |
+| `NEXT_PUBLIC_LOGTO_ENDPOINT` | `https://auth.lemonade.art`                  | For client-side components                        |
+| `LOGTO_M2M_APP_ID`           | `<optional>`                                 | Only if using M2M                                 |
+| `LOGTO_M2M_APP_SECRET`       | `<optional>`                                 | Only if using M2M                                 |
+| `LOGTO_API_RESOURCE`         | `https://api.fire-platform.com`              | Optional                                          |
 
 ### ⚠️ Critical Checks
 
 For **each variable**:
+
 - ✅ Variable name is **exact** (case-sensitive, no typos)
 - ✅ Value has **no quotes, no spaces, no trailing slashes**
 - ✅ **Production** environment is checked ✅
@@ -140,6 +142,7 @@ For **each variable**:
 ```
 
 This will check:
+
 - ✅ All environment variables are set
 - ✅ LogTo is accessible
 - ✅ Database connection works
@@ -154,6 +157,7 @@ This will check:
 **Cause:** Environment variables not loaded in Vercel
 
 **Fix:**
+
 1. Verify all variables are set for **Production** environment
 2. Check variable names are **exact** (case-sensitive)
 3. Redeploy Vercel after setting variables
@@ -164,6 +168,7 @@ This will check:
 **Cause:** Wrong LogTo App ID or Secret
 
 **Fix:**
+
 1. Verify `LOGTO_APP_ID` matches LogTo console
 2. Verify `LOGTO_APP_SECRET` includes `#internal:` prefix
 3. Check LogTo redirect URI matches exactly
@@ -173,6 +178,7 @@ This will check:
 **Cause:** Wrong database URL or network issue
 
 **Fix:**
+
 1. Verify using **PUBLIC** connection string (not internal)
 2. Check Railway Postgres is running
 3. Verify connection string format is correct
@@ -214,17 +220,20 @@ vercel ls
 ## Success Criteria
 
 ✅ **Authentication works:**
+
 - Sign in redirects to LogTo
 - Login completes successfully
 - Redirects back to app
 - User is logged in
 
 ✅ **No errors in logs:**
+
 - No `auth.fire.local` references
 - No validation errors
 - No database connection errors
 
 ✅ **All features work:**
+
 - Dashboard loads
 - Posts display
 - Events work
@@ -244,4 +253,3 @@ Once production is working:
 ---
 
 **Need help?** Check `TROUBLESHOOTING_PRODUCTION.md` or review Vercel/Railway logs.
-

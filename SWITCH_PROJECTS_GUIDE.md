@@ -3,17 +3,20 @@
 ## Stopping Fire Project
 
 ### Step 1: Stop All Services
+
 ```bash
 cd ~/fire
 docker-compose down
 ```
 
 This stops and removes:
+
 - Containers (app, postgres, redis, logto, etc.)
 - Network
 - Keeps volumes (your data is safe)
 
 ### Step 2: Clean Up Orphaned Containers & Networks
+
 ```bash
 # Remove stopped containers
 docker container prune -f
@@ -26,17 +29,20 @@ docker image prune -f
 ```
 
 ### Step 3: Check What's Using Space
+
 ```bash
 docker system df
 ```
 
 Shows:
+
 - Images
 - Containers
 - Volumes
 - Build cache
 
 ### Step 4: Clean Up Unused Volumes (Optional - BE CAREFUL)
+
 ```bash
 # List volumes
 docker volume ls
@@ -55,6 +61,7 @@ docker volume rm volume_name
 ## Starting New Project
 
 ### Directory Structure
+
 ```
 ~/projects/
 ├── fire/          ← Keep Fire here
@@ -62,6 +69,7 @@ docker volume rm volume_name
 ```
 
 ### Quick Setup
+
 ```bash
 # Create new project directory
 cd ~
@@ -97,6 +105,7 @@ docker-compose up -d
 ```
 
 ### In Cursor
+
 **File** → **Open Folder** → Select `~/fire`
 
 ---
@@ -104,6 +113,7 @@ docker-compose up -d
 ## Clean State Commands
 
 ### Fire - Full Clean Restart
+
 ```bash
 cd ~/fire
 docker-compose down -v  # Removes volumes too - RESETS EVERYTHING
@@ -112,6 +122,7 @@ docker-compose up -d
 ```
 
 ### New Project - Full Clean Restart
+
 ```bash
 cd ~/new-project
 docker-compose down -v
@@ -123,6 +134,7 @@ docker-compose up -d
 ## Docker Maintenance
 
 ### Check Docker Resource Usage
+
 ```bash
 # Overall usage
 docker system df
@@ -132,6 +144,7 @@ docker system df -v
 ```
 
 ### Clean Everything (Nuclear Option)
+
 ```bash
 # Stop all containers
 docker stop $(docker ps -aq)
@@ -156,6 +169,7 @@ docker network prune -f
 ## Recommended Workflow
 
 **Working on Fire:**
+
 ```bash
 cd ~/fire
 docker-compose up -d
@@ -163,6 +177,7 @@ docker-compose up -d
 ```
 
 **Switching to New Project:**
+
 ```bash
 docker-compose down  # In Fire directory
 cd ~/projects/new-project
@@ -178,7 +193,7 @@ docker-compose up -d
 
 - Always `docker-compose down` before switching
 - Keep separate Git repos
-- Name volumes clearly (fire_*, newproject_*)
+- Name volumes clearly (fire*\*, newproject*\*)
 - Use `docker ps` to see what's running
 - Use `docker-compose logs` to debug issues
 
@@ -187,10 +202,10 @@ docker-compose up -d
 ## Current Fire State
 
 Before switching, Fire is:
+
 - ✅ All code committed
 - ✅ Production deployed
 - ✅ Tests passing
 - ✅ Ready to pause
 
 Safe to shut down!
-

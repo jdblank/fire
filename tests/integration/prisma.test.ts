@@ -7,15 +7,16 @@ describe('Prisma Database Integration', () => {
   // Detect if we're running inside Docker
   const isInDocker = process.env.DATABASE_URL?.includes('postgres:5432')
   const POSTGRES_HOST = isInDocker ? 'postgres' : 'localhost'
-  const DATABASE_URL = process.env.DATABASE_URL || `postgres://fireuser:firepass@${POSTGRES_HOST}:5432/fire_db`
+  const DATABASE_URL =
+    process.env.DATABASE_URL || `postgres://fireuser:firepass@${POSTGRES_HOST}:5432/fire_db`
 
   beforeAll(async () => {
     prisma = new PrismaClient({
       datasources: {
         db: {
-          url: DATABASE_URL
-        }
-      }
+          url: DATABASE_URL,
+        },
+      },
     })
     await prisma.$connect()
   })
@@ -60,7 +61,7 @@ describe('Prisma Database Integration', () => {
           firstName: 'Test',
           lastName: 'User',
           displayName: 'Test User',
-        }
+        },
       })
 
       expect(user).toHaveProperty('id')
@@ -80,7 +81,7 @@ describe('Prisma Database Integration', () => {
           startDate: new Date(),
           endDate: new Date(Date.now() + 3600000), // 1 hour later
           location: 'Test Location',
-        }
+        },
       })
 
       expect(event).toHaveProperty('id')
@@ -91,4 +92,3 @@ describe('Prisma Database Integration', () => {
     })
   })
 })
-

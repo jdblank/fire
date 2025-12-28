@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export async function PUT(request: Request) {
   try {
     const session = await auth()
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -30,15 +30,12 @@ export async function PUT(request: Request) {
 
     // Verify current password and update to new password via LogTo
     const { verifyPasswordWithLogTo } = await import('@/lib/logto-experience')
-    
+
     // Verify current password
     const verifyResult = await verifyPasswordWithLogTo(session.user.email!, currentPassword)
-    
+
     if (!verifyResult) {
-      return NextResponse.json(
-        { error: 'Current password is incorrect' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Current password is incorrect' }, { status: 401 })
     }
 
     // Update to new password via LogTo Management API
@@ -61,40 +58,33 @@ export async function PUT(request: Request) {
 
     if (!tokenResponse.ok) {
       console.error('Failed to get M2M token for password change')
-      return NextResponse.json(
-        { error: 'Failed to authenticate with LogTo' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to authenticate with LogTo' }, { status: 500 })
     }
 
     const { access_token } = await tokenResponse.json()
 
     // Update password
-    const passwordResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${session.user.id}/password`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${access_token}`,
-      },
-      body: JSON.stringify({ password: newPassword }),
-    })
+    const passwordResponse = await fetch(
+      `${LOGTO_ENDPOINT}/api/users/${session.user.id}/password`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify({ password: newPassword }),
+      }
+    )
 
     if (!passwordResponse.ok) {
       const error = await passwordResponse.text()
       console.error('Failed to update password in LogTo:', error)
-      return NextResponse.json(
-        { error: 'Failed to update password' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to update password' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, message: 'Password changed successfully' })
   } catch (error) {
     console.error('Password change error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

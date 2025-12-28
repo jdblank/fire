@@ -9,7 +9,7 @@ John,Doe,john@example.com
 Jane,Smith,jane@example.com`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(2)
       expect(result.errors).toHaveLength(0)
       expect(result.valid[0]).toEqual({
@@ -24,7 +24,7 @@ Jane,Smith,jane@example.com`
 John,Doe,john@example.com,Austin TX,1990-01-15,referrer@example.com,+1-555-1234`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(1)
       expect(result.valid[0]).toEqual({
         firstName: 'John',
@@ -42,7 +42,7 @@ John,Doe,john@example.com,Austin TX,1990-01-15,referrer@example.com,+1-555-1234`
 ,Doe,john@example.com`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(0)
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].error).toContain('firstName is required')
@@ -53,7 +53,7 @@ John,Doe,john@example.com,Austin TX,1990-01-15,referrer@example.com,+1-555-1234`
 John,,john@example.com`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(0)
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].error).toContain('lastName is required')
@@ -64,7 +64,7 @@ John,,john@example.com`
 John,Doe,`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(0)
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].error).toContain('email is required')
@@ -75,7 +75,7 @@ John,Doe,`
 John,Doe,invalid-email`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(0)
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].error).toContain('Invalid email format')
@@ -86,7 +86,7 @@ John,Doe,invalid-email`
 John,Doe,john@example.com,invalid-date`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(0)
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].error).toContain('Invalid date format')
@@ -97,7 +97,7 @@ John,Doe,john@example.com,invalid-date`
   John  , Doe ,  john@example.com  `
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(1)
       expect(result.valid[0].firstName).toBe('John')
       expect(result.valid[0].lastName).toBe('Doe')
@@ -109,7 +109,7 @@ John,Doe,john@example.com,invalid-date`
 John,Doe,JOHN@EXAMPLE.COM`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(1)
       expect(result.valid[0].email).toBe('john@example.com')
     })
@@ -121,7 +121,7 @@ Jane,,jane@example.com
 Bob,Smith,bob@example.com`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(2)
       expect(result.errors).toHaveLength(1)
     })
@@ -133,7 +133,7 @@ John,Doe,john@example.com
 Jane,Smith,jane@example.com`
 
       const result = parseUsersCSV(csv)
-      
+
       expect(result.valid).toHaveLength(2)
     })
   })
@@ -141,14 +141,14 @@ Jane,Smith,jane@example.com`
   describe('generateCSVTemplate', () => {
     it('should generate valid CSV template', () => {
       const template = generateCSVTemplate()
-      
+
       expect(template).toContain('firstName,lastName,email')
       expect(template).toContain('John,Doe,john.doe@example.com')
     })
 
     it('should include all columns', () => {
       const template = generateCSVTemplate()
-      
+
       expect(template).toContain('hometown')
       expect(template).toContain('dateOfBirth')
       expect(template).toContain('referredByEmail')
@@ -156,5 +156,3 @@ Jane,Smith,jane@example.com`
     })
   })
 })
-
-

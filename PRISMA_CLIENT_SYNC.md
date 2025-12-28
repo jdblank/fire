@@ -5,7 +5,7 @@
 The Prisma client became out of sync with the database schema, causing posts to not display on the Dashboard. This happens when:
 
 1. **Schema changes** but Prisma client isn't regenerated
-2. **Dependencies update** but Prisma client isn't regenerated  
+2. **Dependencies update** but Prisma client isn't regenerated
 3. **Container rebuild** without regenerating Prisma client
 4. **Node modules** get out of sync
 
@@ -26,12 +26,14 @@ docker-compose restart app
 ### 1. Automatic Regeneration on Install
 
 Added `postinstall` script to `packages/db/package.json`:
+
 - Automatically runs `prisma generate` after `pnpm install`
 - Ensures client is always in sync after dependency updates
 
 ### 2. Check Script
 
 Created `scripts/check-prisma-client.sh`:
+
 - Verifies Prisma client exists and is up to date
 - Regenerates if schema is newer than client
 - Run before starting development: `./scripts/check-prisma-client.sh`
@@ -39,6 +41,7 @@ Created `scripts/check-prisma-client.sh`:
 ### 3. Docker Build
 
 The `Dockerfile.dev` already includes Prisma generation:
+
 ```dockerfile
 RUN cd packages/db && NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm exec prisma generate
 ```
@@ -46,6 +49,7 @@ RUN cd packages/db && NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm exec prisma generate
 ### 4. When to Regenerate
 
 **Always regenerate Prisma client when:**
+
 - ✅ Schema changes (`schema.prisma` is modified)
 - ✅ After pulling code that includes schema changes
 - ✅ After `pnpm install` (now automatic via postinstall)
@@ -79,11 +83,13 @@ docker-compose restart app
 ## If It Happens Again
 
 1. **Regenerate Prisma client:**
+
    ```bash
    docker exec fire-app sh -c "cd /app/packages/db && npx prisma generate"
    ```
 
 2. **Restart the app:**
+
    ```bash
    docker-compose restart app
    ```
@@ -100,4 +106,3 @@ docker-compose restart app
 3. **Check Prisma client** if you see database errors
 4. **Document schema changes** in commit messages
 5. **Test after schema changes** to catch issues early
-

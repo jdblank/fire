@@ -65,7 +65,7 @@ export async function uploadImage(
 
   const s3Client = getS3Client()
   const bucketName = getBucketName()
-  
+
   await s3Client
     .putObject({
       Bucket: bucketName,
@@ -104,7 +104,7 @@ export async function getSignedImageUrl(key: string): Promise<string> {
     Key: key,
     Expires: 3600, // 1 hour
   }
-  
+
   return s3Client.getSignedUrl('getObject', params)
 }
 

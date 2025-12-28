@@ -65,9 +65,7 @@ export function PasswordChange({ onSuccess, onCancel }: PasswordChangeProps) {
     <div className="space-y-6">
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Current Password
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
           <input
             type="password"
             value={currentPassword}
@@ -78,9 +76,7 @@ export function PasswordChange({ onSuccess, onCancel }: PasswordChangeProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            New Password
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
           <input
             type="password"
             value={newPassword}

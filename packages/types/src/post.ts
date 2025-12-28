@@ -11,19 +11,3 @@ export const createCommentSchema = z.object({
 
 export type CreatePost = z.infer<typeof createPostSchema>
 export type CreateComment = z.infer<typeof createCommentSchema>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

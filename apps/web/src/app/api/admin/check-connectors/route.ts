@@ -10,7 +10,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function GET() {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -24,8 +24,8 @@ export async function GET() {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
@@ -34,8 +34,8 @@ export async function GET() {
     // Get connectors
     const connectorsResponse = await fetch(`${LOGTO_ENDPOINT}/api/connectors`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
 
     const connectors = await connectorsResponse.json()
@@ -46,16 +46,11 @@ export async function GET() {
         name: c.name || c.id,
         type: c.type || c.metadata?.type,
         enabled: c.enabled,
-        config: c.config ? Object.keys(c.config) : []
-      }))
+        config: c.config ? Object.keys(c.config) : [],
+      })),
     })
-
   } catch (error) {
     console.error('Error checking connectors:', error)
-    return NextResponse.json(
-      { error: 'Failed to check connectors' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to check connectors' }, { status: 500 })
   }
 }
-

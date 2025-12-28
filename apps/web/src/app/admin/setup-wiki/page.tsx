@@ -41,9 +41,7 @@ export default function SetupWikiPage() {
       <div className="min-h-screen bg-gray-50">
         <Header user={session?.user} />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-red-600">
-            Admin access required
-          </div>
+          <div className="text-center text-red-600">Admin access required</div>
         </div>
       </div>
     )
@@ -52,11 +50,9 @@ export default function SetupWikiPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-8">
-          Setup Wiki SSO
-        </h1>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-8">Setup Wiki SSO</h1>
 
         <div className="bg-white rounded-lg border border-gray-200 p-8">
           <p className="text-gray-600 mb-6">
@@ -82,7 +78,9 @@ export default function SetupWikiPage() {
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <p className="text-green-800 font-medium mb-2">✅ {result.message}</p>
               <div className="text-sm text-gray-700 mb-3 space-y-1">
-                <p><strong>Client ID:</strong> {result.clientId}</p>
+                <p>
+                  <strong>Client ID:</strong> {result.clientId}
+                </p>
                 {result.clientSecret && (
                   <p className="font-mono text-xs bg-white p-2 rounded border">
                     <strong>Client Secret:</strong> {result.clientSecret}
@@ -101,7 +99,7 @@ export default function SetupWikiPage() {
                   </p>
                 </div>
               )}
-              
+
               <div className="bg-white p-4 rounded border border-green-300 mt-4">
                 <p className="font-medium text-gray-900 mb-2">Next Steps:</p>
                 <ol className="text-sm text-gray-700 space-y-2 list-decimal list-inside">
@@ -124,4 +122,3 @@ export default function SetupWikiPage() {
     </div>
   )
 }
-

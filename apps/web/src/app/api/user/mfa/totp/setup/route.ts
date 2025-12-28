@@ -12,7 +12,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function POST() {
   try {
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -20,7 +20,7 @@ export async function POST() {
     // Get user's LogTo ID
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { logtoId: true, email: true }
+      select: { logtoId: true, email: true },
     })
 
     if (!user?.logtoId) {
@@ -36,47 +36,56 @@ export async function POST() {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
     const accessToken = tokenData.access_token
 
     // First, check if TOTP already exists
-    const existingResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
+    const existingResponse = await fetch(
+      `${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
-    })
+    )
 
     if (existingResponse.ok) {
       const existingMFA = await existingResponse.json()
       const existingTOTP = existingMFA.find((m: any) => m.type === 'Totp')
-      
+
       // If TOTP exists, delete it first to generate a new one
       if (existingTOTP) {
         console.log('Deleting existing TOTP...')
-        await fetch(`${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications/${existingTOTP.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
+        await fetch(
+          `${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications/${existingTOTP.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
           }
-        })
+        )
       }
     }
 
     // Generate new TOTP secret via LogTo API
-    const totpResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        type: 'Totp'
-      })
-    })
+    const totpResponse = await fetch(
+      `${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'Totp',
+        }),
+      }
+    )
 
     if (!totpResponse.ok) {
       const error = await totpResponse.text()
@@ -93,9 +102,8 @@ export async function POST() {
     return NextResponse.json({
       secret: totpData.secret,
       qrCode: qrCodeUrl,
-      verificationId: totpData.id
+      verificationId: totpData.id,
     })
-
   } catch (error) {
     console.error('TOTP setup error:', error)
     return NextResponse.json(
@@ -104,4 +112,3 @@ export async function POST() {
     )
   }
 }
-

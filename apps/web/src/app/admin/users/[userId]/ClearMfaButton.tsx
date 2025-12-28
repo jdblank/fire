@@ -16,7 +16,7 @@ export function ClearMfaButton({ userId }: { userId: string }) {
       const response = await fetch('/api/admin/clear-user-mfa', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId }),
       })
       const data = await response.json()
       alert(data.message || data.error)

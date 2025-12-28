@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "pnpm --filter @fire/web dev",
     "build": "pnpm -r build",
+    "deploy:check": "pnpm lint && pnpm type-check && pnpm build",
     "test": "pnpm -r test",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
@@ -35,6 +36,7 @@
     "db:generate": "pnpm --filter @fire/db db:generate",
     "db:push": "pnpm --filter @fire/db db:push",
     "db:migrate": "pnpm --filter @fire/db db:migrate",
+    "db:migrate:deploy": "pnpm --filter @fire/db db:migrate:deploy",
     "db:studio": "pnpm --filter @fire/db db:studio"
   },
   "devDependencies": {

@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     // Check if user is authenticated in Fire
     const session = await auth()
-    
+
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // This tells LogTo to use the existing session without prompting
     const authUrl = new URL(`${OUTLINE_PUBLIC_URL}/auth/oidc`)
     authUrl.searchParams.set('prompt', 'none')
-    
+
     return NextResponse.redirect(authUrl.toString())
   } catch (error) {
     console.error('Wiki SSO error:', error)

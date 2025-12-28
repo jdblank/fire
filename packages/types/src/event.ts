@@ -15,19 +15,3 @@ export const createEventSchema = z.object({
 })
 
 export type CreateEvent = z.infer<typeof createEventSchema>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

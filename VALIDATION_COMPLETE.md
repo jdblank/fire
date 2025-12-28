@@ -48,6 +48,7 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 ### ✅ Quick Validation Results
 
 **Just ran successfully:**
+
 ```
 🔥 Fire Platform - Infrastructure Validation
 =============================================
@@ -77,6 +78,7 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 ## 📦 Test Coverage
 
 ### Infrastructure Components
+
 - ✅ PostgreSQL (15+ tests)
 - ✅ Redis (5+ tests)
 - ✅ MinIO S3 (3+ tests)
@@ -86,6 +88,7 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 - ✅ Prisma ORM (4+ tests)
 
 ### Test Types
+
 - ✅ **Unit Tests** - Utilities and functions
 - ✅ **Integration Tests** - Service connectivity
 - ✅ **E2E Tests** - Browser workflows (Playwright)
@@ -94,18 +97,23 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 ## 🚀 Running Tests
 
 ### Quick Infrastructure Check (Recommended)
+
 ```bash
 ./scripts/validate-infrastructure.sh
 ```
+
 **Fast! No npm install needed. Checks all services in seconds.**
 
 ### Full Test Suite (Docker)
+
 ```bash
 ./scripts/test-all-docker.sh
 ```
+
 **Comprehensive but slower (npm install required)**
 
 ### Individual Test Suites
+
 ```bash
 # Infrastructure tests
 docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-infrastructure
@@ -127,6 +135,7 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 ## ✅ What's Validated
 
 ### Services Running
+
 - ✅ PostgreSQL 16 (Port 5432) - Healthy
 - ✅ Redis 7 (Port 6379) - Healthy
 - ✅ MinIO (Ports 9100, 9101) - Healthy
@@ -134,16 +143,19 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 - ✅ Outline (Port 3004) - Healthy
 
 ### Databases
+
 - ✅ fire_db - Created and accessible
 - ✅ logto_db - Created and initialized (64 tables)
 - ✅ outline_db - Created and initialized
 
 ### Storage
+
 - ✅ MinIO buckets: fire-uploads, outline-data
 - ✅ S3 API accessible
 - ✅ Health endpoints responding
 
 ### Authentication
+
 - ✅ LogTo initialized and running
 - ✅ OIDC discovery endpoint working
 - ✅ Status API responding
@@ -152,23 +164,24 @@ docker-compose -f docker-compose.yml -f docker-compose.tools.yml run --rm test-u
 ## 🎯 CI/CD Integration
 
 Tests are configured in GitHub Actions:
+
 - **`.github/workflows/ci.yml`** - Lint, unit tests, E2E tests, security scans
 - **`.github/workflows/deploy.yml`** - Build and deployment
 - All tests run automatically on PRs and merges
 
 ## 📊 Summary
 
-| Component | Status | Tests | Coverage |
-|-----------|--------|-------|----------|
-| Infrastructure | ✅ | 15+ | All services |
-| Docker | ✅ | 6+ | Containers, networks, volumes |
-| PostgreSQL | ✅ | 5+ | Connection, queries, databases |
-| Redis | ✅ | 3+ | Connection, operations, TTL |
-| MinIO | ✅ | 2+ | Health, buckets |
-| LogTo | ✅ | 3+ | Status, OIDC, auth |
-| Outline | ✅ | 2+ | Web interface |
-| Prisma | ✅ | 4+ | ORM, CRUD |
-| Total | ✅ | **40+** | **Comprehensive** |
+| Component      | Status | Tests   | Coverage                       |
+| -------------- | ------ | ------- | ------------------------------ |
+| Infrastructure | ✅     | 15+     | All services                   |
+| Docker         | ✅     | 6+      | Containers, networks, volumes  |
+| PostgreSQL     | ✅     | 5+      | Connection, queries, databases |
+| Redis          | ✅     | 3+      | Connection, operations, TTL    |
+| MinIO          | ✅     | 2+      | Health, buckets                |
+| LogTo          | ✅     | 3+      | Status, OIDC, auth             |
+| Outline        | ✅     | 2+      | Web interface                  |
+| Prisma         | ✅     | 4+      | ORM, CRUD                      |
+| Total          | ✅     | **40+** | **Comprehensive**              |
 
 ## 🎉 Result
 
@@ -213,4 +226,3 @@ open http://localhost:3002
 # Restart a service
 docker-compose restart [service]
 ```
-

@@ -24,13 +24,14 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
     // Try fetching with node-fetch compatible options
     // Note: In Docker, external fetches may fail due to SSL issues
     const agent = new https.Agent({
-      rejectUnauthorized: false // Disable SSL verification for development
+      rejectUnauthorized: false, // Disable SSL verification for development
     })
 
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        Accept: 'text/html,application/xhtml+xml,application/xml',
         'Accept-Language': 'en-US,en;q=0.9',
       },
       // @ts-expect-error - agent is valid but TS doesn't know
@@ -58,7 +59,8 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
 
     // Fallback to regular meta tags if OG not found
     const title = ogTitle || html.match(/<title>([^<]+)<\/title>/i)?.[1]
-    const description = ogDescription || html.match(/<meta\s+name="description"\s+content="([^"]+)"/i)?.[1]
+    const description =
+      ogDescription || html.match(/<meta\s+name="description"\s+content="([^"]+)"/i)?.[1]
 
     // Make image URL absolute if it's relative
     let imageUrl = ogImage
@@ -78,7 +80,7 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
     return preview
   } catch (error) {
     console.error('Error fetching link preview:', error)
-    
+
     // Return basic preview even on error
     try {
       const urlObj = new URL(url)

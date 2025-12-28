@@ -193,8 +193,13 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <form onSubmit={handleSubmit} className="border border-gray-200 rounded-lg p-4 space-y-4 bg-gray-50">
-          <h3 className="font-medium text-gray-900">{editingId ? 'Edit Line Item' : 'Add Line Item'}</h3>
+        <form
+          onSubmit={handleSubmit}
+          className="border border-gray-200 rounded-lg p-4 space-y-4 bg-gray-50"
+        >
+          <h3 className="font-medium text-gray-900">
+            {editingId ? 'Edit Line Item' : 'Add Line Item'}
+          </h3>
 
           {/* Name */}
           <div>
@@ -212,9 +217,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -227,18 +230,16 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
           <div className="grid md:grid-cols-2 gap-4">
             {/* Line Item Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Type
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
               <select
                 value={formData.lineItemType}
                 onChange={(e) => {
                   const type = e.target.value
-                  setFormData({ 
-                    ...formData, 
+                  setFormData({
+                    ...formData,
                     lineItemType: type,
                     calculationMethod: type === 'AGE_BASED' ? 'AGE_MULTIPLIER' : 'FIXED_AMOUNT',
-                    isRequired: type === 'AGE_BASED' || type === 'FIXED'
+                    isRequired: type === 'AGE_BASED' || type === 'FIXED',
                   })
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
@@ -252,9 +253,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
 
             {/* Calculation Method */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Calculation
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Calculation</label>
               <select
                 value={formData.calculationMethod}
                 onChange={(e) => setFormData({ ...formData, calculationMethod: e.target.value })}
@@ -272,9 +271,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
           {formData.calculationMethod === 'AGE_MULTIPLIER' && (
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Multiplier
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Multiplier</label>
                 <input
                   type="number"
                   step="0.01"
@@ -286,9 +283,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
                 <p className="text-xs text-gray-500 mt-1">$ per year of age</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Min Amount
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Min Amount</label>
                 <input
                   type="number"
                   step="0.01"
@@ -299,9 +294,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max Amount
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Max Amount</label>
                 <input
                   type="number"
                   step="0.01"
@@ -317,9 +310,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
           {/* Fixed Amount Field */}
           {formData.calculationMethod === 'FIXED_AMOUNT' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Amount ($)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -334,9 +325,7 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
           {/* Percentage Field */}
           {formData.calculationMethod === 'PERCENTAGE' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Percentage (%)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Percentage (%)</label>
               <input
                 type="number"
                 step="0.01"
@@ -487,4 +476,3 @@ export function LineItemsEditor({ eventId }: LineItemsEditorProps) {
     </div>
   )
 }
-

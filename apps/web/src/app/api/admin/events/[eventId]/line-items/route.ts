@@ -4,21 +4,18 @@ import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 // GET /api/admin/events/[eventId]/line-items - List all line items for an event
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ eventId: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
     const { eventId } = await params
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     const lineItems = await prisma.eventLineItem.findMany({
       where: { eventId: eventId },
-      orderBy: { sortOrder: 'asc' }
+      orderBy: { sortOrder: 'asc' },
     })
 
     return NextResponse.json({ lineItems })
@@ -29,14 +26,11 @@ export async function GET(
 }
 
 // POST /api/admin/events/[eventId]/line-items - Create a new line item
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ eventId: string }> }
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
     const { eventId } = await params
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -65,7 +59,7 @@ export async function POST(
 
     // Verify event exists
     const event = await prisma.event.findUnique({
-      where: { id: eventId }
+      where: { id: eventId },
     })
 
     if (!event) {
@@ -78,7 +72,7 @@ export async function POST(
       const maxOrder = await prisma.eventLineItem.findFirst({
         where: { eventId: eventId },
         orderBy: { sortOrder: 'desc' },
-        select: { sortOrder: true }
+        select: { sortOrder: true },
       })
       order = (maxOrder?.sortOrder || 0) + 1
     }
@@ -97,7 +91,7 @@ export async function POST(
         maxAmount: maxAmount || null,
         multiplier: multiplier || null,
         sortOrder: order,
-      }
+      },
     })
 
     return NextResponse.json({ lineItem }, { status: 201 })

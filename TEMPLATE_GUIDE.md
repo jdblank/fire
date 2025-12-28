@@ -15,7 +15,7 @@ A complete, production-ready infrastructure template with:
 ✅ **Documentation** - Outline wiki  
 ✅ **Testing** - 30 tests (unit, integration, load)  
 ✅ **Docker** - Complete containerized setup  
-✅ **CI/CD Ready** - All tests run in Docker  
+✅ **CI/CD Ready** - All tests run in Docker
 
 ## Three Ways to Package This
 
@@ -24,12 +24,14 @@ A complete, production-ready infrastructure template with:
 **Best for:** Teams, open source projects
 
 **Setup:**
+
 1. Push to GitHub (if not already)
 2. Go to repository Settings
 3. Check ☑️ "Template repository"
 4. Done!
 
 **Usage:**
+
 ```bash
 # Anyone can create a new project:
 # 1. Click "Use this template" on GitHub
@@ -41,12 +43,14 @@ cd <new-repo>
 ```
 
 **Pros:**
+
 - ✅ Easy for others to use
 - ✅ GitHub handles versioning
 - ✅ Can track template updates
 - ✅ Great for teams
 
 **Cons:**
+
 - ⚠️ Requires GitHub
 - ⚠️ Public or GitHub Pro for private templates
 
@@ -66,18 +70,21 @@ npm create fire-app my-new-project
 ```
 
 **How to build:**
+
 1. Extract template to separate repo
 2. Create Node.js CLI package
 3. Publish to npm
 4. Users run npx command
 
 **Pros:**
+
 - ✅ Professional developer experience
 - ✅ Can prompt for customizations
 - ✅ Easy to distribute
 - ✅ Version control via npm
 
 **Cons:**
+
 - ⚠️ Requires building CLI tool
 - ⚠️ Need to maintain npm package
 
@@ -91,6 +98,7 @@ npm create fire-app my-new-project
 Nothing needed - already done!
 
 **Usage:**
+
 ```bash
 # Clone for new project
 git clone <this-repo> my-new-project
@@ -103,11 +111,13 @@ cd my-new-project
 ```
 
 **Pros:**
+
 - ✅ Already working
 - ✅ Full control
 - ✅ Easy to understand
 
 **Cons:**
+
 - ⚠️ Manual cloning
 - ⚠️ Git history included
 - ⚠️ Need to track updates manually
@@ -119,21 +129,25 @@ cd my-new-project
 When creating a new project, the setup script updates:
 
 ### 1. Project Metadata
+
 - `package.json` → Project name and description
 - `apps/web/package.json` → App name
 - `packages/*/package.json` → Package names
 - `README.md` → Project documentation
 
 ### 2. Secrets & Configuration
+
 - Generates new `NEXTAUTH_SECRET`
 - Creates `docker-compose.override.yml` template
 - Preserves infrastructure config
 
 ### 3. Git History
+
 - Option to start fresh git repo
 - Removes template-specific files
 
 ### 4. What Stays the Same
+
 - ✅ Docker infrastructure
 - ✅ Database schema (customizable after)
 - ✅ Test suites
@@ -143,6 +157,7 @@ When creating a new project, the setup script updates:
 ## Using the Template for Different Projects
 
 ### SaaS Application
+
 ```bash
 ./scripts/setup-new-project.sh
 # Name: my-saas-platform
@@ -153,6 +168,7 @@ When creating a new project, the setup script updates:
 ```
 
 ### E-commerce Site
+
 ```bash
 ./scripts/setup-new-project.sh
 # Name: my-store
@@ -163,6 +179,7 @@ When creating a new project, the setup script updates:
 ```
 
 ### Internal Tool
+
 ```bash
 ./scripts/setup-new-project.sh
 # Name: company-tool
@@ -173,6 +190,7 @@ When creating a new project, the setup script updates:
 ```
 
 ### API Backend
+
 ```bash
 ./scripts/setup-new-project.sh
 # Name: my-api
@@ -185,6 +203,7 @@ When creating a new project, the setup script updates:
 ## Keeping Templates Updated
 
 ### Track Upstream Changes
+
 ```bash
 # In your new project:
 git remote add template <original-template-repo>
@@ -193,7 +212,9 @@ git merge template/main --allow-unrelated-histories
 ```
 
 ### Version the Template
+
 Tag stable versions in the template repo:
+
 ```bash
 # In the template repo:
 git tag -a v1.0.0 -m "Stable infrastructure template"
@@ -201,7 +222,9 @@ git push origin v1.0.0
 ```
 
 ### Document Breaking Changes
+
 Maintain a `CHANGELOG.md` in the template:
+
 - Major version = Breaking changes
 - Minor version = New features
 - Patch version = Bug fixes
@@ -211,6 +234,7 @@ Maintain a `CHANGELOG.md` in the template:
 After running setup script, customize these for your project:
 
 ### Required:
+
 - [ ] Run `./scripts/setup-new-project.sh`
 - [ ] Configure LogTo (see LOGTO_SETUP_GUIDE.md)
 - [ ] Update Prisma schema for your domain
@@ -218,6 +242,7 @@ After running setup script, customize these for your project:
 - [ ] Update README with project details
 
 ### Recommended:
+
 - [ ] Customize landing page (`apps/web/src/app/page.tsx`)
 - [ ] Add project logo and branding
 - [ ] Configure CI/CD (GitHub Actions provided)
@@ -225,6 +250,7 @@ After running setup script, customize these for your project:
 - [ ] Add project-specific tests
 
 ### Optional:
+
 - [ ] Add more authentication providers
 - [ ] Customize email templates
 - [ ] Add analytics/monitoring
@@ -237,16 +263,19 @@ After running setup script, customize these for your project:
 When creating a specific project type:
 
 **For API-only projects:**
+
 - Delete: `apps/web/src/app/(auth)/`
 - Delete: UI components not needed
 - Keep: API routes, database, auth
 
 **For frontend-only:**
+
 - Simplify API routes
 - Remove complex business logic
 - Keep: Auth, database queries
 
 **For microservices:**
+
 - Extract individual services
 - Use docker-compose services independently
 - Keep: Shared types and database
@@ -254,6 +283,7 @@ When creating a specific project type:
 ## Template Maintenance
 
 ### Keep These Generic:
+
 - ✅ Docker configuration
 - ✅ Test infrastructure
 - ✅ Authentication setup
@@ -261,6 +291,7 @@ When creating a specific project type:
 - ✅ Documentation templates
 
 ### Make These Customizable:
+
 - ✅ Prisma models (domain-specific)
 - ✅ API routes (business logic)
 - ✅ UI components (branding)
@@ -269,6 +300,7 @@ When creating a specific project type:
 ## Sharing Your Template
 
 ### Make it Public (Open Source)
+
 1. Clean up sensitive data
 2. Add LICENSE file
 3. Add CODE_OF_CONDUCT.md
@@ -278,12 +310,14 @@ When creating a specific project type:
 7. Share!
 
 ### Keep it Private (Internal)
+
 1. Push to private GitHub repo
 2. Mark as template
 3. Grant team access
 4. Document usage in internal wiki
 
 ### Publish as npm Package
+
 1. Extract template logic
 2. Create CLI tool
 3. Publish to npm
@@ -325,4 +359,3 @@ Questions about using this template?
 ---
 
 **You've built something valuable!** This template saves weeks of setup time for every new project. 🚀
-

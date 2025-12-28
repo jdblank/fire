@@ -33,9 +33,11 @@ Fire is a social community platform built with a microservices-inspired architec
 ## Services
 
 ### 1. Next.js Application (Port 3000)
+
 **Purpose**: Main web application
 
 **Responsibilities**:
+
 - User interface
 - API endpoints
 - Server-side rendering
@@ -44,13 +46,16 @@ Fire is a social community platform built with a microservices-inspired architec
 **Technology**: Next.js 14, React, TypeScript, Prisma
 
 **Databases Used**:
+
 - `fire_db` (PostgreSQL)
 - Redis for caching
 
 ### 2. LogTo (Ports 3001-3002)
+
 **Purpose**: Authentication and identity management
 
 **Responsibilities**:
+
 - User registration/login
 - OAuth/OIDC provider
 - Session management
@@ -61,9 +66,11 @@ Fire is a social community platform built with a microservices-inspired architec
 **Database**: `logto_db` (PostgreSQL)
 
 ### 3. Outline (Port 3003)
+
 **Purpose**: Wiki and documentation platform
 
 **Responsibilities**:
+
 - Document creation and editing
 - Collaboration features
 - Search functionality
@@ -72,44 +79,54 @@ Fire is a social community platform built with a microservices-inspired architec
 **Technology**: Outline (open-source)
 
 **Databases Used**:
+
 - `outline_db` (PostgreSQL)
 - Redis for caching
 - MinIO for file storage
 
 ### 4. PostgreSQL (Port 5432)
+
 **Purpose**: Primary data store
 
 **Databases**:
+
 - `fire_db`: Main application data
 - `logto_db`: Authentication data
 - `outline_db`: Wiki data
 
 **Why PostgreSQL?**
+
 - ACID compliance
 - Rich feature set (JSON, full-text search)
 - Excellent with Prisma ORM
 - Proven at scale
 
 ### 5. Redis (Port 6379)
+
 **Purpose**: Caching and session storage
 
 **Used By**:
+
 - Next.js (sessions, rate limiting)
 - Outline (caching)
 
 **Why Redis?**
+
 - Fast in-memory operations
 - Session persistence
 - Rate limiting support
 
 ### 6. MinIO (Ports 9000-9001)
+
 **Purpose**: Object storage (S3-compatible)
 
 **Buckets**:
+
 - `fire-uploads`: User uploads, avatars, event banners
 - `outline-data`: Wiki attachments and images
 
 **Why MinIO?**
+
 - Self-hosted (no cloud costs in dev)
 - S3-compatible API
 - Easy migration to AWS S3 if needed
@@ -185,10 +202,12 @@ Browser automatically refreshes
 ## Scalability Considerations
 
 ### Current (Development)
+
 - All services on one machine
 - Suitable for 100s of concurrent users
 
 ### Future (Production)
+
 - Horizontal scaling of Next.js (multiple containers)
 - PostgreSQL replication (read replicas)
 - Redis cluster
@@ -199,11 +218,13 @@ Browser automatically refreshes
 ## Monitoring & Logging
 
 ### Development
+
 - Docker logs: `docker-compose logs -f`
 - Prisma Studio: Database inspection
 - MinIO Console: File storage inspection
 
 ### Production (Future)
+
 - Application: Sentry, DataDog
 - Infrastructure: Prometheus + Grafana
 - Logs: ELK Stack or Loki
@@ -212,10 +233,12 @@ Browser automatically refreshes
 ## Backup Strategy
 
 ### Development
+
 - Database: Regular pg_dump
 - Files: MinIO volume backups
 
 ### Production (Future)
+
 - PostgreSQL: Continuous archiving (WAL)
 - MinIO: Replication or S3 versioning
 - Automated daily backups
@@ -224,19 +247,23 @@ Browser automatically refreshes
 ## Testing Strategy
 
 ### Unit Tests
+
 - Components: Vitest + React Testing Library
 - API endpoints: Vitest
 - Utilities: Vitest
 
 ### Integration Tests
+
 - API flows: Vitest with test database
 - Database operations: Prisma test client
 
 ### E2E Tests
+
 - User flows: Playwright
 - Run against Docker environment
 
 ### Load Tests
+
 - k6 or Artillery
 - Test database performance
 - Test API rate limits
@@ -244,11 +271,13 @@ Browser automatically refreshes
 ## Deployment
 
 ### Development
+
 ```bash
 docker-compose up -d
 ```
 
 ### Production (Future)
+
 - Container registry: GitHub Container Registry or Docker Hub
 - Orchestration: Docker Swarm or Kubernetes
 - CI/CD: GitHub Actions
@@ -257,6 +286,7 @@ docker-compose up -d
 ## Environment Variables
 
 Critical variables documented in:
+
 - `docker-compose.yml`: Development defaults
 - `.env.example`: Template for local overrides
 - GitHub Secrets: Production values
@@ -264,10 +294,12 @@ Critical variables documented in:
 ## Cost Analysis
 
 ### Development
+
 - **Total Cost**: $0 (all self-hosted)
 - **Machine Requirements**: 8GB RAM, 20GB disk
 
 ### Production (Estimated for 1000 users)
+
 - **Hosting**: $50-100/mo (VPS/cloud)
 - **Database**: Included or $20/mo (managed)
 - **Storage**: $5-10/mo (100GB)
@@ -307,19 +339,3 @@ Coming soon: OpenAPI/Swagger documentation for all endpoints.
 ## Contributing
 
 See `CONTRIBUTING.md` for development guidelines.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
     const { email } = body
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
     // Get M2M token for Management API access
@@ -44,7 +41,7 @@ export async function POST(request: NextRequest) {
     const usersResponse = await fetch(
       `${LOGTO_ENDPOINT}/api/users?search=${encodeURIComponent(email)}`,
       {
-        headers: { 'Authorization': `Bearer ${access_token}` },
+        headers: { Authorization: `Bearer ${access_token}` },
       }
     )
 
@@ -80,13 +77,14 @@ export async function POST(request: NextRequest) {
     // 4. Create reset-password page to handle token verification
 
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: 'If an account exists, you will receive reset instructions.',
         // For development: include manual reset instructions
-        dev_note: process.env.NODE_ENV === 'development' 
-          ? `For now, reset password manually in LogTo admin console: http://localhost:3002 → Users → ${email}` 
-          : undefined
+        dev_note:
+          process.env.NODE_ENV === 'development'
+            ? `For now, reset password manually in LogTo admin console: http://localhost:3002 → Users → ${email}`
+            : undefined,
       },
       { status: 200 }
     )
@@ -98,15 +96,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

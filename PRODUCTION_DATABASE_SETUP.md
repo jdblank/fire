@@ -9,6 +9,7 @@ This matches your development setup and provides good isolation while keeping co
 ## Current Setup
 
 **Railway Postgres Service:**
+
 - LogTo uses: `logto_db` (or `railway` - the default database)
 - App will use: `fire_db` (new database we'll create)
 
@@ -60,24 +61,29 @@ docker run --rm postgres:16-alpine \
 ## Step 2: Get Connection Strings
 
 ### For LogTo (Already Set):
+
 - Database: `railway` (or `logto_db` if you created it)
 - Connection: Already configured in Railway LogTo service
 
 ### For Vercel App (New):
+
 - Database: `fire_db` (the one we just created)
 - Connection: Same host/port/credentials, just different database name
 
 **Format:**
+
 ```
 postgresql://postgres:password@host.proxy.rlwy.net:port/fire_db
 ```
 
 **To get it:**
+
 1. Railway → Postgres → Variables → `DATABASE_URL`
 2. Copy the connection string
 3. Change the database name at the end from `/railway` to `/fire_db`
 
 **Example:**
+
 ```
 Original: postgresql://postgres:pass@host.proxy.rlwy.net:12345/railway
 App URL:  postgresql://postgres:pass@host.proxy.rlwy.net:12345/fire_db
@@ -144,6 +150,7 @@ npx prisma migrate deploy
 ## Step 5: Verify Setup
 
 ### Check LogTo Database:
+
 ```sql
 -- Connect to LogTo database
 \c railway  -- or \c logto_db
@@ -155,6 +162,7 @@ npx prisma migrate deploy
 ```
 
 ### Check App Database:
+
 ```sql
 -- Connect to app database
 \c fire_db
@@ -177,11 +185,13 @@ If you prefer maximum isolation:
 4. Keep existing Postgres for LogTo only
 
 **Pros:**
+
 - ✅ Maximum isolation
 - ✅ Independent scaling
 - ✅ Can restart one without affecting the other
 
 **Cons:**
+
 - ❌ Higher cost (2 Postgres services)
 - ❌ More complex (2 connection strings)
 - ❌ Doesn't match dev setup
@@ -191,6 +201,7 @@ If you prefer maximum isolation:
 ## Recommendation
 
 **Use Option 1 (Same Service, Different Databases)** because:
+
 - ✅ Matches your dev setup
 - ✅ Lower cost
 - ✅ Simpler to manage
@@ -216,4 +227,3 @@ If you prefer maximum isolation:
 3. ✅ Set `DATABASE_URL` in Vercel
 4. ✅ Run Prisma migrations
 5. ✅ Test database connection
-

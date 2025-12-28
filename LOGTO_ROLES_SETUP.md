@@ -3,6 +3,7 @@
 ## Overview
 
 LogTo is your **Identity and Access Management (IAM)** system. It should manage:
+
 - ✅ User authentication (login/logout)
 - ✅ User roles (ADMIN, MODERATOR, USER)
 - ✅ Role assignments
@@ -19,17 +20,20 @@ Your Next.js app reads roles from LogTo and enforces authorization.
 3. **Create three roles**:
 
 ### Role 1: User (Default)
+
 - **Name**: `user`
 - **Description**: Regular platform user
 - **Permissions**: Basic access
 
 ### Role 2: Moderator
+
 - **Name**: `moderator`
 - **Description**: Can moderate content and manage events
 - **Permissions**: Content moderation, event management
 
 ### Role 3: Admin
-- **Name**: `admin`  
+
+- **Name**: `admin`
 - **Description**: Full platform access
 - **Permissions**: All permissions, user management
 
@@ -106,7 +110,7 @@ App checks role for authorization
 ✅ **Token-based** - No extra database queries  
 ✅ **Scalable** - Works across multiple apps  
 ✅ **Secure** - IAM best practices  
-✅ **Audit trail** - LogTo logs role changes  
+✅ **Audit trail** - LogTo logs role changes
 
 ---
 
@@ -144,6 +148,7 @@ If you already have users with database roles:
 ## Quick Setup for Testing
 
 **Manual approach** (for your first admin):
+
 1. Open LogTo console: http://localhost:3002
 2. Go to Users → josh@lemonade.art
 3. Assign role: `admin`
@@ -153,9 +158,9 @@ If you already have users with database roles:
 ---
 
 **Do you want me to help you:**
+
 1. Update NextAuth to properly read roles from LogTo tokens?
 2. Create a script to setup roles via LogTo Management API?
 3. Keep the current database approach (simpler but not best practice)?
 
 **What's your preference?**
-

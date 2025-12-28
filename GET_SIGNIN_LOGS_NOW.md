@@ -12,6 +12,7 @@
 ## What to Look For
 
 You should see:
+
 ```
 [SIGNIN] Starting signIn callback
 [SIGNIN] Fetching user roles from LogTo
@@ -27,4 +28,3 @@ And an error with details about WHY it failed.
 3. **Network/timeout issue** - Vercel can't reach LogTo Management API
 
 The error details will show exactly what's failing so we can fix it.
-

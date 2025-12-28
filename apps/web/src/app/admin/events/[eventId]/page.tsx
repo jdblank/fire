@@ -1,5 +1,5 @@
-import { auth } from "@/auth"
-import { redirect, notFound } from "next/navigation"
+import { auth } from '@/auth'
+import { redirect, notFound } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { EventForm } from '../EventForm'
 import { LineItemsEditor } from './LineItemsEditor'
@@ -30,14 +30,14 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
     where: { id: eventId },
     include: {
       lineItems: {
-        orderBy: { sortOrder: 'asc' }
+        orderBy: { sortOrder: 'asc' },
       },
       _count: {
         select: {
-          registrations: true
-        }
-      }
-    }
+          registrations: true,
+        },
+      },
+    },
   })
 
   if (!event) {
@@ -48,7 +48,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
   const serializedEvent = {
     ...event,
     depositAmount: serializeDecimal(event.depositAmount),
-    lineItems: event.lineItems.map(item => ({
+    lineItems: event.lineItems.map((item) => ({
       ...item,
       baseAmount: serializeDecimal(item.baseAmount),
       minAmount: serializeDecimal(item.minAmount),
@@ -60,17 +60,13 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-                Edit Event
-              </h1>
-              <p className="text-gray-500">
-                Update event details and manage line items
-              </p>
+              <h1 className="text-3xl font-semibold text-gray-900 mb-2">Edit Event</h1>
+              <p className="text-gray-500">Update event details and manage line items</p>
             </div>
             <Link
               href={`/admin/events/${event.id}/registrations`}
@@ -82,11 +78,9 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
         </div>
 
         <EventForm eventId={event.id} initialData={serializedEvent} />
-        
+
         {/* Line Items Editor - Only for paid events */}
-        {event.eventType === 'PAID' && (
-          <LineItemsEditor eventId={event.id} />
-        )}
+        {event.eventType === 'PAID' && <LineItemsEditor eventId={event.id} />}
       </main>
     </div>
   )

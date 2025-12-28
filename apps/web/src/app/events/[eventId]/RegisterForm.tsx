@@ -57,7 +57,7 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
   // Auto-select required line items
   useEffect(() => {
     const required = new Set<string>()
-    event.lineItems.forEach(item => {
+    event.lineItems.forEach((item) => {
       if (item.isRequired) {
         required.add(item.id)
       }
@@ -70,7 +70,7 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
     const amounts = new Map<string, number>()
     let total = 0
 
-    event.lineItems.forEach(item => {
+    event.lineItems.forEach((item) => {
       if (selectedLineItems.has(item.id)) {
         try {
           const amount = calculateLineItemAmount(item, userAge || undefined)
@@ -87,7 +87,7 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
   }, [selectedLineItems, event.lineItems, userAge])
 
   const toggleLineItem = (itemId: string) => {
-    const item = event.lineItems.find(i => i.id === itemId)
+    const item = event.lineItems.find((i) => i.id === itemId)
     if (item?.isRequired) return // Can't deselect required items
 
     const newSelected = new Set(selectedLineItems)
@@ -106,7 +106,7 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
     try {
       // Check if user has date of birth for age-based items
       const hasAgeBased = event.lineItems.some(
-        item => item.lineItemType === 'AGE_BASED' && selectedLineItems.has(item.id)
+        (item) => item.lineItemType === 'AGE_BASED' && selectedLineItems.has(item.id)
       )
 
       if (hasAgeBased && !userAge) {
@@ -116,8 +116,8 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
       }
 
       // Prepare line items data
-      const lineItemsData = Array.from(selectedLineItems).map(itemId => {
-        const item = event.lineItems.find(i => i.id === itemId)!
+      const lineItemsData = Array.from(selectedLineItems).map((itemId) => {
+        const item = event.lineItems.find((i) => i.id === itemId)!
         return {
           lineItemId: itemId,
           quantity: 1,
@@ -154,16 +154,14 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">
-        Register for This Event
-      </h2>
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Register for This Event</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Line Items Selection - Only show for PAID events or if there are non-zero items */}
         {event.eventType === 'PAID' && event.lineItems.length > 0 && (
           <div className="space-y-4">
             <h3 className="font-medium text-gray-900">Registration Options</h3>
-            
+
             {event.lineItems.map((item) => {
               const isSelected = selectedLineItems.has(item.id)
               const amount = calculatedAmounts.get(item.id) || 0
@@ -172,11 +170,11 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
                 <div
                   key={item.id}
                   className={`border rounded-lg p-4 ${
-                    item.isRequired 
-                      ? 'border-gray-300 bg-gray-50' 
-                      : isSelected 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300 cursor-pointer'
+                    item.isRequired
+                      ? 'border-gray-300 bg-gray-50'
+                      : isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 cursor-pointer'
                   }`}
                   onClick={() => !item.isRequired && toggleLineItem(item.id)}
                 >
@@ -210,9 +208,7 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">
-                        {formatCurrency(amount)}
-                      </p>
+                      <p className="font-semibold text-gray-900">{formatCurrency(amount)}</p>
                     </div>
                   </div>
                 </div>
@@ -228,12 +224,16 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
               <span>Total:</span>
               <span className="text-gray-900">{formatCurrency(totalAmount)}</span>
             </div>
-            
+
             {event.requiresDeposit && event.depositAmount && (
               <div className="mt-2 text-sm text-gray-600">
-                <p>Deposit required: {formatCurrency(parseFloat(event.depositAmount.toString()))}</p>
+                <p>
+                  Deposit required: {formatCurrency(parseFloat(event.depositAmount.toString()))}
+                </p>
                 <p className="text-xs mt-1">
-                  Balance of {formatCurrency(totalAmount - parseFloat(event.depositAmount.toString()))} due later
+                  Balance of{' '}
+                  {formatCurrency(totalAmount - parseFloat(event.depositAmount.toString()))} due
+                  later
                 </p>
               </div>
             )}
@@ -247,7 +247,13 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
             disabled={loading || (event.eventType === 'PAID' && totalAmount === 0)}
             className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : event.eventType === 'FREE' ? 'Register for Free Event' : event.requiresDeposit ? 'Register & Pay Deposit' : 'Complete Registration'}
+            {loading
+              ? 'Processing...'
+              : event.eventType === 'FREE'
+                ? 'Register for Free Event'
+                : event.requiresDeposit
+                  ? 'Register & Pay Deposit'
+                  : 'Complete Registration'}
           </button>
           {totalAmount === 0 && event.eventType === 'PAID' && (
             <p className="text-sm text-gray-500 mt-2 text-center">
@@ -259,4 +265,3 @@ export function RegisterForm({ event, user }: RegisterFormProps) {
     </div>
   )
 }
-

@@ -15,18 +15,18 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "saoudrizwan.claude-dev",       // Cline
-        "dbaeumer.vscode-eslint",       // ESLint (Quality)
-        "esbenp.prettier-vscode",       // Formatting
-        "ms-playwright.playwright",     // E2E Testing
-        "humao.rest-client"             // API Testing
+        "saoudrizwan.claude-dev", // Cline
+        "dbaeumer.vscode-eslint", // ESLint (Quality)
+        "esbenp.prettier-vscode", // Formatting
+        "ms-playwright.playwright", // E2E Testing
+        "humao.rest-client" // API Testing
       ],
       "settings": {
         "cline.apiProvider": "google",
         "cline.model": "gemini-3-pro-preview",
         "terminal.integrated.env.linux": {
-           "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
-           "GEMINI_API_KEY": "${localEnv:GEMINI_API_KEY}"
+          "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+          "GEMINI_API_KEY": "${localEnv:GEMINI_API_KEY}"
         },
         "editor.formatOnSave": true
       }

@@ -45,22 +45,39 @@ export function ReferralNetworkGraph({ users }: ReferralNetworkGraphProps) {
   // Empty state
   if (users.length === 0) {
     return (
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#f9fafb',
+        }}
+      >
         <div className="text-center">
           <div className="text-6xl mb-4">👥</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            No Network Members Yet
-          </h3>
-          <p className="text-gray-600">
-            Start inviting members to build your referral network
-          </p>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Network Members Yet</h3>
+          <p className="text-gray-600">Start inviting members to build your referral network</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#f9fafb' }}>
+    <div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#f9fafb',
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -78,12 +95,7 @@ export function ReferralNetworkGraph({ users }: ReferralNetworkGraphProps) {
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
         attributionPosition="bottom-left"
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={16}
-          size={1}
-          color="#e5e7eb"
-        />
+        <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#e5e7eb" />
         <Controls
           showInteractive={false}
           className="bg-white border border-gray-300 rounded-lg shadow-lg"
@@ -98,4 +110,3 @@ export function ReferralNetworkGraph({ users }: ReferralNetworkGraphProps) {
     </div>
   )
 }
-

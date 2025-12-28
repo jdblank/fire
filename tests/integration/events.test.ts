@@ -2,7 +2,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL || 'postgresql://fireuser:firepass@localhost:5432/fire_db'
+  datasourceUrl:
+    process.env.DATABASE_URL || 'postgresql://fireuser:firepass@localhost:5432/fire_db',
 })
 
 describe('Event Management System', () => {
@@ -21,7 +22,7 @@ describe('Event Management System', () => {
         displayName: 'Event Tester',
         dateOfBirth: new Date('1990-01-01'),
         accountStatus: 'ACTIVE',
-      }
+      },
     })
     testUserId = user.id
   })
@@ -55,7 +56,7 @@ describe('Event Management System', () => {
           depositAmount: 500,
           maxAttendees: 100,
           status: 'PUBLISHED',
-        }
+        },
       })
 
       expect(event).toBeDefined()
@@ -63,13 +64,13 @@ describe('Event Management System', () => {
       expect(event.eventType).toBe('PAID')
       expect(event.requiresDeposit).toBe(true)
       expect(parseFloat(event.depositAmount?.toString() || '0')).toBe(500)
-      
+
       testEventId = event.id
     })
 
     it('should retrieve event by ID', async () => {
       const event = await prisma.event.findUnique({
-        where: { id: testEventId }
+        where: { id: testEventId },
       })
 
       expect(event).toBeDefined()
@@ -80,8 +81,8 @@ describe('Event Management System', () => {
       const updated = await prisma.event.update({
         where: { id: testEventId },
         data: {
-          maxAttendees: 150
-        }
+          maxAttendees: 150,
+        },
       })
 
       expect(updated.maxAttendees).toBe(150)
@@ -89,9 +90,9 @@ describe('Event Management System', () => {
 
     it('should list events', async () => {
       const events = await prisma.event.findMany()
-      
+
       expect(events.length).toBeGreaterThan(0)
-      expect(events.some(e => e.id === testEventId)).toBe(true)
+      expect(events.some((e) => e.id === testEventId)).toBe(true)
     })
   })
 
@@ -109,13 +110,13 @@ describe('Event Management System', () => {
           minAmount: 1800,
           maxAmount: 3600,
           sortOrder: 1,
-        }
+        },
       })
 
       expect(lineItem).toBeDefined()
       expect(lineItem.lineItemType).toBe('AGE_BASED')
       expect(parseFloat(lineItem.multiplier?.toString() || '0')).toBe(60)
-      
+
       lineItemId = lineItem.id
     })
 
@@ -130,7 +131,7 @@ describe('Event Management System', () => {
           calculationMethod: 'FIXED_AMOUNT',
           baseAmount: 550,
           sortOrder: 2,
-        }
+        },
       })
 
       expect(lineItem).toBeDefined()
@@ -144,7 +145,7 @@ describe('Event Management System', () => {
     it('should list line items for event', async () => {
       const lineItems = await prisma.eventLineItem.findMany({
         where: { eventId: testEventId },
-        orderBy: { sortOrder: 'asc' }
+        orderBy: { sortOrder: 'asc' },
       })
 
       expect(lineItems.length).toBeGreaterThan(0)
@@ -170,20 +171,20 @@ describe('Event Management System', () => {
                 quantity: 1,
                 calculatedAmount: 2100,
                 userAge: 35,
-              }
-            ]
-          }
+              },
+            ],
+          },
         },
         include: {
-          lineItems: true
-        }
+          lineItems: true,
+        },
       })
 
       expect(registration).toBeDefined()
       expect(parseFloat(registration.totalAmount.toString())).toBe(2100)
       expect(registration.lineItems.length).toBe(1)
       expect(registration.paymentStatus).toBe('UNPAID')
-      
+
       registrationId = registration.id
     })
 
@@ -191,8 +192,8 @@ describe('Event Management System', () => {
       const count = await prisma.eventRegistration.count({
         where: {
           eventId: testEventId,
-          userId: testUserId
-        }
+          userId: testUserId,
+        },
       })
 
       expect(count).toBe(1) // Only one registration allowed
@@ -204,8 +205,8 @@ describe('Event Management System', () => {
         data: {
           depositPaid: 500,
           balanceDue: 1600,
-          paymentStatus: 'DEPOSIT_PAID'
-        }
+          paymentStatus: 'DEPOSIT_PAID',
+        },
       })
 
       expect(parseFloat(updated.depositPaid.toString())).toBe(500)
@@ -217,8 +218,8 @@ describe('Event Management System', () => {
         where: { eventId: testEventId },
         include: {
           user: true,
-          lineItems: true
-        }
+          lineItems: true,
+        },
       })
 
       expect(registrations.length).toBeGreaterThan(0)
@@ -234,7 +235,7 @@ describe('Event Management System', () => {
           name: 'Early Bird Discount',
           discountType: 'FIXED_AMOUNT',
           amount: 200,
-        }
+        },
       })
 
       expect(discount).toBeDefined()
@@ -251,7 +252,7 @@ describe('Event Management System', () => {
           name: '10% Family Discount',
           discountType: 'PERCENTAGE',
           amount: 10, // 10%
-        }
+        },
       })
 
       expect(discount).toBeDefined()
@@ -268,9 +269,9 @@ describe('Event Management System', () => {
         where: { id: testEventId },
         include: {
           _count: {
-            select: { registrations: true }
-          }
-        }
+            select: { registrations: true },
+          },
+        },
       })
 
       expect(event?._count.registrations).toBeGreaterThan(0)
@@ -278,11 +279,10 @@ describe('Event Management System', () => {
 
     it('should respect max attendees', async () => {
       const event = await prisma.event.findUnique({
-        where: { id: testEventId }
+        where: { id: testEventId },
       })
 
       expect(event?.maxAttendees).toBe(150) // Updated earlier
     })
   })
 })
-

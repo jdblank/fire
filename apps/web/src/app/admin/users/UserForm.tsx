@@ -21,20 +21,22 @@ export function UserForm({ userId, initialData }: UserFormProps) {
   const [searchingReferrals, setSearchingReferrals] = useState(false)
   const [referralOptions, setReferralOptions] = useState<ReferralOption[]>([])
   const [referralSearch, setReferralSearch] = useState('')
-  
+
   const [formData, setFormData] = useState({
     email: initialData?.email || '',
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
     displayName: initialData?.displayName || '',
-    dateOfBirth: initialData?.dateOfBirth ? new Date(initialData.dateOfBirth).toISOString().split('T')[0] : '',
+    dateOfBirth: initialData?.dateOfBirth
+      ? new Date(initialData.dateOfBirth).toISOString().split('T')[0]
+      : '',
     countryCode: initialData?.countryCode || '+1',
     mobilePhone: initialData?.mobilePhone || '',
     hometown: initialData?.hometown || '',
     referredById: initialData?.referredById || '',
     role: initialData?.role || 'USER',
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   // Search for referral users
@@ -47,7 +49,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
     const timer = setTimeout(async () => {
       setSearchingReferrals(true)
       try {
-        const response = await fetch(`/api/admin/users?search=${encodeURIComponent(referralSearch)}&limit=10`)
+        const response = await fetch(
+          `/api/admin/users?search=${encodeURIComponent(referralSearch)}&limit=10`
+        )
         if (response.ok) {
           const data = await response.json()
           setReferralOptions(data.users.filter((u: any) => u.id !== userId)) // Exclude self
@@ -84,7 +88,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
       const data = {
         ...formData,
         // Combine country code and phone number if provided
-        mobilePhone: formData.mobilePhone ? `${formData.countryCode}-${formData.mobilePhone}` : null,
+        mobilePhone: formData.mobilePhone
+          ? `${formData.countryCode}-${formData.mobilePhone}`
+          : null,
         dateOfBirth: formData.dateOfBirth || null,
         referredById: formData.referredById || null,
       }
@@ -117,7 +123,10 @@ export function UserForm({ userId, initialData }: UserFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-lg border border-gray-200 p-6 space-y-6"
+    >
       {/* Email */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -180,7 +189,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
           placeholder="Leave blank to use First + Last Name"
         />
-        <p className="mt-1 text-sm text-gray-500">This is how the user&apos;s name will appear to others</p>
+        <p className="mt-1 text-sm text-gray-500">
+          This is how the user&apos;s name will appear to others
+        </p>
       </div>
 
       {/* Date of Birth */}
@@ -221,7 +232,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
             id="mobilePhone"
             type="tel"
             value={formData.mobilePhone}
-            onChange={(e) => setFormData({ ...formData, mobilePhone: e.target.value.replace(/[^0-9-]/g, '') })}
+            onChange={(e) =>
+              setFormData({ ...formData, mobilePhone: e.target.value.replace(/[^0-9-]/g, '') })
+            }
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
             placeholder="555-1234"
           />

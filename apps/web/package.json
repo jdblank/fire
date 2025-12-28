@@ -6,7 +6,7 @@
     "dev": "next dev --webpack",
     "build": "cd ../../packages/db && pnpm prisma generate && cd ../../apps/web && next build --webpack",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

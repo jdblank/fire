@@ -7,7 +7,7 @@ import { parseUsersCSV } from '@/lib/csv-utils'
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -21,15 +21,18 @@ export async function POST(request: NextRequest) {
 
     // Read CSV content
     const text = await file.text()
-    
+
     // Parse and validate CSV
     const parsed = parseUsersCSV(text)
 
     if (parsed.valid.length === 0) {
-      return NextResponse.json({
-        error: 'No valid users found in CSV',
-        parseErrors: parsed.errors,
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'No valid users found in CSV',
+          parseErrors: parsed.errors,
+        },
+        { status: 400 }
+      )
     }
 
     // Process users in a transaction
@@ -115,10 +118,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('CSV import error:', error)
-    return NextResponse.json(
-      { error: 'Failed to import users' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to import users' }, { status: 500 })
   }
 }
-

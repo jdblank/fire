@@ -11,7 +11,7 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
-    
+
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     // Get user's LogTo ID
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { logtoId: true, email: true }
+      select: { logtoId: true, email: true },
     })
 
     if (!user?.logtoId) {
@@ -37,19 +37,22 @@ export async function POST(request: NextRequest) {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
     const accessToken = tokenData.access_token
 
     // Get all MFA verifications
-    const mfaResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
+    const mfaResponse = await fetch(
+      `${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
-    })
+    )
 
     if (!mfaResponse.ok) {
       throw new Error('Failed to fetch MFA verifications')
@@ -63,8 +66,8 @@ export async function POST(request: NextRequest) {
       fetch(`${LOGTO_ENDPOINT}/api/users/${user.logtoId}/mfa-verifications/${verification.id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       })
     )
 
@@ -75,9 +78,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: `Cleared ${mfaVerifications.length} MFA verification(s) for ${user.email}`,
-      cleared: mfaVerifications.length
+      cleared: mfaVerifications.length,
     })
-
   } catch (error) {
     console.error('Error clearing MFA:', error)
     return NextResponse.json(
@@ -86,4 +88,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

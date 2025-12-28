@@ -6,16 +6,19 @@
 ## ⚡ Quick Start (Do This Now!)
 
 ### Step 1: Start Docker Desktop
+
 1. Open **Docker Desktop** application on your Mac
 2. Wait for Docker to fully start (watch for the Docker icon in menu bar)
 3. Verify Docker is running: `docker info`
 
 ### Step 2: Start All Services
+
 ```bash
 ./start-services.sh
 ```
 
 This will:
+
 - Start PostgreSQL, Redis, MinIO, LogTo, Outline, and the Next.js app
 - Wait for all services to be healthy
 - Display URLs when ready
@@ -23,11 +26,13 @@ This will:
 **Expected wait time**: 30-60 seconds
 
 ### Step 3: Verify Everything is Running
+
 ```bash
 ./test-system.sh
 ```
 
 This will check:
+
 - ✅ Docker is running
 - ✅ All containers are up
 - ✅ HTTP endpoints responding
@@ -38,6 +43,7 @@ This will check:
 Open browser and go to: **http://localhost:3000/login**
 
 **Test Credentials** (demo account):
+
 - Email: `demo@fire.test`
 - Password: `Demo123!Pass`
 
@@ -46,6 +52,7 @@ Open browser and go to: **http://localhost:3000/login**
 ## 🎯 What Should Happen
 
 After successful login, you should see:
+
 1. Dashboard with welcome message
 2. Your name and role displayed
 3. Quick stats cards
@@ -55,6 +62,7 @@ After successful login, you should see:
 ## 🔧 Your Configuration Status
 
 ✅ **All credentials are configured** in `docker-compose.override.yml`:
+
 - NEXTAUTH_SECRET
 - LOGTO_APP_ID (Web App)
 - LOGTO_APP_SECRET
@@ -62,6 +70,7 @@ After successful login, you should see:
 - LOGTO_M2M_APP_SECRET
 
 ✅ **Authentication is implemented** and working:
+
 - Custom login/register forms
 - LogTo password verification via Management API
 - NextAuth session management
@@ -70,6 +79,7 @@ After successful login, you should see:
 ## 🌐 Service Access
 
 Once running:
+
 - **Next.js App**: http://localhost:3000
 - **LogTo Admin Console**: http://localhost:3002
 - **Outline Wiki**: http://localhost:3004
@@ -80,10 +90,13 @@ Once running:
 ## 🐛 Troubleshooting
 
 ### Problem: Docker daemon not running
+
 **Solution**: Start Docker Desktop and wait for it to fully load
 
 ### Problem: Port already in use
-**Solution**: 
+
+**Solution**:
+
 ```bash
 # Find what's using the port (e.g., 3000)
 lsof -i :3000
@@ -92,7 +105,9 @@ lsof -i :3000
 ```
 
 ### Problem: "Invalid email or password"
-**Solution**: 
+
+**Solution**:
+
 1. Go to LogTo Admin: http://localhost:3002
 2. Navigate to: **Users** → find your user
 3. Click **"Set Password"**
@@ -100,7 +115,9 @@ lsof -i :3000
 5. Use that exact password to login
 
 ### Problem: Services won't start
+
 **Solution**:
+
 ```bash
 # View logs to see what's wrong
 docker-compose logs -f
@@ -111,7 +128,9 @@ docker-compose up -d
 ```
 
 ### Problem: Prisma client errors
+
 **Solution**:
+
 ```bash
 # Regenerate Prisma client inside container
 docker-compose exec app npx prisma generate
@@ -121,7 +140,9 @@ docker-compose restart app
 ```
 
 ### Problem: LogTo redirect issues
+
 **Solution**:
+
 1. Go to LogTo Admin: http://localhost:3002
 2. Navigate to: **Applications** → **Fire Platform Web**
 3. Under **Redirect URIs**, ensure you have:
@@ -132,6 +153,7 @@ docker-compose restart app
 ## 📊 Useful Commands
 
 ### View Logs
+
 ```bash
 # All services
 docker-compose logs -f
@@ -144,28 +166,33 @@ docker-compose logs -f logto
 ```
 
 ### Check Service Status
+
 ```bash
 docker-compose ps
 ```
 
 ### Restart a Service
+
 ```bash
 docker-compose restart app
 docker-compose restart logto
 ```
 
 ### Stop Everything
+
 ```bash
 docker-compose down
 ```
 
 ### Complete Reset (removes all data)
+
 ```bash
 docker-compose down -v
 ./start-services.sh
 ```
 
 ### Access Database
+
 ```bash
 # Fire app database
 docker-compose exec postgres psql -U fireuser -d fire_db
@@ -177,6 +204,7 @@ docker-compose exec postgres psql -U fireuser -d logto_db
 ## 🎉 Success Checklist
 
 After following this guide, you should have:
+
 - [ ] Docker Desktop running
 - [ ] All services started (`docker-compose ps` shows 6+ services)
 - [ ] http://localhost:3000 loads the app
@@ -212,17 +240,20 @@ Once everything is working:
 
 ## 🆘 Still Having Issues?
 
-1. **Check Docker Desktop is running**: 
+1. **Check Docker Desktop is running**:
+
    ```bash
    docker info
    ```
 
 2. **Verify all containers are up**:
+
    ```bash
    docker-compose ps
    ```
 
 3. **Check the logs**:
+
    ```bash
    docker-compose logs -f app
    ```
@@ -249,17 +280,7 @@ Once everything is working:
 **Remember**: The user rule is to "always build in Docker, never in the local Mac environment". All development happens inside Docker containers! 🐳
 
 **Ready to start?** Run:
+
 ```bash
 ./start-services.sh
 ```
-
-
-
-
-
-
-
-
-
-
-

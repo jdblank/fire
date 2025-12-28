@@ -32,18 +32,21 @@ export function Header({ user }: HeaderProps) {
   const handleSignOut = async () => {
     // Proper OIDC logout flow
     // Get session to retrieve id_token
-    const session = await fetch('/api/auth/session').then(r => r.json())
-    
+    const session = await fetch('/api/auth/session').then((r) => r.json())
+
     if (session?.id_token) {
       // Clear Fire session first
       await signOut({ redirect: false })
-      
+
       // Then call LogTo's end_session with id_token_hint for auto-redirect
-      const isDev = window.location.hostname === 'app.fire.local' || window.location.hostname === 'localhost'
-      const logtoEndpoint = process.env.NEXT_PUBLIC_LOGTO_ENDPOINT || (isDev ? 'http://localhost:3001' : 'https://auth.lemonade.art')
+      const isDev =
+        window.location.hostname === 'app.fire.local' || window.location.hostname === 'localhost'
+      const logtoEndpoint =
+        process.env.NEXT_PUBLIC_LOGTO_ENDPOINT ||
+        (isDev ? 'http://localhost:3001' : 'https://auth.lemonade.art')
       const params = new URLSearchParams({
         id_token_hint: session.id_token,
-        post_logout_redirect_uri: window.location.origin
+        post_logout_redirect_uri: window.location.origin,
       })
       window.location.href = `${logtoEndpoint}/oidc/session/end?${params}`
     } else {
@@ -57,23 +60,38 @@ export function Header({ user }: HeaderProps) {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href={user ? '/dashboard' : '/'} className="text-xl font-semibold text-gray-900 hover:text-gray-700 transition-colors">
+          <Link
+            href={user ? '/dashboard' : '/'}
+            className="text-xl font-semibold text-gray-900 hover:text-gray-700 transition-colors"
+          >
             Fire
           </Link>
 
           {/* Navigation - Only shown when logged in */}
           {user && (
             <nav className="flex items-center gap-8">
-              <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link
+                href="/dashboard"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 Dashboard
               </Link>
-              <Link href="/events" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link
+                href="/events"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 Events
               </Link>
-              <Link href="/community" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link
+                href="/community"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 Community
               </Link>
-              <Link href="/wiki" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link
+                href="/wiki"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              >
                 Wiki
               </Link>
 
@@ -94,18 +112,27 @@ export function Header({ user }: HeaderProps) {
                       />
                     ) : (
                       <span className="text-xs font-medium text-gray-600">
-                        {user.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                        {user.name?.charAt(0)?.toUpperCase() ||
+                          user.email?.charAt(0)?.toUpperCase() ||
+                          'U'}
                       </span>
                     )}
                   </div>
-                  <span className="hidden md:inline font-medium">{user.name || user.email?.split('@')[0]}</span>
-                  <svg 
-                    className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <span className="hidden md:inline font-medium">
+                    {user.name || user.email?.split('@')[0]}
+                  </span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -121,7 +148,7 @@ export function Header({ user }: HeaderProps) {
                         </span>
                       )}
                     </div>
-                    
+
                     <Link
                       href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -129,7 +156,7 @@ export function Header({ user }: HeaderProps) {
                     >
                       Profile
                     </Link>
-                    
+
                     <Link
                       href="/settings"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -175,4 +202,3 @@ export function Header({ user }: HeaderProps) {
     </header>
   )
 }
-

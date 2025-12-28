@@ -19,31 +19,37 @@ tests/
 ## Running Tests
 
 ### All Tests
+
 ```bash
 npm run test:all
 ```
 
 ### Unit Tests
+
 ```bash
 npm run test:unit
 ```
 
 ### Integration Tests (Infrastructure Validation)
+
 ```bash
 npm run test:integration
 ```
 
 ### Infrastructure Health Checks Only
+
 ```bash
 npm run test:infrastructure
 ```
 
 ### E2E Tests
+
 ```bash
 npm run test:e2e
 ```
 
 ### Load Tests
+
 ```bash
 npm run test:load
 ```
@@ -53,38 +59,45 @@ npm run test:load
 ### ✅ Infrastructure Tests (`integration/`)
 
 #### Docker Container Tests
+
 - Verifies all containers are running
 - Checks container health status
 - Validates Docker networks
 - Confirms volumes are created
 
 #### PostgreSQL Tests
+
 - Database connectivity
 - fire_db database exists
 - logto_db database exists and initialized
 - SQL query execution
 
 #### Redis Tests
+
 - Connection and authentication
 - Key-value operations
 - TTL/expiration functionality
 
 #### MinIO Tests
+
 - Health endpoint accessibility
 - Bucket existence (fire-uploads)
 - S3 API availability
 
 #### LogTo Tests
+
 - Service availability
 - Status API endpoint
 - OIDC discovery endpoint
 - Authentication configuration
 
 #### Outline Tests
+
 - Web interface accessibility
 - Application serving
 
 #### Prisma Tests
+
 - Database connection via ORM
 - Schema validation
 - CRUD operations (after migration)
@@ -111,6 +124,7 @@ npm run test:load
 ## Prerequisites
 
 ### For Integration Tests
+
 ```bash
 # Start all infrastructure services
 docker-compose up -d
@@ -124,6 +138,7 @@ docker-compose up -d
 ```
 
 ### For API/E2E Tests
+
 ```bash
 # Additionally start the Next.js app
 docker-compose up -d app
@@ -131,6 +146,7 @@ docker-compose up -d app
 ```
 
 ### For Prisma Tests
+
 ```bash
 # Run database migrations first
 npm run db:migrate:docker
@@ -141,16 +157,19 @@ npm run db:migrate:docker
 ### Expected Results
 
 **Infrastructure Tests** - Should pass if Docker services are running:
+
 - ✅ 15+ infrastructure health checks
 - ✅ Docker container validation
 - ✅ Service connectivity tests
 
 **Prisma Tests** - Will show warnings before migration:
-- ⚠️  Tables not found (before migration)
+
+- ⚠️ Tables not found (before migration)
 - ✅ All pass after running migrations
 
 **API Tests** - Require Next.js app running:
-- ⚠️  Warnings if app not started
+
+- ⚠️ Warnings if app not started
 - ✅ All pass when app is running
 
 ## CI/CD Integration
@@ -170,6 +189,7 @@ Tests are automatically run in GitHub Actions:
 ## Writing New Tests
 
 ### Unit Test Example
+
 ```typescript
 import { describe, it, expect } from 'vitest'
 
@@ -181,6 +201,7 @@ describe('MyFunction', () => {
 ```
 
 ### Integration Test Example
+
 ```typescript
 import { describe, it, expect } from 'vitest'
 
@@ -193,6 +214,7 @@ describe('Service Integration', () => {
 ```
 
 ### E2E Test Example
+
 ```typescript
 import { test, expect } from '@playwright/test'
 
@@ -208,16 +230,19 @@ test('user can login', async ({ page }) => {
 ### Tests Failing?
 
 1. **Check Docker services are running:**
+
    ```bash
    docker-compose ps
    ```
 
 2. **View service logs:**
+
    ```bash
    docker-compose logs -f [service-name]
    ```
 
 3. **Restart services:**
+
    ```bash
    docker-compose restart
    ```
@@ -231,14 +256,17 @@ test('user can login', async ({ page }) => {
 ### Common Issues
 
 **"Connection refused"**
+
 - Service not running or wrong port
 - Check `docker-compose ps`
 
 **"Table does not exist"**
+
 - Migrations not run yet
 - Run: `npm run db:migrate:docker`
 
 **"Container not found"**
+
 - Docker containers not started
 - Run: `docker-compose up -d`
 
@@ -256,4 +284,3 @@ test('user can login', async ({ page }) => {
 - **Integration Tests**: All infrastructure components
 - **E2E Tests**: Critical user paths
 - **Load Tests**: Performance benchmarks documented
-

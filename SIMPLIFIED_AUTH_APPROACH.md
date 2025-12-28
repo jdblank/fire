@@ -34,6 +34,7 @@ User stays in your app ✅
 ## 📝 **Code Structure**
 
 ### **New File: `logto-experience.ts`**
+
 Centralized LogTo API client with three functions:
 
 1. **`verifyPasswordWithLogTo(email, password)`**
@@ -52,12 +53,14 @@ Centralized LogTo API client with three functions:
    - Returns combined data
 
 ### **Updated: `auth.ts`**
+
 - Uses `verifyPasswordWithLogTo()` instead of custom endpoint
 - Decodes ID token for user info
 - Fetches roles from LogTo
 - Syncs to database
 
 ### **Updated: `register/route.ts`**
+
 - Uses `registerUserWithLogTo()`
 - Proper error handling
 - Email validation
@@ -78,16 +81,19 @@ Centralized LogTo API client with three functions:
 ## 🧪 **Testing**
 
 ### **Register New User:**
+
 1. Go to http://localhost:3000/register
 2. Enter: test@example.com / Test1234! / Test User
 3. Should succeed and create user in LogTo
 
 ### **Login:**
-1. Go to http://localhost:3000/login  
+
+1. Go to http://localhost:3000/login
 2. Enter: test@example.com / Test1234!
 3. Should authenticate and redirect to dashboard
 
 ### **Admin Functions:**
+
 1. Login as josh@lemonade.art
 2. Password: (whatever you set in LogTo admin)
 3. Should see ADMIN badge
@@ -106,6 +112,7 @@ docker-compose up -d --build
 ```
 
 Then test:
+
 1. Register: http://localhost:3000/register
 2. Login: http://localhost:3000/login
 3. Dashboard: http://localhost:3000/dashboard
@@ -119,22 +126,9 @@ Then test:
 **Password Storage**: LogTo (secure) ✅  
 **Role Management**: LogTo Management API ✅  
 **User Experience**: Seamless, no redirects ✅  
-**Security**: OAuth2 standard ✅  
+**Security**: OAuth2 standard ✅
 
 ---
 
 **Status**: Code complete, needs rebuild and testing
 **Next**: Rebuild app container and test auth flow
-
-
-
-
-
-
-
-
-
-
-
-
-
