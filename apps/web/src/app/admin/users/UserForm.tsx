@@ -100,7 +100,7 @@ export function UserForm({ userId, initialData }: UserFormProps) {
       })
 
       if (response.ok) {
-        const result = await response.json()
+        await response.json()
         alert(userId ? 'User updated successfully!' : 'User created successfully!')
         router.push('/admin/users')
         router.refresh()
@@ -326,4 +326,3 @@ export function UserForm({ userId, initialData }: UserFormProps) {
     </form>
   )
 }
-

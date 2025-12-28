@@ -129,8 +129,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Discount not found' }, { status: 404 })
     }
 
-    const discountAmount = parseFloat(discount.amount.toString())
-
     // Delete discount
     await prisma.discount.delete({
       where: { id: discountId }
@@ -171,4 +169,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

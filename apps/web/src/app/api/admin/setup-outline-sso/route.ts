@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
-import fs from 'fs'
-import path from 'path'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 const M2M_APP_ID = process.env.LOGTO_M2M_APP_ID
@@ -137,4 +135,3 @@ export async function POST() {
     )
   }
 }
-

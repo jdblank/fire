@@ -121,7 +121,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
                 <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-                <p className="text-sm text-gray-600">Manage user's 2FA settings</p>
+                <p className="text-sm text-gray-600">Manage user&apos;s 2FA settings</p>
               </div>
               <ClearMfaButton userId={user.id} />
             </div>

@@ -52,12 +52,6 @@ export async function POST(
       return NextResponse.json({ error: 'Event is at full capacity' }, { status: 400 })
     }
 
-    // Calculate deposit and balance
-    const depositRequired = event.requiresDeposit && event.depositAmount 
-      ? parseFloat(event.depositAmount.toString())
-      : 0
-    const balanceDue = totalAmount - 0 // No payment yet
-    
     // Create registration with line items
     const registration = await prisma.eventRegistration.create({
       data: {
@@ -99,4 +93,3 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

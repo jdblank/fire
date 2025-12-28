@@ -7,7 +7,7 @@ interface PasskeyEnrollmentProps {
   onCancel: () => void
 }
 
-export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProps) {
+export function PasskeyEnrollment({ onSuccess: _onSuccess, onCancel }: PasskeyEnrollmentProps) {
   const [step, setStep] = useState<'intro' | 'enrolling' | 'success'>('intro')
   const [error, setError] = useState<string | null>(null)
 
@@ -48,8 +48,8 @@ export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProp
               What are Passkeys?
             </h3>
             <p className="text-gray-600 mb-4">
-              Passkeys let you sign in using your device's biometrics (Face ID, Touch ID, Windows Hello) 
-              or a hardware security key. They're more secure than passwords and easier to use.
+              Passkeys let you sign in using your device&apos;s biometrics (Face ID, Touch ID, Windows Hello) 
+              or a hardware security key. They&apos;re more secure than passwords and easier to use.
             </p>
           </div>
 
@@ -102,5 +102,3 @@ export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProp
     </div>
   )
 }
-
-

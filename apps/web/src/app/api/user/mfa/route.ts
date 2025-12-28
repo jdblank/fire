@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
@@ -77,4 +77,3 @@ export async function GET() {
     )
   }
 }
-

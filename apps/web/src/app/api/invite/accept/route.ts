@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@fire/db'
-import { getLogToManagementToken, createLogToUser } from '@/lib/logto-experience'
+import { createLogToUser } from '@/lib/logto-experience'
 
 export async function POST(request: Request) {
   try {
@@ -110,4 +110,3 @@ export async function POST(request: Request) {
     )
   }
 }
-

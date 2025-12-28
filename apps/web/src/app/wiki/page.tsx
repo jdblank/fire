@@ -34,7 +34,7 @@ export default async function WikiPage() {
               Wiki Coming Soon
             </h2>
             <p className="text-gray-600">
-              We're working on bringing you collaborative documentation and community resources.
+              We&apos;re working on bringing you collaborative documentation and community resources.
             </p>
           </div>
         </div>

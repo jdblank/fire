@@ -187,7 +187,7 @@ export default function CreatePostPage() {
           {/* Content */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              What's on your mind?
+              What&apos;s on your mind?
             </label>
             <textarea
               value={content}
@@ -371,4 +371,3 @@ export default function CreatePostPage() {
     </div>
   )
 }
-

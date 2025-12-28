@@ -37,12 +37,12 @@ export default function BrandAuthPage() {
         
         <div className="bg-white p-6 rounded-lg border space-y-4">
           <p className="text-gray-600">
-            This will customize LogTo's login/register pages to match Fire's branding:
+            This will customize LogTo&apos;s login/register pages to match Fire&apos;s branding:
           </p>
           
           <ul className="text-sm text-gray-700 space-y-2 list-disc list-inside">
             <li>Gray-900 primary color (matches Fire)</li>
-            <li>Hide "Powered by Logto" footer</li>
+            <li>Hide &quot;Powered by Logto&quot; footer</li>
             <li>Clean, minimal Fire aesthetic</li>
           </ul>
           
@@ -66,5 +66,3 @@ export default function BrandAuthPage() {
     </div>
   )
 }
-
-

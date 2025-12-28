@@ -104,11 +104,10 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
       {role !== currentRole && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
           <p className="text-sm text-yellow-800">
-            ⚠️ You are about to change this user's role from <strong>{currentRole}</strong> to <strong>{role}</strong>
+            ⚠️ You are about to change this user&apos;s role from <strong>{currentRole}</strong> to <strong>{role}</strong>
           </p>
         </div>
       )}
     </form>
   )
 }
-

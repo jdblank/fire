@@ -31,12 +31,6 @@ export default async function ProfilePage() {
     redirect("/login")
   }
 
-  // Cast for client components
-  const userForForm: any = {
-    ...dbUser,
-    dateOfBirth: dbUser.dateOfBirth?.toISOString()
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 interface User {
   id: string
@@ -24,7 +23,6 @@ interface User {
 }
 
 export function UsersTable() {
-  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -285,4 +283,3 @@ export function UsersTable() {
     </div>
   )
 }
-

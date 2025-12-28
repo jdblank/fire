@@ -108,7 +108,7 @@ export default function SettingsPage() {
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900 mb-1">Password</h3>
                     <p className="text-sm text-gray-700 mb-3">
-                      Change your password or reset it if you've forgotten
+                      Change your password or reset it if you&apos;ve forgotten
                     </p>
                     <button
                       onClick={() => setActiveModal('password')}
@@ -152,4 +152,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

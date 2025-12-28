@@ -3,6 +3,8 @@
  * Note: For development, we'll use a fallback approach if fetching fails
  */
 
+import https from 'https'
+
 export interface LinkPreview {
   url: string
   title?: string
@@ -21,7 +23,6 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
 
     // Try fetching with node-fetch compatible options
     // Note: In Docker, external fetches may fail due to SSL issues
-    const https = require('https')
     const agent = new https.Agent({
       rejectUnauthorized: false // Disable SSL verification for development
     })
@@ -32,7 +33,7 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
         'Accept': 'text/html,application/xhtml+xml,application/xml',
         'Accept-Language': 'en-US,en;q=0.9',
       },
-      // @ts-ignore - agent is valid but TS doesn't know
+      // @ts-expect-error - agent is valid but TS doesn't know
       agent: url.startsWith('https') ? agent : undefined,
       signal: AbortSignal.timeout(8000),
     })
@@ -91,4 +92,3 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
     }
   }
 }
-

@@ -60,7 +60,7 @@ export default function CheckMFAStatus() {
           disabled={loading}
           className="bg-blue-600 text-white px-6 py-3 rounded-lg"
         >
-          Check Josh's MFA Status
+          Check Josh&apos;s MFA Status
         </button>
 
         {result && (
@@ -72,4 +72,3 @@ export default function CheckMFAStatus() {
     </div>
   )
 }
-

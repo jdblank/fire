@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 interface ProfilePhotoUploadProps {
   currentImage?: string | null
-  onUploadSuccess: (url: string) => void
+  onUploadSuccess?: (url: string) => void
 }
 
 export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePhotoUploadProps) {
@@ -63,7 +63,7 @@ export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePho
       }
 
       const data = await response.json()
-      onUploadSuccess(data.upload.url)
+      onUploadSuccess?.(data.upload.url)
       setPreview(null)
     } catch (err) {
       setError((err as Error).message)
@@ -129,4 +129,3 @@ export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePho
     </div>
   )
 }
-

@@ -129,11 +129,9 @@ export function PasswordChange({ onSuccess, onCancel }: PasswordChangeProps) {
 
       <div className="pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500 text-center">
-          For immediate password reset, use the "Forgot Password" link on the login page
+          For immediate password reset, use the &quot;Forgot Password&quot; link on the login page
         </p>
       </div>
     </div>
   )
 }
-
-

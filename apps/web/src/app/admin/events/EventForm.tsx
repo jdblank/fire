@@ -102,7 +102,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       })
 
       if (response.ok) {
-        const result = await response.json()
+        await response.json()
         alert(eventId ? 'Event updated successfully!' : 'Event created successfully!')
         router.push('/admin/events')
         router.refresh()
@@ -380,4 +380,3 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
     </form>
   )
 }
-

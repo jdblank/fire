@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
           <h1 className="text-3xl font-bold">🔥 Fire Platform</h1>
           <h2 className="mt-6 text-2xl font-semibold">Reset your password</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Enter your email address and we'll send you instructions to reset your password.
+            Enter your email address and we&apos;ll send you instructions to reset your password.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function ForgotPasswordPage() {
                 ← Back to login
               </Link>
               <Link href="/register" className="block text-sm text-muted-foreground hover:text-primary">
-                Don't have an account? Sign up
+                Don&apos;t have an account? Sign up
               </Link>
             </div>
           </form>
@@ -106,15 +106,3 @@ export default function ForgotPasswordPage() {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-

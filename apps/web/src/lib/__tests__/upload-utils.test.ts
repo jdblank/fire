@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateImage, generateFilename, ALLOWED_IMAGE_TYPES, MAX_IMAGE_SIZE } from '../upload-utils'
+import { validateImage, generateFilename, MAX_IMAGE_SIZE } from '../upload-utils'
 
 describe('Upload Utils', () => {
   describe('validateImage', () => {
@@ -75,4 +75,3 @@ describe('Upload Utils', () => {
     })
   })
 })
-

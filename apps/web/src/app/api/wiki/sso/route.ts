@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 
-const OUTLINE_INTERNAL_URL = 'http://outline:3000'
 const OUTLINE_PUBLIC_URL = 'http://localhost:3004'
 
 export async function GET(request: NextRequest) {
@@ -28,4 +27,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/wiki', request.url))
   }
 }
-
