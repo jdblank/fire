@@ -6,9 +6,10 @@ import { prisma } from '@fire/db'
 // PUT /api/admin/events/[eventId]/line-items/[itemId] - Update line item
 export async function PUT(
   request: Request,
-  { params }: { params: { eventId: string; itemId: string } }
+  { params }: { params: Promise<{ eventId: string; itemId: string }> }
 ) {
   try {
+    const { eventId, itemId } = await params
     const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
@@ -32,8 +33,8 @@ export async function PUT(
     // Check if line item exists and belongs to this event
     const existing = await prisma.eventLineItem.findFirst({
       where: {
-        id: params.itemId,
-        eventId: params.eventId
+        id: itemId,
+        eventId: eventId
       }
     })
 
@@ -43,7 +44,7 @@ export async function PUT(
 
     // Update line item
     const lineItem = await prisma.eventLineItem.update({
-      where: { id: params.itemId },
+      where: { id: itemId },
       data: {
         ...(name && { name }),
         ...(description !== undefined && { description }),
@@ -68,9 +69,10 @@ export async function PUT(
 // DELETE /api/admin/events/[eventId]/line-items/[itemId] - Delete line item
 export async function DELETE(
   request: Request,
-  { params }: { params: { eventId: string; itemId: string } }
+  { params }: { params: Promise<{ eventId: string; itemId: string }> }
 ) {
   try {
+    const { eventId, itemId } = await params
     const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
@@ -80,8 +82,8 @@ export async function DELETE(
     // Check if line item exists and belongs to this event
     const lineItem = await prisma.eventLineItem.findFirst({
       where: {
-        id: params.itemId,
-        eventId: params.eventId
+        id: itemId,
+        eventId: eventId
       },
       include: {
         _count: {
@@ -104,7 +106,7 @@ export async function DELETE(
 
     // Delete line item
     await prisma.eventLineItem.delete({
-      where: { id: params.itemId }
+      where: { id: itemId }
     })
 
     return NextResponse.json({ success: true })
@@ -113,4 +115,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

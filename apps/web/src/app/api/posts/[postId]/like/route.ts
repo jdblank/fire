@@ -6,9 +6,10 @@ import { prisma } from '@fire/db'
 // POST /api/posts/[postId]/like - Like or dislike a post
 export async function POST(
   request: NextRequest,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
+    const { postId } = await params
     const session = await auth()
     
     if (!session) {
@@ -22,7 +23,7 @@ export async function POST(
     const existing = await prisma.postLike.findUnique({
       where: {
         postId_userId: {
-          postId: params.postId,
+          postId: postId,
           userId: session.user.id,
         }
       }
@@ -41,7 +42,7 @@ export async function POST(
           data: { isLike }
         }),
         prisma.post.update({
-          where: { id: params.postId },
+          where: { id: postId },
           data: existing.isLike 
             ? { likes: { decrement: 1 }, dislikes: { increment: 1 } } // Was like, now dislike
             : { dislikes: { decrement: 1 }, likes: { increment: 1 } } // Was dislike, now like
@@ -55,13 +56,13 @@ export async function POST(
     await prisma.$transaction([
       prisma.postLike.create({
         data: {
-          postId: params.postId,
+          postId: postId,
           userId: session.user.id,
           isLike,
         }
       }),
       prisma.post.update({
-        where: { id: params.postId },
+        where: { id: postId },
         data: isLike 
           ? { likes: { increment: 1 } }
           : { dislikes: { increment: 1 } }
@@ -82,9 +83,10 @@ export async function POST(
 // DELETE /api/posts/[postId]/like - Remove reaction from a post
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
+    const { postId } = await params
     const session = await auth()
     
     if (!session) {
@@ -95,7 +97,7 @@ export async function DELETE(
     const existing = await prisma.postLike.findUnique({
       where: {
         postId_userId: {
-          postId: params.postId,
+          postId: postId,
           userId: session.user.id,
         }
       }
@@ -111,7 +113,7 @@ export async function DELETE(
         where: { id: existing.id }
       }),
       prisma.post.update({
-        where: { id: params.postId },
+        where: { id: postId },
         data: existing.isLike
           ? { likes: { decrement: 1 } }
           : { dislikes: { decrement: 1 } }
@@ -128,4 +130,3 @@ export async function DELETE(
     )
   }
 }
-

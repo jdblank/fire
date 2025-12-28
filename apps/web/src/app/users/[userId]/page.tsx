@@ -6,7 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatDateShort } from '@/lib/date-utils'
 
-export default async function PublicProfilePage({ params }: { params: { userId: string } }) {
+export default async function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params
   const session = await auth()
 
   if (!session) {
@@ -14,7 +15,7 @@ export default async function PublicProfilePage({ params }: { params: { userId: 
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: params.userId },
+    where: { id: userId },
     include: {
       profile: true,
       referredBy: {

@@ -6,9 +6,10 @@ import { prisma } from '@fire/db'
 // GET /api/admin/events/[eventId]/line-items - List all line items for an event
 export async function GET(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params
     const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
@@ -16,7 +17,7 @@ export async function GET(
     }
 
     const lineItems = await prisma.eventLineItem.findMany({
-      where: { eventId: params.eventId },
+      where: { eventId: eventId },
       orderBy: { sortOrder: 'asc' }
     })
 
@@ -30,9 +31,10 @@ export async function GET(
 // POST /api/admin/events/[eventId]/line-items - Create a new line item
 export async function POST(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params
     const session = await auth()
     
     if (!session || session.user.role !== 'ADMIN') {
@@ -63,7 +65,7 @@ export async function POST(
 
     // Verify event exists
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId }
+      where: { id: eventId }
     })
 
     if (!event) {
@@ -74,7 +76,7 @@ export async function POST(
     let order = sortOrder
     if (order === undefined || order === null) {
       const maxOrder = await prisma.eventLineItem.findFirst({
-        where: { eventId: params.eventId },
+        where: { eventId: eventId },
         orderBy: { sortOrder: 'desc' },
         select: { sortOrder: true }
       })
@@ -84,7 +86,7 @@ export async function POST(
     // Create line item
     const lineItem = await prisma.eventLineItem.create({
       data: {
-        eventId: params.eventId,
+        eventId: eventId,
         name,
         description: description || null,
         lineItemType,
@@ -104,4 +106,3 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

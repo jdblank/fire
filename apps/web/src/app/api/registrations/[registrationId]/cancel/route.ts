@@ -5,9 +5,10 @@ import { prisma } from '@fire/db'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { registrationId: string } }
+  { params }: { params: Promise<{ registrationId: string }> }
 ) {
   try {
+    const { registrationId } = await params
     const session = await auth()
     
     if (!session) {
@@ -16,7 +17,7 @@ export async function POST(
 
     // Get the registration
     const registration = await prisma.eventRegistration.findUnique({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       include: {
         event: {
           select: {
@@ -45,7 +46,7 @@ export async function POST(
 
     // Cancel the registration
     await prisma.eventRegistration.update({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       data: {
         status: 'CANCELLED'
       }
@@ -64,4 +65,3 @@ export async function POST(
     )
   }
 }
-

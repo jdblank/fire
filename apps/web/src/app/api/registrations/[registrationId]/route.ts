@@ -6,9 +6,10 @@ import { prisma } from '@fire/db'
 // GET /api/registrations/[registrationId] - Get registration details
 export async function GET(
   request: Request,
-  { params }: { params: { registrationId: string } }
+  { params }: { params: Promise<{ registrationId: string }> }
 ) {
   try {
+    const { registrationId } = await params
     const session = await auth()
     
     if (!session) {
@@ -16,7 +17,7 @@ export async function GET(
     }
 
     const registration = await prisma.eventRegistration.findUnique({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       include: {
         event: true,
         user: {
@@ -60,4 +61,3 @@ export async function GET(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

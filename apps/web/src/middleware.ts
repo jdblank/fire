@@ -11,7 +11,6 @@ export default auth((req) => {
     path: nextUrl.pathname,
     isLoggedIn,
     hasUser: !!req.auth?.user,
-    userEmail: req.auth?.user?.email,
     userRole: req.auth?.user?.role
   })
 
