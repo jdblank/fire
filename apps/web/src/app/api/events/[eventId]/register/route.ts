@@ -5,9 +5,10 @@ import { prisma } from '@fire/db'
 
 export async function POST(
   request: Request,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const { eventId } = await params
     const session = await auth()
     
     if (!session) {
@@ -19,7 +20,7 @@ export async function POST(
 
     // Verify event exists and is published
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId },
+      where: { id: eventId },
       include: {
         _count: {
           select: { registrations: true }
@@ -35,11 +36,14 @@ export async function POST(
       return NextResponse.json({ error: 'Event is not open for registration' }, { status: 400 })
     }
 
-    // Check if user is already registered
+    // Check if user is already registered (exclude cancelled registrations)
     const existing = await prisma.eventRegistration.findFirst({
       where: {
-        eventId: params.eventId,
-        userId: session.user.id
+        eventId: eventId,
+        userId: session.user.id,
+        status: {
+          not: 'CANCELLED'
+        }
       }
     })
 
@@ -55,7 +59,7 @@ export async function POST(
     // Create registration with line items
     const registration = await prisma.eventRegistration.create({
       data: {
-        eventId: params.eventId,
+        eventId: eventId,
         userId: session.user.id,
         status: 'PENDING',
         totalAmount,

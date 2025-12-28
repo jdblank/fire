@@ -6,6 +6,13 @@ import { LineItemsEditor } from './LineItemsEditor'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 
+// Helper to convert Decimal to number for client components
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function serializeDecimal(value: any): number | null {
+  if (value === null || value === undefined) return null
+  return Number(value)
+}
+
 export default async function EditEventPage({ params }: { params: Promise<{ eventId: string }> }) {
   const { eventId } = await params
   const session = await auth()
@@ -37,6 +44,19 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
     notFound()
   }
 
+  // Serialize Decimal fields for client component
+  const serializedEvent = {
+    ...event,
+    depositAmount: serializeDecimal(event.depositAmount),
+    lineItems: event.lineItems.map(item => ({
+      ...item,
+      baseAmount: serializeDecimal(item.baseAmount),
+      minAmount: serializeDecimal(item.minAmount),
+      maxAmount: serializeDecimal(item.maxAmount),
+      multiplier: serializeDecimal(item.multiplier),
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
@@ -61,7 +81,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
           </div>
         </div>
 
-        <EventForm eventId={event.id} initialData={event} />
+        <EventForm eventId={event.id} initialData={serializedEvent} />
         
         {/* Line Items Editor - Only for paid events */}
         {event.eventType === 'PAID' && (

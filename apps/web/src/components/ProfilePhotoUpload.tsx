@@ -112,7 +112,7 @@ export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePho
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
+        className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
       >
         {uploading ? 'Uploading...' : currentImage ? 'Change Photo' : 'Upload Photo'}
       </button>
