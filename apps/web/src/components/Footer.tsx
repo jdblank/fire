@@ -14,7 +14,7 @@ export function Footer() {
           </Link>
         </div>
         <div className="text-center text-xs text-gray-500 mt-3">
-          © {new Date().getFullYear()} Fire. All rights reserved.
+          © {new Date().getFullYear()} Fire - NextGen. All rights reserved.
         </div>
       </div>
     </footer>
