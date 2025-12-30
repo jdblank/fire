@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "cd ../../packages/db && pnpm prisma generate && cd ../../apps/web && next build --webpack",
+    "build": "cd ../../packages/db && pnpm prisma generate && pnpm prisma migrate deploy && cd ../../apps/web && next build --webpack",
     "start": "next start",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
