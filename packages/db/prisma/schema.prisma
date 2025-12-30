@@ -199,10 +199,15 @@ model Event {
   description String   @db.Text
   banner      String?
   
-  // Date and location
+  // Date and time
+  // For "Date Only" events (isAllDay=true), startDate/endDate store dates at midnight UTC
+  // For "Specific Time" events (isAllDay=false), startDate/endDate store the exact datetime
   startDate   DateTime
   endDate     DateTime?
   timezone    String?  // e.g., "America/New_York", "America/Los_Angeles"
+  isAllDay    Boolean  @default(false) // true = Date Only event, false = Specific Time event
+  
+  // Location
   location    String?
   isOnline    Boolean  @default(false)
   

@@ -80,6 +80,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ even
       location,
       timezone,
       isOnline,
+      isAllDay,
       eventType,
       requiresDeposit,
       depositAmount,
@@ -96,6 +97,29 @@ export async function PUT(request: Request, { params }: { params: Promise<{ even
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
 
+    // Helper function to normalize date to midnight UTC for all-day events
+    const normalizeToMidnightUTC = (date: Date): Date => {
+      const normalized = new Date(date)
+      normalized.setUTCHours(0, 0, 0, 0)
+      return normalized
+    }
+
+    // Determine if this is an all-day event (use provided value or existing)
+    const effectiveIsAllDay = isAllDay !== undefined ? isAllDay : existing.isAllDay
+
+    // Process dates - normalize to midnight UTC if all-day event
+    let processedStartDate = startDate ? new Date(startDate) : undefined
+    let processedEndDate = endDate !== undefined ? (endDate ? new Date(endDate) : null) : undefined
+
+    if (effectiveIsAllDay) {
+      if (processedStartDate) {
+        processedStartDate = normalizeToMidnightUTC(processedStartDate)
+      }
+      if (processedEndDate) {
+        processedEndDate = normalizeToMidnightUTC(processedEndDate)
+      }
+    }
+
     // Update event
     const event = await prisma.event.update({
       where: { id: eventId },
@@ -103,11 +127,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ even
         ...(title && { title }),
         ...(description && { description }),
         ...(banner !== undefined && { banner }),
-        ...(startDate && { startDate: new Date(startDate) }),
-        ...(endDate !== undefined && { endDate: endDate ? new Date(endDate) : null }),
+        ...(processedStartDate && { startDate: processedStartDate }),
+        ...(processedEndDate !== undefined && { endDate: processedEndDate }),
         ...(location !== undefined && { location }),
         ...(timezone !== undefined && { timezone }),
         ...(isOnline !== undefined && { isOnline }),
+        ...(isAllDay !== undefined && { isAllDay }),
         ...(eventType && { eventType }),
         ...(requiresDeposit !== undefined && { requiresDeposit }),
         ...(depositAmount !== undefined && { depositAmount }),

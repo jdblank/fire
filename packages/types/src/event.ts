@@ -8,6 +8,7 @@ export const createEventSchema = z.object({
   endDate: z.string().datetime().optional(),
   location: z.string().optional(),
   isOnline: z.boolean().default(false),
+  isAllDay: z.boolean().default(false).optional(),
   isFree: z.boolean().default(true),
   price: z.number().positive().optional(),
   currency: z.string().default('USD'),

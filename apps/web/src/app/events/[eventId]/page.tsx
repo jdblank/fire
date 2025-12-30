@@ -129,14 +129,21 @@ export default async function EventDetailPage({
               <span className="text-2xl">📅</span>
               <div>
                 <p className="font-medium text-gray-900">
-                  {formatDateInternational(event.startDate, event.timezone || undefined)}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {formatTime(event.startDate, event.timezone || undefined)}
-                  {event.endDate && (
-                    <> - {formatTime(event.endDate, event.timezone || undefined)}</>
+                  {formatDateInternational(event.startDate, event.timezone || undefined, event.isAllDay)}
+                  {event.endDate && event.isAllDay && (
+                    <> - {formatDateInternational(event.endDate, event.timezone || undefined, event.isAllDay)}</>
                   )}
                 </p>
+                {event.isAllDay ? (
+                  <p className="text-sm text-gray-600">All Day</p>
+                ) : (
+                  <p className="text-sm text-gray-600">
+                    {formatTime(event.startDate, event.timezone || undefined)}
+                    {event.endDate && (
+                      <> - {formatTime(event.endDate, event.timezone || undefined)}</>
+                    )}
+                  </p>
+                )}
               </div>
             </div>
 

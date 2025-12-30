@@ -32,6 +32,7 @@ export default async function EventsPage() {
       endDate: true,
       location: true,
       timezone: true,
+      isAllDay: true,
       eventType: true,
       maxAttendees: true,
       // Only fetch registration count for admins
@@ -123,7 +124,10 @@ export default async function EventsPage() {
                     <div className="space-y-2 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <span>📅</span>
-                        <span>{formatDateShort(event.startDate, event.timezone || undefined)}</span>
+                        <span>
+                          {formatDateShort(event.startDate, event.timezone || undefined, event.isAllDay)}
+                          {event.isAllDay && <span className="ml-1 text-gray-500">(All Day)</span>}
+                        </span>
                       </div>
                       {event.location && (
                         <div className="flex items-center gap-2">

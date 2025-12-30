@@ -99,6 +99,7 @@ export async function POST(request: Request) {
       location,
       timezone,
       isOnline,
+      isAllDay,
       eventType,
       requiresDeposit,
       depositAmount,
@@ -111,17 +112,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Title and start date are required' }, { status: 400 })
     }
 
+    // Helper function to normalize date to midnight UTC for all-day events
+    const normalizeToMidnightUTC = (date: Date): Date => {
+      const normalized = new Date(date)
+      normalized.setUTCHours(0, 0, 0, 0)
+      return normalized
+    }
+
+    // Process dates - normalize to midnight UTC if all-day event
+    let processedStartDate = new Date(startDate)
+    let processedEndDate = endDate ? new Date(endDate) : null
+
+    if (isAllDay) {
+      processedStartDate = normalizeToMidnightUTC(processedStartDate)
+      if (processedEndDate) {
+        processedEndDate = normalizeToMidnightUTC(processedEndDate)
+      }
+    }
+
     // Create event
     const event = await prisma.event.create({
       data: {
         title,
         description,
         banner: banner || null,
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: processedStartDate,
+        endDate: processedEndDate,
         location: location || null,
         timezone: timezone || 'America/New_York',
         isOnline: isOnline || false,
+        isAllDay: isAllDay || false,
         eventType: eventType || 'FREE',
         requiresDeposit: requiresDeposit || false,
         depositAmount: depositAmount || null,

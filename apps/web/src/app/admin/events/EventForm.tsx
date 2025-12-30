@@ -17,13 +17,24 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
   const [cityResults, setCityResults] = useState<City[]>([])
   const [showCityResults, setShowCityResults] = useState(false)
 
+  // Helper to format date for input fields
+  const formatDateForInput = (date: string | Date | undefined, isAllDay: boolean): string => {
+    if (!date) return ''
+    const d = new Date(date)
+    if (isAllDay) {
+      // For date-only input: YYYY-MM-DD
+      return d.toISOString().slice(0, 10)
+    }
+    // For datetime-local input: YYYY-MM-DDTHH:MM
+    return d.toISOString().slice(0, 16)
+  }
+
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
-    startDate: initialData?.startDate
-      ? new Date(initialData.startDate).toISOString().slice(0, 16)
-      : '',
-    endDate: initialData?.endDate ? new Date(initialData.endDate).toISOString().slice(0, 16) : '',
+    isAllDay: initialData?.isAllDay || false,
+    startDate: formatDateForInput(initialData?.startDate, initialData?.isAllDay || false),
+    endDate: formatDateForInput(initialData?.endDate, initialData?.isAllDay || false),
     location: initialData?.location || '',
     timezone: initialData?.timezone || 'America/New_York',
     isOnline: initialData?.isOnline || false,
@@ -81,6 +92,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       const data = {
         title: formData.title,
         description: formData.description,
+        isAllDay: formData.isAllDay,
         startDate: formData.startDate,
         endDate: formData.endDate || null,
         location: formData.location || null,
@@ -182,15 +194,48 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Date & Location</h2>
 
+        {/* All Day Toggle */}
+        <div className="flex items-center gap-2">
+          <input
+            id="isAllDay"
+            type="checkbox"
+            checked={formData.isAllDay}
+            onChange={(e) => {
+              const isAllDay = e.target.checked
+              // Convert date format when toggling
+              const convertDate = (dateStr: string): string => {
+                if (!dateStr) return ''
+                if (isAllDay) {
+                  // Converting to date-only: take first 10 chars (YYYY-MM-DD)
+                  return dateStr.slice(0, 10)
+                } else {
+                  // Converting to datetime: append default time
+                  return dateStr.length === 10 ? `${dateStr}T09:00` : dateStr
+                }
+              }
+              setFormData({
+                ...formData,
+                isAllDay,
+                startDate: convertDate(formData.startDate),
+                endDate: convertDate(formData.endDate),
+              })
+            }}
+            className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
+          />
+          <label htmlFor="isAllDay" className="text-sm font-medium text-gray-700">
+            All Day Event
+          </label>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-4">
           {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
-              Start Date & Time <span className="text-red-500">*</span>
+              {formData.isAllDay ? 'Start Date' : 'Start Date & Time'} <span className="text-red-500">*</span>
             </label>
             <input
               id="startDate"
-              type="datetime-local"
+              type={formData.isAllDay ? 'date' : 'datetime-local'}
               value={formData.startDate}
               onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 ${errors.startDate ? 'border-red-500' : 'border-gray-300'}`}
@@ -201,11 +246,11 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
           {/* End Date */}
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
-              End Date & Time
+              {formData.isAllDay ? 'End Date' : 'End Date & Time'}
             </label>
             <input
               id="endDate"
-              type="datetime-local"
+              type={formData.isAllDay ? 'date' : 'datetime-local'}
               value={formData.endDate}
               onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"

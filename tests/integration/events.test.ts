@@ -68,6 +68,80 @@ describe('Event Management System', () => {
       testEventId = event.id
     })
 
+    it('should create an all-day event with time normalized to midnight UTC', async () => {
+      // Create an all-day event with a time of 14:30 (should be normalized to 00:00:00)
+      const inputStartDate = new Date('2025-12-25T14:30:00Z') // Christmas at 2:30 PM
+      const inputEndDate = new Date('2025-12-25T18:45:00Z') // Christmas at 6:45 PM
+
+      // Helper function to normalize date to midnight UTC (same as in API route)
+      const normalizeToMidnightUTC = (date: Date): Date => {
+        const normalized = new Date(date)
+        normalized.setUTCHours(0, 0, 0, 0)
+        return normalized
+      }
+
+      // Simulate what the API does for all-day events
+      const processedStartDate = normalizeToMidnightUTC(inputStartDate)
+      const processedEndDate = normalizeToMidnightUTC(inputEndDate)
+
+      const allDayEvent = await prisma.event.create({
+        data: {
+          title: 'Christmas Day Celebration',
+          description: 'An all-day holiday event',
+          startDate: processedStartDate,
+          endDate: processedEndDate,
+          isAllDay: true,
+          timezone: 'UTC',
+          eventType: 'FREE',
+          status: 'DRAFT',
+        },
+      })
+
+      expect(allDayEvent).toBeDefined()
+      expect(allDayEvent.isAllDay).toBe(true)
+
+      // Verify time components are normalized to midnight UTC (00:00:00.000Z)
+      expect(allDayEvent.startDate.getUTCHours()).toBe(0)
+      expect(allDayEvent.startDate.getUTCMinutes()).toBe(0)
+      expect(allDayEvent.startDate.getUTCSeconds()).toBe(0)
+      expect(allDayEvent.startDate.getUTCMilliseconds()).toBe(0)
+
+      expect(allDayEvent.endDate?.getUTCHours()).toBe(0)
+      expect(allDayEvent.endDate?.getUTCMinutes()).toBe(0)
+      expect(allDayEvent.endDate?.getUTCSeconds()).toBe(0)
+      expect(allDayEvent.endDate?.getUTCMilliseconds()).toBe(0)
+
+      // Verify the date is still December 25th
+      expect(allDayEvent.startDate.getUTCDate()).toBe(25)
+      expect(allDayEvent.startDate.getUTCMonth()).toBe(11) // December is month 11 (0-indexed)
+
+      // Cleanup
+      await prisma.event.delete({ where: { id: allDayEvent.id } })
+    })
+
+    it('should default isAllDay to false for regular events', async () => {
+      const regularEvent = await prisma.event.create({
+        data: {
+          title: 'Regular Timed Event',
+          description: 'A regular event with specific time',
+          startDate: new Date('2025-06-15T09:00:00Z'),
+          endDate: new Date('2025-06-15T17:00:00Z'),
+          eventType: 'FREE',
+          status: 'DRAFT',
+        },
+      })
+
+      expect(regularEvent).toBeDefined()
+      expect(regularEvent.isAllDay).toBe(false)
+
+      // Time should NOT be normalized for regular events
+      expect(regularEvent.startDate.getUTCHours()).toBe(9)
+      expect(regularEvent.endDate?.getUTCHours()).toBe(17)
+
+      // Cleanup
+      await prisma.event.delete({ where: { id: regularEvent.id } })
+    })
+
     it('should retrieve event by ID', async () => {
       const event = await prisma.event.findUnique({
         where: { id: testEventId },
