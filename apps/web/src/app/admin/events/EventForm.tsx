@@ -21,12 +21,22 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
   const formatDateForInput = (date: string | Date | undefined, isAllDay: boolean): string => {
     if (!date) return ''
     const d = new Date(date)
+
     if (isAllDay) {
-      // For date-only input: YYYY-MM-DD
+      // For all-day events, we store as midnight UTC.
+      // To show in a date input, we need YYYY-MM-DD of that UTC date.
       return d.toISOString().slice(0, 10)
     }
-    // For datetime-local input: YYYY-MM-DDTHH:MM
-    return d.toISOString().slice(0, 16)
+
+    // For timed events, we want to show the date/time in the user's local timezone
+    // as it would appear in a datetime-local input (YYYY-MM-DDTHH:mm).
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const hours = String(d.getHours()).padStart(2, '0')
+    const minutes = String(d.getMinutes()).padStart(2, '0')
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`
   }
 
   const [formData, setFormData] = useState({
@@ -231,7 +241,8 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
           {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
-              {formData.isAllDay ? 'Start Date' : 'Start Date & Time'} <span className="text-red-500">*</span>
+              {formData.isAllDay ? 'Start Date' : 'Start Date & Time'}{' '}
+              <span className="text-red-500">*</span>
             </label>
             <input
               id="startDate"

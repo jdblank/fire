@@ -7,6 +7,7 @@ import { formatDateShort } from '@/lib/date-utils'
 interface Event {
   id: string
   title: string
+  isAllDay: boolean
   startDate: string
   endDate: string | null
   location: string | null
@@ -189,10 +190,21 @@ export function EventsTable() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    <div>{formatDateShort(event.startDate, event.timezone || undefined)}</div>
+                    <div>
+                      {formatDateShort(
+                        event.startDate,
+                        event.timezone || undefined,
+                        event.isAllDay
+                      )}
+                    </div>
                     {event.endDate && (
                       <div className="text-xs text-gray-500">
-                        to {formatDateShort(event.endDate, event.timezone || undefined)}
+                        to{' '}
+                        {formatDateShort(
+                          event.endDate,
+                          event.timezone || undefined,
+                          event.isAllDay
+                        )}
                       </div>
                     )}
                   </td>
