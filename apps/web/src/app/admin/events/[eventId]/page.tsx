@@ -5,6 +5,7 @@ import { EventForm } from '../EventForm'
 import { LineItemsEditor } from './LineItemsEditor'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
+import { hasRole } from '@/lib/utils'
 
 // Helper to convert Decimal to number for client components
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,7 +22,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ even
     redirect('/login')
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if (!hasRole(session.user, 'admin')) {
     redirect('/dashboard')
   }
 

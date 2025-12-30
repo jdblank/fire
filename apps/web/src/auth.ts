@@ -1,6 +1,5 @@
 import NextAuth, { type DefaultSession } from 'next-auth'
 import { PrismaClient } from '@fire/db'
-import { UserRole } from '@fire/types'
 import { authConfig } from './auth.config'
 
 // Extend NextAuth types
@@ -8,22 +7,13 @@ declare module 'next-auth' {
   interface Session {
     user: {
       id: string
-      role: UserRole
+      roles: string[]
     } & DefaultSession['user']
     id_token?: string
   }
 
   interface User {
-    role: UserRole
-  }
-}
-
-// Augment the JWT interface directly
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id: string
-    role: UserRole
-    id_token?: string
+    roles: string[]
   }
 }
 
@@ -42,31 +32,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Sync user to database on initial sign-in
         if (user.email) {
           try {
-            const existingDbUser = await prisma.user.findUnique({
-              where: { email: user.email },
-              select: { id: true, role: true },
-            })
-
-            let userRole: UserRole = (existingDbUser?.role || UserRole.USER) as UserRole
-
-            // Fetch role from LogTo for new users
-            if (!existingDbUser && user.id) {
-              try {
-                const { getUserFromLogTo } = await import('@/lib/logto-experience')
-                const logtoUser = await getUserFromLogTo(user.id)
-                const roles = logtoUser.roles
-                const rolesArray = Array.isArray(roles) ? roles : []
-
-                if (rolesArray.some((r: any) => r.name === 'admin')) {
-                  userRole = UserRole.ADMIN
-                } else if (rolesArray.some((r: any) => r.name === 'moderator')) {
-                  userRole = UserRole.MODERATOR
-                }
-              } catch (e) {
-                console.warn('[AUTH] Failed to fetch roles from LogTo', e)
-              }
-            }
-
             const nameParts = (user.name || user.email.split('@')[0]).split(' ')
             const firstName = nameParts[0] || 'User'
             const lastName = nameParts.slice(1).join(' ') || ''
@@ -79,7 +44,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 firstName,
                 lastName: lastName || firstName,
                 displayName: user.name,
-                role: userRole,
                 accountStatus: 'ACTIVE',
                 lastLoginAt: new Date(),
               },
@@ -90,7 +54,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 firstName,
                 lastName: lastName || firstName,
                 displayName: user.name,
-                role: userRole,
                 accountStatus: 'ACTIVE',
               },
               select: { id: true },
@@ -98,13 +61,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             // Use the database user ID (not the LogTo ID) for session
             token.id = syncedUser.id
-            token.role = userRole
+            token.roles = user.roles || []
             console.log(
-              `[AUTH JWT] User synced to database: ${user.email} -> DB ID: ${syncedUser.id}, role: ${userRole}`
+              `[AUTH JWT] User synced to database: ${user.email} -> DB ID: ${syncedUser.id}, roles: ${JSON.stringify(token.roles)}`
             )
           } catch (error) {
             console.error('[AUTH JWT] Database sync error:', error)
-            token.role = user?.role || 'USER'
           }
         }
       }
@@ -114,21 +76,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id_token = account.id_token
       }
 
-      // On subsequent requests, fetch the role from database
+      // On subsequent requests, ensure we use the database ID
       if (token.id && !user) {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id as string },
-            select: { id: true, role: true },
+            select: { id: true },
           })
 
           if (dbUser) {
             token.id = dbUser.id // Ensure we always use the database ID
-            token.role = dbUser.role
-            console.log(`[AUTH JWT] Refreshed role from database: ${token.id} -> ${dbUser.role}`)
           }
         } catch (error) {
-          console.error('[AUTH JWT] Failed to fetch user role from database:', error)
+          console.error('[AUTH JWT] Failed to fetch user from database:', error)
         }
       }
 
@@ -142,31 +102,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!user?.email) return
 
       try {
-        const existingDbUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          select: { role: true },
-        })
-
-        let userRole: UserRole = (existingDbUser?.role || UserRole.USER) as UserRole
-
-        // Fetch role from LogTo for new users
-        if (!existingDbUser && user.id) {
-          try {
-            const { getUserFromLogTo } = await import('@/lib/logto-experience')
-            const logtoUser = await getUserFromLogTo(user.id)
-            const roles = logtoUser.roles
-            const rolesArray = Array.isArray(roles) ? roles : []
-
-            if (rolesArray.some((r: any) => r.name === 'admin')) {
-              userRole = UserRole.ADMIN
-            } else if (rolesArray.some((r: any) => r.name === 'moderator')) {
-              userRole = UserRole.MODERATOR
-            }
-          } catch (e) {
-            console.warn('[AUTH] Failed to fetch roles from LogTo', e)
-          }
-        }
-
         const nameParts = (user.name || user.email.split('@')[0]).split(' ')
         const firstName = nameParts[0] || 'User'
         const lastName = nameParts.slice(1).join(' ') || ''
@@ -179,7 +114,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             firstName,
             lastName: lastName || firstName,
             displayName: user.name,
-            role: userRole,
             accountStatus: 'ACTIVE',
             lastLoginAt: new Date(),
           },
@@ -190,12 +124,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             firstName,
             lastName: lastName || firstName,
             displayName: user.name,
-            role: userRole,
             accountStatus: 'ACTIVE',
           },
         })
 
-        console.log(`[AUTH] User synced to database: ${user.email} (${userRole})`)
+        console.log(`[AUTH] User synced to database: ${user.email}`)
       } catch (error) {
         console.error('[AUTH] Database sync error:', error)
         // Don't throw - allow sign in to proceed even if DB sync fails

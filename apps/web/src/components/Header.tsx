@@ -4,12 +4,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useRef, useEffect } from 'react'
 import { signOut } from 'next-auth/react'
+import { hasRole } from '@/lib/utils'
 
 interface HeaderProps {
   user?: {
     name?: string | null
     email?: string | null
-    role?: string
+    roles?: string[]
     image?: string | null
   }
 }
@@ -142,9 +143,9 @@ export function Header({ user }: HeaderProps) {
                     <div className="px-4 py-3 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900">{user.name || 'User'}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                      {user.role && (
+                      {user.roles?.[0] && (
                         <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded">
-                          {user.role}
+                          {user.roles[0]}
                         </span>
                       )}
                     </div>
@@ -165,7 +166,7 @@ export function Header({ user }: HeaderProps) {
                       Settings
                     </Link>
 
-                    {user.role === 'ADMIN' && (
+                    {hasRole(user, 'admin') && (
                       <>
                         <div className="border-t border-gray-100 my-1"></div>
                         <Link

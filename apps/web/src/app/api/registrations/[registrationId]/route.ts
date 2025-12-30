@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/registrations/[registrationId] - Get registration details
 export async function GET(
@@ -51,7 +52,7 @@ export async function GET(
     }
 
     // Security: Only allow user to view their own registration or admins
-    if (registration.userId !== session.user.id && session.user.role !== 'ADMIN') {
+    if (registration.userId !== session.user.id && !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

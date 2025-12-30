@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { InvoiceContent } from './InvoiceContent'
+import { hasRole } from '@/lib/utils'
 
 export default async function InvoicePage({
   params,
@@ -15,7 +16,7 @@ export default async function InvoicePage({
     redirect('/login')
   }
 
-  const isAdmin = session.user.role === 'ADMIN'
+  const isAdmin = hasRole(session.user, 'admin')
 
   return (
     <div className="min-h-screen bg-gray-50">

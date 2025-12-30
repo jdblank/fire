@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // POST /api/admin/registrations - Admin creates registration for a user
 export async function POST(request: Request) {
   try {
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

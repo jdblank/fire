@@ -1,5 +1,3 @@
-import { UserRole } from '@fire/types'
-
 // LogTo configuration from environment
 const LOGTO_ISSUER = process.env.LOGTO_ISSUER || 'http://localhost:3001/oidc'
 const LOGTO_APP_ID = process.env.LOGTO_APP_ID
@@ -17,7 +15,7 @@ function LogtoProvider(options: any = {}): any {
     checks: ['pkce', 'state'],
     authorization: {
       params: {
-        scope: 'openid profile email',
+        scope: 'openid profile email roles',
         ...(options.authParams || {}),
       },
     },
@@ -27,7 +25,7 @@ function LogtoProvider(options: any = {}): any {
         email: profile.email,
         name: profile.name || profile.username,
         image: profile.picture,
-        role: (profile.role as UserRole) || UserRole.USER,
+        roles: profile.roles || [],
       }
     },
   }
@@ -54,7 +52,7 @@ export const authConfig = {
       // Add user info to token on initial sign in
       if (user) {
         token.id = user.id
-        token.role = user.role
+        token.roles = user.roles
       }
       // Add id_token from OAuth provider
       if (account?.id_token) {
@@ -66,7 +64,7 @@ export const authConfig = {
       // Pass token info to session
       if (token) {
         session.user.id = token.id as string
-        session.user.role = token.role
+        session.user.roles = token.roles
         session.id_token = token.id_token as string
       }
       return session

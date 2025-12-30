@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/events/[eventId] - Get event by ID
 export async function GET(_request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -64,7 +65,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ even
   try {
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -142,7 +143,7 @@ export async function DELETE(
   try {
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

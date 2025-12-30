@@ -6,7 +6,6 @@ import ReactFlow, {
   Background,
   MiniMap,
   Node,
-  Edge,
   useNodesState,
   useEdgesState,
   NodeTypes,
@@ -34,12 +33,12 @@ export function ReferralNetworkGraph({ users }: ReferralNetworkGraphProps) {
     [users]
   )
 
-  const [nodes, , onNodesChange] = useNodesState<Node<MemberNodeData>>(initialNodes)
-  const [edges, , onEdgesChange] = useEdgesState<Edge>(initialEdges)
+  const [nodes, , onNodesChange] = useNodesState(initialNodes)
+  const [edges, , onEdgesChange] = useEdgesState(initialEdges)
 
   // Minimap node color based on depth
-  const getMiniMapNodeColor = useCallback((node: Node<MemberNodeData>) => {
-    return node.data.depth === 0 ? '#3b82f6' : '#94a3b8'
+  const getMiniMapNodeColor = useCallback((node: Node) => {
+    return (node.data as MemberNodeData).depth === 0 ? '#3b82f6' : '#94a3b8'
   }, [])
 
   // Empty state

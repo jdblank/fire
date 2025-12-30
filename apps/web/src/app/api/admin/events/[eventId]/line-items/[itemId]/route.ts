@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // PUT /api/admin/events/[eventId]/line-items/[itemId] - Update line item
 export async function PUT(
@@ -12,7 +13,7 @@ export async function PUT(
     const { eventId, itemId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -75,7 +76,7 @@ export async function DELETE(
     const { eventId, itemId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

@@ -2,13 +2,18 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // POST /api/registrations/[registrationId]/discounts - Apply discount
-export async function POST(request: Request, { params }: { params: { registrationId: string } }) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ registrationId: string }> }
+) {
   try {
+    const { registrationId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -25,7 +30,7 @@ export async function POST(request: Request, { params }: { params: { registratio
 
     // Get registration
     const registration = await prisma.eventRegistration.findUnique({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       include: {
         lineItems: true,
         discounts: true,
@@ -53,7 +58,7 @@ export async function POST(request: Request, { params }: { params: { registratio
     // Create discount
     const discount = await prisma.discount.create({
       data: {
-        registrationId: params.registrationId,
+        registrationId,
         name,
         discountType,
         amount: discountAmount,
@@ -73,7 +78,7 @@ export async function POST(request: Request, { params }: { params: { registratio
 
     // Update registration
     const updatedRegistration = await prisma.eventRegistration.update({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       data: {
         totalAmount: newTotal,
         balanceDue: newBalanceDue,
@@ -101,11 +106,15 @@ export async function POST(request: Request, { params }: { params: { registratio
 }
 
 // DELETE /api/registrations/[registrationId]/discounts/[discountId] - Remove discount
-export async function DELETE(request: Request, { params }: { params: { registrationId: string } }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ registrationId: string }> }
+) {
   try {
+    const { registrationId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -121,7 +130,7 @@ export async function DELETE(request: Request, { params }: { params: { registrat
       where: { id: discountId },
     })
 
-    if (!discount || discount.registrationId !== params.registrationId) {
+    if (!discount || discount.registrationId !== registrationId) {
       return NextResponse.json({ error: 'Discount not found' }, { status: 404 })
     }
 
@@ -132,7 +141,7 @@ export async function DELETE(request: Request, { params }: { params: { registrat
 
     // Recalculate registration totals
     const registration = await prisma.eventRegistration.findUnique({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       include: {
         lineItems: true,
         discounts: true,
@@ -153,7 +162,7 @@ export async function DELETE(request: Request, { params }: { params: { registrat
       const newBalanceDue = Math.max(0, newTotal - currentDepositPaid)
 
       await prisma.eventRegistration.update({
-        where: { id: params.registrationId },
+        where: { id: registrationId },
         data: {
           totalAmount: newTotal,
           balanceDue: newBalanceDue,

@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { EventForm } from '../EventForm'
+import { hasRole } from '@/lib/utils'
 
 export default async function CreateEventPage() {
   const session = await auth()
@@ -10,7 +11,7 @@ export default async function CreateEventPage() {
     redirect('/login')
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if (!hasRole(session.user, 'admin')) {
     redirect('/dashboard')
   }
 

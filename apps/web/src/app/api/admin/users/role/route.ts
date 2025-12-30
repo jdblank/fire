@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
-import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
+import { hasRole } from '@/lib/utils'
 
 const roleSchema = z.object({
   userId: z.string(),
@@ -46,7 +44,7 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 403 })
     }
 
@@ -112,23 +110,11 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ roleIds: [targetRole.id] }),
     })
 
-    // Update user role in our database (cache)
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { role },
-      select: {
-        id: true,
-        email: true,
-        displayName: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-      },
-    })
+    // Update user role in our database (cache) - REMOVED
+    // Roles are now managed solely in Logto.
 
     return NextResponse.json({
       success: true,
-      user: updatedUser,
       message: `User role updated to ${role} in LogTo. User must log out and back in for changes to take effect.`,
     })
   } catch (error: any) {

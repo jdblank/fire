@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Header } from '@/components/Header'
 import Link from 'next/link'
 import Image from 'next/image'
+import { hasRole } from '@/lib/utils'
 
 interface LinkPreview {
   url: string
@@ -16,7 +17,7 @@ interface LinkPreview {
 }
 
 export default function CreatePostPage() {
-  const { data: session } = useSession({ required: true })
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [content, setContent] = useState('')
@@ -26,7 +27,7 @@ export default function CreatePostPage() {
   const [videos, setVideos] = useState<string[]>([])
   const [uploadingMedia, setUploadingMedia] = useState(false)
   const [detectedUrl, setDetectedUrl] = useState<string | null>(null)
-  const debounceTimer = useRef<NodeJS.Timeout>()
+  const debounceTimer = useRef<NodeJS.Timeout>(null)
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -37,7 +38,15 @@ export default function CreatePostPage() {
     }
   }, [])
 
-  if (session?.user?.role !== 'ADMIN') {
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
+
+  if (status === 'loading') return <div>Loading...</div>
+
+  if (!session?.user || !hasRole(session.user, 'admin')) {
     return <div>Admin access required</div>
   }
 

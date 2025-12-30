@@ -6,6 +6,7 @@ import { RegisterForm } from './RegisterForm'
 import { CancelRegistrationButton } from './CancelRegistrationButton'
 import { formatDateInternational, formatTime } from '@/lib/date-utils'
 import Link from 'next/link'
+import { hasRole } from '@/lib/utils'
 
 export default async function EventDetailPage({
   params,
@@ -68,7 +69,7 @@ export default async function EventDetailPage({
   }
 
   // Check if event is published (admins can view any status)
-  if (event.status !== 'PUBLISHED' && session.user.role !== 'ADMIN') {
+  if (event.status !== 'PUBLISHED' && !hasRole(session.user, 'admin')) {
     notFound()
   }
 
@@ -93,7 +94,7 @@ export default async function EventDetailPage({
 
   // Check capacity
   const isFull = event.maxAttendees && event._count.registrations >= event.maxAttendees
-  const isAdmin = session.user.role === 'ADMIN'
+  const isAdmin = hasRole(session.user, 'admin')
 
   return (
     <div className="min-h-screen bg-gray-50">

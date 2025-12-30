@@ -4,6 +4,7 @@ import { Header } from '@/components/Header'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 import { formatDateShort } from '@/lib/date-utils'
+import { hasRole } from '@/lib/utils'
 
 export default async function EventsPage() {
   const session = await auth()
@@ -12,7 +13,7 @@ export default async function EventsPage() {
     redirect('/login')
   }
 
-  const isAdmin = session.user.role === 'ADMIN'
+  const isAdmin = hasRole(session.user, 'admin')
 
   // Fetch published events
   const events = await prisma.event.findMany({

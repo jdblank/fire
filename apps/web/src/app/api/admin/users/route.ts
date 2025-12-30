@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/users - List all users
 export async function GET(request: Request) {
@@ -10,10 +11,12 @@ export async function GET(request: Request) {
     const session = await auth()
     console.log(
       'Session:',
-      session ? `User: ${session.user.email}, Role: ${session.user.role}` : 'No session'
+      session
+        ? `User: ${session.user.email}, Roles: ${JSON.stringify(session.user.roles)}`
+        : 'No session'
     )
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       console.log('Unauthorized access attempt')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
@@ -100,7 +103,7 @@ export async function POST(request: Request) {
   try {
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -115,7 +118,6 @@ export async function POST(request: Request) {
       countryCode,
       hometown,
       referredById,
-      role,
     } = body
 
     // Validate required fields
@@ -147,7 +149,6 @@ export async function POST(request: Request) {
         countryCode,
         hometown,
         referredById: referredById || null,
-        role: role || 'USER',
         accountStatus: 'PENDING_INVITE',
       },
       include: {

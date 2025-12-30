@@ -26,7 +26,6 @@ describe('Admin User Management', () => {
           firstName: 'Test',
           lastName: 'User',
           displayName: 'Test User',
-          role: 'USER',
           accountStatus: 'PENDING_INVITE',
         },
       })
@@ -84,7 +83,6 @@ describe('Admin User Management', () => {
           email: `referred-${Date.now()}@example.com`,
           firstName: 'Referred',
           lastName: 'User',
-          role: 'USER',
           accountStatus: 'PENDING_INVITE',
           referredById: referrer!.id,
         },

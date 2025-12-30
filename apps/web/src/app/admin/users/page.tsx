@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import Link from 'next/link'
 import { UsersTable } from './UsersTable'
+import { hasRole } from '@/lib/utils'
 
 export default async function AdminUsersPage() {
   const session = await auth()
@@ -11,7 +12,7 @@ export default async function AdminUsersPage() {
     redirect('/login')
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if (!hasRole(session.user, 'admin')) {
     redirect('/dashboard')
   }
 

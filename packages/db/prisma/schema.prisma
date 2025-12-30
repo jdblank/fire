@@ -34,7 +34,6 @@ model User {
   hometown      String?
   
   // Account management
-  role          UserRole  @default(USER)
   accountStatus AccountStatus @default(PENDING_INVITE)
   
   // Referral system (self-referential)
@@ -64,20 +63,12 @@ model User {
   @@index([email])
   @@index([logtoId])
   @@index([username])
-  @@index([role])
   @@index([accountStatus])
   @@index([referredById])
   @@map("users")
 }
 
 // Note: Passwords are stored in LogTo, not our database
-
-// User roles enum
-enum UserRole {
-  USER        // Regular user
-  MODERATOR   // Can moderate content
-  ADMIN       // Full admin access
-}
 
 // Account status enum
 enum AccountStatus {
@@ -464,7 +455,3 @@ model Upload {
   @@index([uploadedBy])
   @@map("uploads")
 }
-
-
-
-

@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { UserForm } from '../UserForm'
+import { hasRole } from '@/lib/utils'
 
 export default async function CreateUserPage() {
   const session = await auth()
@@ -10,7 +11,7 @@ export default async function CreateUserPage() {
     redirect('/login')
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if (!hasRole(session.user, 'admin')) {
     redirect('/dashboard')
   }
 

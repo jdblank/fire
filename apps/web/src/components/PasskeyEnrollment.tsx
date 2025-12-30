@@ -77,10 +77,9 @@ export function PasskeyEnrollment({ onSuccess: _onSuccess, onCancel }: PasskeyEn
             </button>
             <button
               onClick={handleEnroll}
-              disabled={step === 'enrolling'}
               className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors font-medium"
             >
-              {step === 'enrolling' ? 'Setting up...' : 'Setup Passkey'}
+              Setup Passkey
             </button>
           </div>
         </>

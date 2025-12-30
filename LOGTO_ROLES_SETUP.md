@@ -141,7 +141,7 @@ If you already have users with database roles:
 1. **Create roles in LogTo** (as above)
 2. **Sync existing roles** from database to LogTo
 3. **Update NextAuth** to read from LogTo
-4. **Remove database role column** (optional, or keep as cache)
+4. **Remove database role column** (Done)
 
 ---
 

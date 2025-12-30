@@ -3,10 +3,11 @@ import { prisma } from '@fire/db'
 import { InviteAcceptForm } from './InviteAcceptForm'
 import Link from 'next/link'
 
-export default async function InviteAcceptPage({ params }: { params: { token: string } }) {
+export default async function InviteAcceptPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   // Validate token
   const inviteToken = await prisma.inviteToken.findUnique({
-    where: { token: params.token },
+    where: { token },
     include: {
       user: {
         select: {
@@ -85,7 +86,7 @@ export default async function InviteAcceptPage({ params }: { params: { token: st
           <div className="text-sm text-gray-600">{inviteToken.user.email}</div>
         </div>
 
-        <InviteAcceptForm token={params.token} user={inviteToken.user} />
+        <InviteAcceptForm token={token} user={inviteToken.user} />
       </div>
     </div>
   )

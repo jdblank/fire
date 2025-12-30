@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { NewsFeed } from '@/components/NewsFeed'
 import Link from 'next/link'
+import { hasRole } from '@/lib/utils'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -11,7 +12,7 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  const isAdmin = session.user.role === 'ADMIN'
+  const isAdmin = hasRole(session.user, 'admin')
 
   return (
     <div className="min-h-screen bg-gray-50">

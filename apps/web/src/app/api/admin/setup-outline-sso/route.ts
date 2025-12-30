@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
+import { hasRole } from '@/lib/utils'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 const M2M_APP_ID = process.env.LOGTO_M2M_APP_ID
@@ -13,7 +14,7 @@ export async function POST() {
     // Check authentication and admin role
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized - Admin only' }, { status: 403 })
     }
 

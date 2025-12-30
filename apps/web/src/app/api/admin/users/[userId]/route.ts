@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/users/[userId] - Get user by ID
 export async function GET(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
@@ -9,7 +10,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ use
     const { userId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -59,7 +60,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ user
     const { userId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -74,7 +75,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ user
       countryCode,
       hometown,
       referredById,
-      role,
       accountStatus,
     } = body
 
@@ -111,7 +111,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ user
         ...(countryCode !== undefined && { countryCode }),
         ...(hometown !== undefined && { hometown }),
         ...(referredById !== undefined && { referredById }),
-        ...(role && { role }),
         ...(accountStatus && { accountStatus }),
       },
       include: {
@@ -141,7 +140,7 @@ export async function DELETE(
     const { userId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

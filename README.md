@@ -18,7 +18,7 @@ A modern, lightweight social community platform with event management, user prof
 
 ## Features
 
-- 🔐 **Authentication**: LogTo integration with OIDC
+- 🔐 **Authentication**: LogTo integration with OIDC (Roles are managed via the Logto Console)
 - 👤 **User Profiles**: Customizable profiles with avatars
 - 📰 **News Feed**: Social posting and interactions
 - 📅 **Event Management**: Free and paid event registration

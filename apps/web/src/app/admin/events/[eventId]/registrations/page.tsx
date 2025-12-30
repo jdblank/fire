@@ -5,6 +5,7 @@ import { prisma } from '@fire/db'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/pricing'
 import { formatDateShort } from '@/lib/date-utils'
+import { hasRole } from '@/lib/utils'
 
 export default async function EventRegistrationsPage({
   params,
@@ -18,7 +19,7 @@ export default async function EventRegistrationsPage({
     redirect('/login')
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if (!hasRole(session.user, 'admin')) {
     redirect('/dashboard')
   }
 

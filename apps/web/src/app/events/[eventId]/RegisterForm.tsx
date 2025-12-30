@@ -20,6 +20,7 @@ interface LineItem {
 interface Event {
   id: string
   title: string
+  startDate: string | Date
   eventType: string
   requiresDeposit: boolean
   depositAmount: string | null
