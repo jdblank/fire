@@ -7,7 +7,11 @@
  * Format date in international style: "Sunday 30 August 2026"
  * For all-day events, use isAllDay: true to prevent timezone shift
  */
-export function formatDateInternational(date: Date | string, timezone?: string, isAllDay?: boolean): string {
+export function formatDateInternational(
+  date: Date | string,
+  timezone?: string,
+  isAllDay?: boolean
+): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date
 
   // For all-day events, display the UTC date to prevent timezone shift
@@ -35,7 +39,11 @@ export function formatDateInternational(date: Date | string, timezone?: string, 
  * Format date short: "30 Aug 2026"
  * For all-day events, use isAllDay: true to prevent timezone shift
  */
-export function formatDateShort(date: Date | string, timezone?: string, isAllDay?: boolean): string {
+export function formatDateShort(
+  date: Date | string,
+  timezone?: string,
+  isAllDay?: boolean
+): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date
 
   // For all-day events, display the UTC date to prevent timezone shift

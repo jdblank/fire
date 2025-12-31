@@ -27,12 +27,20 @@ export default async function AdminEventsPage() {
             <h1 className="text-3xl font-semibold text-gray-900 mb-2">Event Management</h1>
             <p className="text-gray-500">Create and manage events with flexible pricing</p>
           </div>
-          <Link
-            href="/admin/events/create"
-            className="bg-gray-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors"
-          >
-            Create Event
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/admin/events/import"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Import CSV
+            </Link>
+            <Link
+              href="/admin/events/create"
+              className="bg-gray-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            >
+              Create Event
+            </Link>
+          </div>
         </div>
 
         {/* Events Table */}

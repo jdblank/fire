@@ -125,7 +125,11 @@ export default async function EventsPage() {
                       <div className="flex items-center gap-2">
                         <span>📅</span>
                         <span>
-                          {formatDateShort(event.startDate, event.timezone || undefined, event.isAllDay)}
+                          {formatDateShort(
+                            event.startDate,
+                            event.timezone || undefined,
+                            event.isAllDay
+                          )}
                           {event.isAllDay && <span className="ml-1 text-gray-500">(All Day)</span>}
                         </span>
                       </div>
