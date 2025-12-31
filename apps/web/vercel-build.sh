@@ -8,4 +8,4 @@ echo "Building Web App..."
 # Go back to the web app folder
 cd ../../apps/web
 # Build
-next build
+next build --webpack
