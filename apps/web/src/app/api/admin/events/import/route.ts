@@ -16,7 +16,10 @@ export async function POST(request: Request) {
     const body = await request.json()
 
     if (!Array.isArray(body)) {
-      return NextResponse.json({ error: 'Invalid input: expected an array of events' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Invalid input: expected an array of events' },
+        { status: 400 }
+      )
     }
 
     const eventsToCreate: any[] = []
@@ -26,10 +29,13 @@ export async function POST(request: Request) {
       // Basic CSV row validation
       const csvRowResult = csvEventImportSchema.safeParse(item)
       if (!csvRowResult.success) {
-        return NextResponse.json({ 
-          error: 'Invalid CSV row format', 
-          details: csvRowResult.error.format() 
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            error: 'Invalid CSV row format',
+            details: csvRowResult.error.format(),
+          },
+          { status: 400 }
+        )
       }
 
       // Parse using import-utils
@@ -38,24 +44,33 @@ export async function POST(request: Request) {
       // Validate against DB schema
       const dbValidationResult = createEventSchema.safeParse(parsedRow)
       if (!dbValidationResult.success) {
-        return NextResponse.json({ 
-          error: 'Row failed database validation', 
-          details: dbValidationResult.error.format() 
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            error: 'Row failed database validation',
+            details: dbValidationResult.error.format(),
+          },
+          { status: 400 }
+        )
       }
 
       // Final normalization for database
       const finalData = dbValidationResult.data
       const startDate = new Date(finalData.startDate)
       if (isNaN(startDate.getTime())) {
-        return NextResponse.json({ error: `Invalid start date: ${finalData.startDate}` }, { status: 400 })
+        return NextResponse.json(
+          { error: `Invalid start date: ${finalData.startDate}` },
+          { status: 400 }
+        )
       }
 
       let endDate: Date | null = null
       if (finalData.endDate) {
         endDate = new Date(finalData.endDate)
         if (isNaN(endDate.getTime())) {
-          return NextResponse.json({ error: `Invalid end date: ${finalData.endDate}` }, { status: 400 })
+          return NextResponse.json(
+            { error: `Invalid end date: ${finalData.endDate}` },
+            { status: 400 }
+          )
         }
       }
 
@@ -86,18 +101,23 @@ export async function POST(request: Request) {
       createdCount++
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      count: createdCount 
-    }, { status: 201 })
-
+    return NextResponse.json(
+      {
+        success: true,
+        count: createdCount,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Error in bulk import:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({ 
-      error: 'Internal server error', 
-      message: errorMessage,
-      details: error instanceof Error ? { stack: error.stack, message: error.message } : error
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: errorMessage,
+        details: error instanceof Error ? { stack: error.stack, message: error.message } : error,
+      },
+      { status: 500 }
+    )
   }
 }

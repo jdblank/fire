@@ -47,7 +47,7 @@ describe('Bulk Event Import API Logic', () => {
       },
     ]
 
-    const eventsToCreate = payload.map(item => {
+    const eventsToCreate = payload.map((item) => {
       const parsed = parseEventImportRow(item as any)
       return {
         ...parsed,
@@ -74,9 +74,9 @@ describe('Bulk Event Import API Logic', () => {
     })
 
     expect(events).toHaveLength(2)
-    
-    const allDayEvent = events.find(e => e.title === 'All Day Event') as any
-    const timedEvent = events.find(e => e.title === 'Timed Event') as any
+
+    const allDayEvent = events.find((e) => e.title === 'All Day Event') as any
+    const timedEvent = events.find((e) => e.title === 'Timed Event') as any
 
     expect(allDayEvent?.isAllDay).toBe(true)
     expect(allDayEvent?.startDate.getUTCHours()).toBe(0)
@@ -84,6 +84,6 @@ describe('Bulk Event Import API Logic', () => {
     expect(timedEvent?.isAllDay).toBe(false)
     expect(timedEvent?.startDate.getUTCHours()).toBe(14)
 
-    events.forEach(e => createdEventIds.push(e.id))
+    events.forEach((e) => createdEventIds.push(e.id))
   })
 })

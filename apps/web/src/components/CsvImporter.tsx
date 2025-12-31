@@ -162,7 +162,9 @@ export function CsvImporter({
             {/* If simple success response */}
             {result.success && result.count !== undefined && (
               <div className="bg-white p-4 rounded border border-green-300">
-                <p className="text-green-800 font-medium">Successfully imported {result.count} {entityName.toLowerCase()}.</p>
+                <p className="text-green-800 font-medium">
+                  Successfully imported {result.count} {entityName.toLowerCase()}.
+                </p>
               </div>
             )}
 
@@ -173,7 +175,9 @@ export function CsvImporter({
                 <div className="bg-white rounded border border-green-300 max-h-60 overflow-y-auto">
                   {result.results.created.map((item: any, i: number) => (
                     <div key={i} className="px-3 py-2 border-b border-gray-100 last:border-0">
-                      <span className="text-sm text-gray-900">{item.name || item.title || item.email}</span>
+                      <span className="text-sm text-gray-900">
+                        {item.name || item.title || item.email}
+                      </span>
                     </div>
                   ))}
                 </div>

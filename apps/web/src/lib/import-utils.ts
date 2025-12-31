@@ -2,18 +2,18 @@ import { CsvEventImport } from '@fire/types'
 
 /**
  * Parses a single row from a CSV import and prepares it for the database.
- * 
- * Rule 1: If startDate is "Date Only" (YYYY-MM-DD, length 10), 
+ *
+ * Rule 1: If startDate is "Date Only" (YYYY-MM-DD, length 10),
  * set isAllDay: true and normalize time to midnight.
- * 
+ *
  * Rule 2: If it has a time component (e.g., ISO string or YYYY-MM-DD HH:mm),
  * set isAllDay: false.
  */
 export function parseEventImportRow(row: CsvEventImport) {
   const { startDate, endDate, ...rest } = row
-  
+
   const isDateOnly = startDate.length === 10 && /^\d{4}-\d{2}-\d{2}$/.test(startDate)
-  
+
   let normalizedStartDate: string
   let isAllDay: boolean
 

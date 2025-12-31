@@ -20,6 +20,8 @@ describe('parseEventImportRow', () => {
     }
     const result = parseEventImportRow(input)
     expect(result.isAllDay).toBe(false)
-    expect(new Date(result.startDate).toISOString()).toBe(new Date('2025-12-25 14:30').toISOString())
+    expect(new Date(result.startDate).toISOString()).toBe(
+      new Date('2025-12-25 14:30').toISOString()
+    )
   })
 })
