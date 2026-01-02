@@ -1,11 +1,11 @@
 import 'dotenv/config'
 import fetch from 'node-fetch'
 
-const LOGTO_ENDPOINT = process.env.DEV_LOGTO_ENDPOINT
-  ? process.env.DEV_LOGTO_ENDPOINT.replace(/\/$/, '')
+const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT
+  ? process.env.LOGTO_ENDPOINT.replace(/\/$/, '')
   : undefined
-const APP_ID = process.env.DEV_M2M_ID
-const APP_SECRET = process.env.DEV_M2M_SECRET
+const APP_ID = process.env.LOGTO_M2M_APP_ID
+const APP_SECRET = process.env.LOGTO_M2M_APP_SECRET
 
 const ROLES_TO_SEED = [
   { name: 'admin', description: 'Full system administrator rights' },
@@ -16,7 +16,7 @@ const ROLES_TO_SEED = [
 async function getAccessToken() {
   if (!LOGTO_ENDPOINT || !APP_ID || !APP_SECRET) {
     throw new Error(
-      'Missing environment variables: DEV_LOGTO_ENDPOINT, DEV_M2M_ID, or DEV_M2M_SECRET'
+      'Missing environment variables: LOGTO_ENDPOINT, LOGTO_M2M_APP_ID, or LOGTO_M2M_APP_SECRET'
     )
   }
 
