@@ -75,7 +75,7 @@ describe('LogTo API Utilities', () => {
   describe('Role Mapping - Our Format to LogTo Format', () => {
     const ROLE_MAP = {
       USER: 'user',
-      MODERATOR: 'moderator',
+      EDITOR: 'editor',
       ADMIN: 'admin',
     }
 
@@ -83,8 +83,8 @@ describe('LogTo API Utilities', () => {
       expect(ROLE_MAP.USER).toBe('user')
     })
 
-    it('should map MODERATOR to moderator', () => {
-      expect(ROLE_MAP.MODERATOR).toBe('moderator')
+    it('should map EDITOR to editor', () => {
+      expect(ROLE_MAP.EDITOR).toBe('editor')
     })
 
     it('should map ADMIN to admin', () => {
@@ -110,7 +110,7 @@ describe('LogTo API Utilities', () => {
   describe('Role Mapping - LogTo Format to Our Format', () => {
     const ROLE_MAP_REVERSE = {
       user: 'USER',
-      moderator: 'MODERATOR',
+      editor: 'EDITOR',
       admin: 'ADMIN',
     }
 
@@ -118,8 +118,8 @@ describe('LogTo API Utilities', () => {
       expect(ROLE_MAP_REVERSE.user).toBe('USER')
     })
 
-    it('should map moderator to MODERATOR', () => {
-      expect(ROLE_MAP_REVERSE.moderator).toBe('MODERATOR')
+    it('should map editor to EDITOR', () => {
+      expect(ROLE_MAP_REVERSE.editor).toBe('EDITOR')
     })
 
     it('should map admin to ADMIN', () => {
@@ -144,14 +144,14 @@ describe('LogTo API Utilities', () => {
 
   describe('Role Validation', () => {
     it('should validate role enum values', () => {
-      const validRoles = ['USER', 'MODERATOR', 'ADMIN']
+      const validRoles = ['USER', 'EDITOR', 'ADMIN']
       const testRole = 'ADMIN'
 
       expect(validRoles).toContain(testRole)
     })
 
     it('should reject invalid role values', () => {
-      const validRoles = ['USER', 'MODERATOR', 'ADMIN']
+      const validRoles = ['USER', 'EDITOR', 'ADMIN']
       const invalidRoles = ['SUPERADMIN', 'GUEST', 'OWNER', 'ROOT']
 
       invalidRoles.forEach((role) => {
@@ -160,7 +160,7 @@ describe('LogTo API Utilities', () => {
     })
 
     it('should be case-sensitive in validation', () => {
-      const validRoles = ['USER', 'MODERATOR', 'ADMIN']
+      const validRoles = ['USER', 'EDITOR', 'ADMIN']
 
       expect(validRoles).not.toContain('user')
       expect(validRoles).not.toContain('admin')
@@ -283,7 +283,7 @@ describe('LogTo API Utilities', () => {
     it('should validate role exists before assignment', () => {
       const allRoles = [
         { id: '1', name: 'user' },
-        { id: '2', name: 'moderator' },
+        { id: '2', name: 'editor' },
         { id: '3', name: 'admin' },
       ]
 

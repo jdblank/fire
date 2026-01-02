@@ -6,13 +6,13 @@ import { hasRole } from '@/lib/utils'
 
 const roleSchema = z.object({
   userId: z.string(),
-  role: z.enum(['USER', 'MODERATOR', 'ADMIN']),
+  role: z.enum(['USER', 'EDITOR', 'ADMIN']),
 })
 
 // Map our role enum to LogTo role names (lowercase)
 const ROLE_MAP = {
   USER: 'user',
-  MODERATOR: 'moderator',
+  EDITOR: 'editor',
   ADMIN: 'admin',
 }
 

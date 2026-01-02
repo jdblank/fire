@@ -36,14 +36,14 @@ describe('LogTo Role Management API', () => {
     it('should return role in expected format', () => {
       // Expected response structure
       type RoleResponse = {
-        role: 'USER' | 'MODERATOR' | 'ADMIN'
+        role: 'USER' | 'EDITOR' | 'ADMIN'
       }
 
       const mockResponse: RoleResponse = {
         role: 'USER',
       }
 
-      expect(mockResponse.role).toMatch(/^(USER|MODERATOR|ADMIN)$/)
+      expect(mockResponse.role).toMatch(/^(USER|EDITOR|ADMIN)$/)
     })
 
     it('should return USER as default when no role assigned', () => {
@@ -72,15 +72,15 @@ describe('LogTo Role Management API', () => {
       }
 
       expect(validRequest.userId).toBeDefined()
-      expect(validRequest.role).toMatch(/^(USER|MODERATOR|ADMIN)$/)
+      expect(validRequest.role).toMatch(/^(USER|EDITOR|ADMIN)$/)
     })
 
     it('should validate role enum', () => {
-      const validRoles = ['USER', 'MODERATOR', 'ADMIN']
+      const validRoles = ['USER', 'EDITOR', 'ADMIN']
       const invalidRole = 'SUPERADMIN'
 
       expect(validRoles).toContain('USER')
-      expect(validRoles).toContain('MODERATOR')
+      expect(validRoles).toContain('EDITOR')
       expect(validRoles).toContain('ADMIN')
       expect(validRoles).not.toContain(invalidRole)
     })
@@ -100,12 +100,12 @@ describe('LogTo Role Management API', () => {
       // Our roles map to LogTo roles (lowercase)
       const ROLE_MAP = {
         USER: 'user',
-        MODERATOR: 'moderator',
+        EDITOR: 'editor',
         ADMIN: 'admin',
       }
 
       expect(ROLE_MAP.USER).toBe('user')
-      expect(ROLE_MAP.MODERATOR).toBe('moderator')
+      expect(ROLE_MAP.EDITOR).toBe('editor')
       expect(ROLE_MAP.ADMIN).toBe('admin')
     })
 
@@ -153,24 +153,24 @@ describe('LogTo Role Management API', () => {
     it('should correctly map between our roles and LogTo roles', () => {
       const ROLE_MAP = {
         USER: 'user',
-        MODERATOR: 'moderator',
+        EDITOR: 'editor',
         ADMIN: 'admin',
       }
 
       const ROLE_MAP_REVERSE = {
         user: 'USER',
-        moderator: 'MODERATOR',
+        editor: 'EDITOR',
         admin: 'ADMIN',
       }
 
       // Forward mapping
       expect(ROLE_MAP['USER']).toBe('user')
-      expect(ROLE_MAP['MODERATOR']).toBe('moderator')
+      expect(ROLE_MAP['EDITOR']).toBe('editor')
       expect(ROLE_MAP['ADMIN']).toBe('admin')
 
       // Reverse mapping
       expect(ROLE_MAP_REVERSE['user']).toBe('USER')
-      expect(ROLE_MAP_REVERSE['moderator']).toBe('MODERATOR')
+      expect(ROLE_MAP_REVERSE['editor']).toBe('EDITOR')
       expect(ROLE_MAP_REVERSE['admin']).toBe('ADMIN')
     })
   })

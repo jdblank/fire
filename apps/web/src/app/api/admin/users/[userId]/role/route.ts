@@ -28,7 +28,7 @@ async function getM2MToken() {
 // Map LogTo role names (lowercase) to our role enum
 const ROLE_MAP_REVERSE = {
   user: 'USER',
-  moderator: 'MODERATOR',
+  editor: 'EDITOR',
   admin: 'ADMIN',
 }
 

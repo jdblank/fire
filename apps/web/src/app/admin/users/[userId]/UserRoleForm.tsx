@@ -48,7 +48,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
           disabled={loading}
         >
           <option value="USER">User</option>
-          <option value="MODERATOR">Moderator</option>
+          <option value="EDITOR">Editor</option>
           <option value="ADMIN">Admin</option>
         </select>
       </div>
@@ -63,7 +63,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
               <li>Access community features</li>
             </>
           )}
-          {role === 'MODERATOR' && (
+          {role === 'EDITOR' && (
             <>
               <li>All user permissions</li>
               <li>Moderate posts and comments</li>
@@ -72,7 +72,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
           )}
           {role === 'ADMIN' && (
             <>
-              <li>All moderator permissions</li>
+              <li>All editor permissions</li>
               <li>Manage user roles</li>
               <li>Access admin panel</li>
               <li>Full platform control</li>

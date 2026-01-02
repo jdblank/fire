@@ -128,7 +128,7 @@ export function UsersTable() {
   const getRoleBadge = (role: string) => {
     const styles = {
       ADMIN: 'bg-purple-100 text-purple-800',
-      MODERATOR: 'bg-blue-100 text-blue-800',
+      EDITOR: 'bg-blue-100 text-blue-800',
       USER: 'bg-gray-100 text-gray-800',
     }
 

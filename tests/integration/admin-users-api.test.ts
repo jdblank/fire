@@ -72,10 +72,10 @@ describe('Admin Users API - Role Field Validation', () => {
       const invalidUpdateData = {
         firstName: 'Updated',
         // @ts-expect-error - role should not be accepted
-        role: 'MODERATOR',
+        role: 'EDITOR',
       }
 
-      expect(invalidUpdateData.role).toBe('MODERATOR')
+      expect(invalidUpdateData.role).toBe('EDITOR')
     })
   })
 

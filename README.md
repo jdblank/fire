@@ -19,7 +19,7 @@ A modern, lightweight social community platform with event management, user prof
 ## Features
 
 - 🔐 **Authentication**: LogTo integration with OIDC
-- 🛡️ **Role-Based Access Control (RBAC)**: Three-tier role system (User, Moderator, Admin) managed in LogTo with admin UI for role assignment
+- 🛡️ **Role-Based Access Control (RBAC)**: Three-tier role system (User, Editor, Admin) managed in LogTo with admin UI for role assignment
 - 👤 **User Profiles**: Customizable profiles with avatars and location search
 - 🗺️ **Location Search**: Google Places integration with city-specific search for profiles and unrestricted search for event locations
 - 📰 **News Feed**: Social posting and interactions

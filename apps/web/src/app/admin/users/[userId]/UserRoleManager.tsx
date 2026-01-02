@@ -7,7 +7,7 @@ interface UserRoleManagerProps {
   logtoId: string | null
 }
 
-type Role = 'USER' | 'MODERATOR' | 'ADMIN'
+type Role = 'USER' | 'EDITOR' | 'ADMIN'
 
 export function UserRoleManager({ userId, logtoId }: UserRoleManagerProps) {
   const [currentRole, setCurrentRole] = useState<Role | null>(null)
@@ -117,7 +117,7 @@ export function UserRoleManager({ userId, logtoId }: UserRoleManagerProps) {
             disabled={saving}
           >
             <option value="USER">User</option>
-            <option value="MODERATOR">Moderator</option>
+            <option value="EDITOR">Editor</option>
             <option value="ADMIN">Admin</option>
           </select>
         </div>

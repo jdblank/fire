@@ -127,7 +127,7 @@ Roles are now managed entirely in Logto, not in the application database. This p
 
 **Architecture:**
 
-- User roles (USER, MODERATOR, ADMIN) are stored in Logto
+- User roles (USER, EDITOR, ADMIN) are stored in Logto
 - Session includes roles from Logto via JWT claims
 - `hasRole()` utility function checks user.roles array
 - Database no longer contains role field (removed via migration)
@@ -166,8 +166,8 @@ if (hasRole(session.user, 'admin')) {
 }
 
 // Check for any role
-if (hasRole(session.user, 'moderator')) {
-  // Moderator logic
+if (hasRole(session.user, 'editor')) {
+  // Editor logic
 }
 ```
 
