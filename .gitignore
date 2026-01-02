@@ -44,7 +44,7 @@ yarn-error.log*
 next-env.d.ts
 
 # Prisma
-prisma/migrations/**/migration.sql
+# (migrations should be committed to version control)
 
 # Local secrets and overrides
 .env.local
