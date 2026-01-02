@@ -159,10 +159,10 @@ async function main() {
 
     const userRole = await createRole(token, 'user', 'Regular platform user with basic access')
 
-    const moderatorRole = await createRole(
+    const editorRole = await createRole(
       token,
-      'moderator',
-      'Content moderator with elevated permissions'
+      'editor',
+      'Content editor with elevated permissions'
     )
 
     const adminRole = await createRole(token, 'admin', 'Platform administrator with full access')
@@ -180,7 +180,7 @@ async function main() {
     console.log('📊 Setup Summary\n' + '='.repeat(50))
     console.log('✅ Roles created:')
     console.log(`   - user (ID: ${userRole.id})`)
-    console.log(`   - moderator (ID: ${moderatorRole.id})`)
+    console.log(`   - editor (ID: ${editorRole.id})`)
     console.log(`   - admin (ID: ${adminRole.id})`)
     console.log('')
 
