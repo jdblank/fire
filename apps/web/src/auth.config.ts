@@ -2,23 +2,35 @@
 const LOGTO_ISSUER = process.env.LOGTO_ISSUER || 'http://localhost:3001/oidc'
 const LOGTO_APP_ID = process.env.LOGTO_APP_ID
 const LOGTO_APP_SECRET = process.env.LOGTO_APP_SECRET
+const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
+const BROWSER_ENDPOINT = 'http://localhost:3001'
 
 function LogtoProvider(options: any = {}): any {
   return {
     id: options.id || 'logto',
     name: options.name || 'Fire',
     type: 'oidc',
-    // In NextAuth v5, providing just the issuer enables automatic OIDC discovery
+    // Specify issuer for validation
     issuer: LOGTO_ISSUER,
     clientId: LOGTO_APP_ID,
     clientSecret: LOGTO_APP_SECRET,
     checks: ['pkce', 'state'],
+    // LogTo uses ES384 for JWT signing
+    idToken: true,
+    client: {
+      id_token_signed_response_alg: 'ES384',
+    },
+    // Manually specify endpoints to handle Docker networking
+    // Browser uses localhost, server uses docker service name
     authorization: {
+      url: `${BROWSER_ENDPOINT}/oidc/auth`,
       params: {
         scope: 'openid profile email roles',
         ...(options.authParams || {}),
       },
     },
+    token: `${LOGTO_ENDPOINT}/oidc/token`,
+    userinfo: `${LOGTO_ENDPOINT}/oidc/me`,
     profile(profile: any) {
       return {
         id: profile.sub,
