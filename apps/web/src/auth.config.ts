@@ -3,7 +3,9 @@ const LOGTO_ISSUER = process.env.LOGTO_ISSUER || 'http://localhost:3001/oidc'
 const LOGTO_APP_ID = process.env.LOGTO_APP_ID
 const LOGTO_APP_SECRET = process.env.LOGTO_APP_SECRET
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
-const BROWSER_ENDPOINT = 'http://localhost:3001'
+// Browser endpoint should use NEXT_PUBLIC var for client-side, or derive from LOGTO_ENDPOINT
+const BROWSER_ENDPOINT =
+  process.env.NEXT_PUBLIC_LOGTO_ENDPOINT || process.env.LOGTO_ENDPOINT || 'http://localhost:3001'
 
 function LogtoProvider(options: any = {}): any {
   return {
