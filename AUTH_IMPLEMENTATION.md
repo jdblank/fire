@@ -117,6 +117,70 @@ LOGTO_M2M_APP_SECRET: <your-m2m-app-secret-from-logto>
 5. **`apps/web/src/components/Providers.tsx`** - Session provider
 6. **`apps/web/src/types/next-auth.d.ts`** - TypeScript definitions
 
+## Role Management
+
+**Status:** ✅ Complete (January 2026)
+
+### Implementation
+
+Roles are now managed entirely in Logto, not in the application database. This provides better security and centralized role management.
+
+**Architecture:**
+
+- User roles (USER, MODERATOR, ADMIN) are stored in Logto
+- Session includes roles from Logto via JWT claims
+- `hasRole()` utility function checks user.roles array
+- Database no longer contains role field (removed via migration)
+
+**Components:**
+
+- **`UserRoleManager`** - Client component for managing user roles (admin UI)
+- **GET `/api/admin/users/[userId]/role`** - Fetches user's current role from Logto
+- **POST `/api/admin/users/role`** - Updates user's role in Logto
+
+**Role Assignment Flow:**
+
+1. Admin selects new role in UserRoleManager
+2. API fetches all Logto roles
+3. API removes user's current roles
+4. API assigns new role by ID
+5. User must log out and back in for role to take effect
+
+**Important Notes:**
+
+- Roles must exist in Logto (run `npm run logto:setup-roles` if needed)
+- Admins cannot change their own role
+- Role changes require re-authentication to take effect
+- Roles are cached in JWT session token
+
+### Role-Based Authorization
+
+Use the `hasRole()` utility for all authorization checks:
+
+```typescript
+import { hasRole } from '@/lib/utils'
+
+// Check if user has admin role
+if (hasRole(session.user, 'admin')) {
+  // Admin-only logic
+}
+
+// Check for any role
+if (hasRole(session.user, 'moderator')) {
+  // Moderator logic
+}
+```
+
+**Never use direct property access:**
+
+```typescript
+// ❌ WRONG - Database role field no longer exists
+if (session.user.role === 'ADMIN') { ... }
+
+// ✅ CORRECT - Use hasRole utility
+if (hasRole(session.user, 'admin')) { ... }
+```
+
 ## How It Works
 
 ### User Sign-In Flow

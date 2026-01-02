@@ -18,10 +18,12 @@ A modern, lightweight social community platform with event management, user prof
 
 ## Features
 
-- 🔐 **Authentication**: LogTo integration with OIDC (Roles are managed via the Logto Console)
-- 👤 **User Profiles**: Customizable profiles with avatars
+- 🔐 **Authentication**: LogTo integration with OIDC
+- 🛡️ **Role-Based Access Control (RBAC)**: Three-tier role system (User, Moderator, Admin) managed in LogTo with admin UI for role assignment
+- 👤 **User Profiles**: Customizable profiles with avatars and location search
+- 🗺️ **Location Search**: Google Places integration with city-specific search for profiles and unrestricted search for event locations
 - 📰 **News Feed**: Social posting and interactions
-- 📅 **Event Management**: Free and paid event registration
+- 📅 **Event Management**: Free and paid event registration with flexible location types
 - 📚 **Wiki**: Outline-based documentation platform
 - 🐳 **Docker-First**: Complete development environment in containers
 

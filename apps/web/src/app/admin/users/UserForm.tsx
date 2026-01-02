@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { LocationAutocomplete, type LocationData } from '@/components/LocationAutocomplete'
 
 interface UserFormProps {
   userId?: string
@@ -33,11 +34,33 @@ export function UserForm({ userId, initialData }: UserFormProps) {
     countryCode: initialData?.countryCode || '+1',
     mobilePhone: initialData?.mobilePhone || '',
     hometown: initialData?.hometown || '',
+    hometownLat: initialData?.hometownLat || null,
+    hometownLng: initialData?.hometownLng || null,
+    hometownPlaceId: initialData?.hometownPlaceId || null,
     referredById: initialData?.referredById || '',
-    role: initialData?.role || 'USER',
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const handleHometownChange = (location: LocationData | null) => {
+    if (location) {
+      setFormData({
+        ...formData,
+        hometown: location.address,
+        hometownLat: location.lat,
+        hometownLng: location.lng,
+        hometownPlaceId: location.placeId,
+      })
+    } else {
+      setFormData({
+        ...formData,
+        hometown: '',
+        hometownLat: null,
+        hometownLng: null,
+        hometownPlaceId: null,
+      })
+    }
+  }
 
   // Search for referral users
   useEffect(() => {
@@ -92,6 +115,10 @@ export function UserForm({ userId, initialData }: UserFormProps) {
           ? `${formData.countryCode}-${formData.mobilePhone}`
           : null,
         dateOfBirth: formData.dateOfBirth || null,
+        hometown: formData.hometown || null,
+        hometownLat: formData.hometownLat,
+        hometownLng: formData.hometownLng,
+        hometownPlaceId: formData.hometownPlaceId,
         referredById: formData.referredById || null,
       }
 
@@ -246,14 +273,19 @@ export function UserForm({ userId, initialData }: UserFormProps) {
         <label htmlFor="hometown" className="block text-sm font-medium text-gray-700 mb-2">
           Hometown
         </label>
-        <input
-          id="hometown"
-          type="text"
+        <LocationAutocomplete
           value={formData.hometown}
-          onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-          placeholder="City, State"
+          onChange={handleHometownChange}
+          placeholder="Enter hometown..."
+          error={errors.hometown}
+          types={['(cities)']}
         />
+        <p className="mt-1 text-xs text-gray-500">Search for a city or town using Google Places</p>
+        {formData.hometownLat && formData.hometownLng && (
+          <p className="mt-1 text-xs text-gray-400">
+            Coordinates: {formData.hometownLat.toFixed(6)}, {formData.hometownLng.toFixed(6)}
+          </p>
+        )}
       </div>
 
       {/* Referred By */}
@@ -301,23 +333,6 @@ export function UserForm({ userId, initialData }: UserFormProps) {
             Clear selection
           </button>
         )}
-      </div>
-
-      {/* Role */}
-      <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-          Role
-        </label>
-        <select
-          id="role"
-          value={formData.role}
-          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >
-          <option value="USER">User</option>
-          <option value="MODERATOR">Moderator</option>
-          <option value="ADMIN">Admin</option>
-        </select>
       </div>
 
       {/* Actions */}

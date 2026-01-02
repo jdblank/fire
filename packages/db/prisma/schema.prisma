@@ -32,7 +32,10 @@ model User {
   mobilePhone   String?   // Full phone number with country code
   countryCode   String?   // e.g., "+1", "+44"
   hometown      String?
-  
+  hometownLat   Float?
+  hometownLng   Float?
+  hometownPlaceId String?
+
   // Account management
   accountStatus AccountStatus @default(PENDING_INVITE)
   
@@ -69,6 +72,7 @@ model User {
 }
 
 // Note: Passwords are stored in LogTo, not our database
+// Note: User roles are managed in LogTo, not our database
 
 // Account status enum
 enum AccountStatus {
@@ -209,6 +213,9 @@ model Event {
   
   // Location
   location    String?
+  locationLat Float?
+  locationLng Float?
+  locationPlaceId String?
   isOnline    Boolean  @default(false)
   
   // Event type and pricing

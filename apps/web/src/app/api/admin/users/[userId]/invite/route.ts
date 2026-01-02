@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // POST /api/admin/users/[userId]/invite - Generate and send invite
 export async function POST(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
@@ -8,7 +9,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ us
     const { userId } = await params
     const session = await auth()
 
-    if (!session || session.user.role !== 'ADMIN') {
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

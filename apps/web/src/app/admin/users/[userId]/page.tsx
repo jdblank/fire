@@ -4,6 +4,7 @@ import { Header } from '@/components/Header'
 import { UserForm } from '../UserForm'
 import { RegisterUserForm } from './RegisterUserForm'
 import { ClearMfaButton } from './ClearMfaButton'
+import { UserRoleManager } from './UserRoleManager'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/pricing'
@@ -110,7 +111,26 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
         </div>
 
         {/* User Profile Form */}
-        <UserForm userId={user.id} initialData={user} />
+        <UserForm
+          userId={user.id}
+          initialData={{
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            displayName: user.displayName,
+            dateOfBirth: user.dateOfBirth,
+            mobilePhone: user.mobilePhone,
+            countryCode: user.countryCode,
+            hometown: user.hometown,
+            hometownLat: user.hometownLat,
+            hometownLng: user.hometownLng,
+            hometownPlaceId: user.hometownPlaceId,
+            referredById: user.referredById,
+          }}
+        />
+
+        {/* User Role Management */}
+        <UserRoleManager userId={user.id} logtoId={user.logtoId} />
 
         {/* Register User for Event Form */}
         <RegisterUserForm user={{ id: user.id, dateOfBirth: user.dateOfBirth }} />
