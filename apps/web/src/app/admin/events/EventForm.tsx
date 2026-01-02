@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { searchCities, type City } from '@/lib/cities'
+import { LocationAutocomplete, type LocationData } from '@/components/LocationAutocomplete'
 
 interface EventFormProps {
   eventId?: string
@@ -13,9 +13,6 @@ interface EventFormProps {
 export function EventForm({ eventId, initialData }: EventFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [citySearch, setCitySearch] = useState(initialData?.location || '')
-  const [cityResults, setCityResults] = useState<City[]>([])
-  const [showCityResults, setShowCityResults] = useState(false)
 
   // Helper to format date for input fields
   const formatDateForInput = (date: string | Date | undefined, isAllDay: boolean): string => {
@@ -46,6 +43,9 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
     startDate: formatDateForInput(initialData?.startDate, initialData?.isAllDay || false),
     endDate: formatDateForInput(initialData?.endDate, initialData?.isAllDay || false),
     location: initialData?.location || '',
+    locationLat: initialData?.locationLat || null,
+    locationLng: initialData?.locationLng || null,
+    locationPlaceId: initialData?.locationPlaceId || null,
     timezone: initialData?.timezone || 'America/New_York',
     isOnline: initialData?.isOnline || false,
     eventType: initialData?.eventType || 'FREE',
@@ -57,28 +57,24 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleCitySearch = (query: string) => {
-    setCitySearch(query)
-    setFormData({ ...formData, location: query })
-
-    if (query.length >= 2) {
-      const results = searchCities(query)
-      setCityResults(results)
-      setShowCityResults(true)
+  const handleLocationChange = (location: LocationData | null) => {
+    if (location) {
+      setFormData({
+        ...formData,
+        location: location.address,
+        locationLat: location.lat,
+        locationLng: location.lng,
+        locationPlaceId: location.placeId,
+      })
     } else {
-      setCityResults([])
-      setShowCityResults(false)
+      setFormData({
+        ...formData,
+        location: '',
+        locationLat: null,
+        locationLng: null,
+        locationPlaceId: null,
+      })
     }
-  }
-
-  const selectCity = (city: City) => {
-    setCitySearch(city.displayName)
-    setFormData({
-      ...formData,
-      location: city.displayName,
-      timezone: city.timezone,
-    })
-    setShowCityResults(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,6 +102,9 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
         startDate: formData.startDate,
         endDate: formData.endDate || null,
         location: formData.location || null,
+        locationLat: formData.locationLat,
+        locationLng: formData.locationLng,
+        locationPlaceId: formData.locationPlaceId,
         timezone: formData.timezone,
         isOnline: formData.isOnline,
         eventType: formData.eventType,
@@ -270,39 +269,24 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
         </div>
 
         {/* Location */}
-        <div className="relative">
+        <div>
           <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
             Location
           </label>
-          <input
-            id="location"
-            type="text"
-            value={citySearch}
-            onChange={(e) => handleCitySearch(e.target.value)}
-            onFocus={() => citySearch.length >= 2 && setShowCityResults(true)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-            placeholder="Search city..."
-            autoComplete="off"
+          <LocationAutocomplete
+            value={formData.location}
+            onChange={handleLocationChange}
+            placeholder="Enter event location..."
+            error={errors.location}
           />
-
-          {/* City Results Dropdown */}
-          {showCityResults && cityResults.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              {cityResults.map((city, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => selectCity(city)}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                >
-                  <div className="font-medium text-gray-900">{city.displayName}</div>
-                  <div className="text-xs text-gray-500">{city.timezone}</div>
-                </button>
-              ))}
-            </div>
+          <p className="mt-1 text-xs text-gray-500">
+            Search for a city, address, or venue using Google Places
+          </p>
+          {formData.locationLat && formData.locationLng && (
+            <p className="mt-1 text-xs text-gray-400">
+              Coordinates: {formData.locationLat.toFixed(6)}, {formData.locationLng.toFixed(6)}
+            </p>
           )}
-
-          <p className="mt-1 text-xs text-gray-500">Timezone: {formData.timezone}</p>
         </div>
 
         {/* Online Event */}
