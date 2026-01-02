@@ -43,6 +43,15 @@ Fire is a social community platform built with a microservices-inspired architec
 - Server-side rendering
 - Business logic
 
+**Key Features**:
+
+- Role-Based Access Control (RBAC) with LogTo integration
+- Google Places API integration for location search
+- Admin panel for user and role management
+- Event management system
+- Social news feed
+- User profiles with avatars and location data
+
 **Technology**: Next.js 14, React, TypeScript, Prisma
 
 **Databases Used**:
@@ -208,21 +217,90 @@ userinfo: 'http://logto:3001/oidc/me'
 
 **Result**: Production uses OIDC discovery, dev uses manual endpoints.
 
-### Role-Based Access Control (RBAC)
+### Authorization Architecture (RBAC)
+
+Fire implements a three-tier Role-Based Access Control system using LogTo as the single source of truth for role assignments.
+
+**Architecture Overview**:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    LogTo Identity                        │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │  User: user@example.com                          │   │
+│  │  Roles: ["admin"]                                │   │
+│  │  LogTo ID: abc123xyz                             │   │
+│  └─────────────────────────────────────────────────┘   │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ↓ (JWT Token with roles claim)
+         ┌───────────────────────┐
+         │   NextAuth Session    │
+         │                       │
+         │  user: {              │
+         │    id: "user-123"     │
+         │    email: "user@..."  │
+         │    roles: ["admin"]   │  ← From LogTo
+         │  }                    │
+         └───────────────────────┘
+                     │
+                     ↓ (hasRole() utility)
+         ┌───────────────────────┐
+         │  Authorization Check  │
+         │                       │
+         │  hasRole(user, 'admin')  │
+         │  → true                  │
+         └───────────────────────┘
+```
 
 **Roles Defined in LogTo**:
 
-- `admin`: Full system access
-- `editor`: Create/edit content, no user management
-- `user`: Standard user permissions
+- `admin`: Full system access, user management, role assignment
+- `editor`: Create/edit content, moderate posts, manage events
+- `user`: Standard user permissions (default)
 
-**Flow**:
+**Key Principles**:
 
-1. User assigned role in LogTo admin console
-2. Role included in OIDC `roles` claim
+1. **LogTo is the Single Source of Truth** - Roles stored in LogTo, not in Fire database
+2. **Session-Based Authorization** - Roles included in JWT session token, cached for performance
+3. **hasRole() Utility Function** - All authorization checks use `hasRole(user, 'admin')` helper
+
+**Authorization Flow**:
+
+1. User assigned role in LogTo admin console or via Fire admin UI
+2. Role included in OIDC `roles` claim during authentication
 3. NextAuth maps role to session via `profile()` function
-4. Session includes `user.roles` array
-5. Middleware/API routes check roles for authorization
+4. Session includes `user.roles` array (cached)
+5. API routes and components check roles using `hasRole()` utility
+6. Re-authentication required after role changes
+
+**Implementation Files**:
+
+- **Core Utility**: `apps/web/src/lib/utils.ts` - `hasRole()` function
+- **Auth Config**: `apps/web/src/auth.config.ts` - NextAuth configuration with roles in JWT
+- **Role Management UI**: `apps/web/src/app/admin/users/[userId]/UserRoleManager.tsx`
+- **API Endpoints**:
+  - `apps/web/src/app/api/admin/users/[userId]/role/route.ts` - Get user role
+  - `apps/web/src/app/api/admin/users/role/route.ts` - Update user role
+- **Documentation**: `ROLE_MANAGEMENT.md` - Comprehensive role management guide
+
+**Example Usage**:
+
+```typescript
+import { hasRole } from '@/lib/utils'
+import { auth } from '@/lib/auth'
+
+// Server-side check
+const session = await auth()
+if (!hasRole(session?.user, 'admin')) {
+  return Response.json({ error: 'Forbidden' }, { status: 403 })
+}
+
+// Client-side check (UI only)
+if (hasRole(session?.user, 'editor')) {
+  // Show editor UI
+}
+```
 
 ## File Upload Flow
 

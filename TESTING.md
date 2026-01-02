@@ -124,6 +124,123 @@ Tests run automatically in GitHub Actions:
 - On merge to main: Full test suite
 - Nightly: Performance + load tests
 
+## Component Testing
+
+### Running Component Tests
+
+Component tests validate React components in isolation using Vitest and React Testing Library:
+
+```bash
+# From the web app directory
+cd apps/web
+npm run test
+
+# Watch mode for development
+npm run test:watch
+
+# With coverage
+npm run test:coverage
+```
+
+### React Testing Library Patterns
+
+**Basic Component Rendering:**
+
+```typescript
+import { render, screen } from '@testing-library/react'
+import { MyComponent } from '../MyComponent'
+
+test('renders component', () => {
+  render(<MyComponent />)
+  expect(screen.getByText('Hello')).toBeInTheDocument()
+})
+```
+
+**User Interactions:**
+
+```typescript
+import { fireEvent } from '@testing-library/react'
+
+test('handles button click', () => {
+  render(<MyButton onClick={mockFn} />)
+  const button = screen.getByRole('button')
+  fireEvent.click(button)
+  expect(mockFn).toHaveBeenCalled()
+})
+```
+
+**Async Operations:**
+
+```typescript
+import { waitFor } from '@testing-library/react'
+
+test('loads data', async () => {
+  render(<DataComponent />)
+  await waitFor(() => {
+    expect(screen.getByText('Loaded')).toBeInTheDocument()
+  })
+})
+```
+
+### Mocking API Calls
+
+**Global fetch mock:**
+
+```typescript
+import { vi } from 'vitest'
+
+// Mock fetch globally
+global.fetch = vi.fn()
+
+beforeEach(() => {
+  vi.clearAllMocks()
+})
+
+test('fetches data', async () => {
+  vi.mocked(fetch).mockResolvedValueOnce({
+    ok: true,
+    json: async () => ({ data: 'test' }),
+  } as Response)
+
+  render(<Component />)
+  await waitFor(() => {
+    expect(fetch).toHaveBeenCalledWith('/api/endpoint')
+  })
+})
+```
+
+**Mocking External Libraries:**
+
+```typescript
+// Mock use-places-autocomplete
+vi.mock('use-places-autocomplete', () => ({
+  default: () => ({
+    ready: true,
+    value: '',
+    suggestions: { status: 'OK', data: [] },
+    setValue: vi.fn(),
+    clearSuggestions: vi.fn(),
+  }),
+  getGeocode: vi.fn(),
+  getLatLng: vi.fn(),
+}))
+```
+
+### Example Component Tests
+
+See these files for comprehensive examples:
+
+- `apps/web/src/components/__tests__/UserRoleManager.test.tsx` - Form interactions, API mocking, state management
+- `apps/web/src/components/__tests__/LocationAutocomplete.test.tsx` - External library mocking, props validation
+
+### Best Practices
+
+1. **Test behavior, not implementation** - Focus on what the user sees and does
+2. **Use semantic queries** - Prefer `getByRole()`, `getByLabelText()` over `getByTestId()`
+3. **Mock external dependencies** - API calls, third-party libraries
+4. **Keep tests focused** - One logical assertion per test
+5. **Use waitFor for async** - Never use arbitrary timeouts
+
 ## Troubleshooting
 
 ### Tests Failing?
