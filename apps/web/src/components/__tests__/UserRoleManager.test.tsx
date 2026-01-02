@@ -29,9 +29,7 @@ describe('UserRoleManager Component', () => {
       render(<UserRoleManager userId="user-123" logtoId={null} />)
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/User has not completed registration/i)
-        ).toBeInTheDocument()
+        expect(screen.getByText(/User has not completed registration/i)).toBeInTheDocument()
       })
 
       expect(
@@ -408,9 +406,7 @@ describe('UserRoleManager Component', () => {
       render(<UserRoleManager userId="user-123" logtoId="logto-456" />)
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Roles are managed in LogTo/i)
-        ).toBeInTheDocument()
+        expect(screen.getByText(/Roles are managed in LogTo/i)).toBeInTheDocument()
       })
 
       expect(

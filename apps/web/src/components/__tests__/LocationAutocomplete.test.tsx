@@ -4,7 +4,9 @@ import { LocationAutocomplete } from '../LocationAutocomplete'
 
 // Mock @react-google-maps/api
 vi.mock('@react-google-maps/api', () => ({
-  LoadScript: ({ children }: { children: React.ReactNode }) => <div data-testid="load-script">{children}</div>,
+  LoadScript: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="load-script">{children}</div>
+  ),
 }))
 
 // Mock use-places-autocomplete
@@ -36,12 +38,8 @@ describe('LocationAutocomplete Component', () => {
 
       render(<LocationAutocomplete value="" onChange={mockOnChange} />)
 
-      expect(
-        screen.getByText(/Google Maps API key is not configured/i)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(/Please set NEXT_PUBLIC_GOOGLE_MAPS_KEY/i)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/Google Maps API key is not configured/i)).toBeInTheDocument()
+      expect(screen.getByText(/Please set NEXT_PUBLIC_GOOGLE_MAPS_KEY/i)).toBeInTheDocument()
     })
 
     it('should render normally when API key is present', () => {
@@ -63,20 +61,14 @@ describe('LocationAutocomplete Component', () => {
 
     it('should render with custom placeholder', () => {
       render(
-        <LocationAutocomplete
-          value=""
-          onChange={mockOnChange}
-          placeholder="Search for a city"
-        />
+        <LocationAutocomplete value="" onChange={mockOnChange} placeholder="Search for a city" />
       )
 
       expect(screen.getByPlaceholderText('Search for a city')).toBeInTheDocument()
     })
 
     it('should display error message when provided', () => {
-      render(
-        <LocationAutocomplete value="" onChange={mockOnChange} error="Invalid location" />
-      )
+      render(<LocationAutocomplete value="" onChange={mockOnChange} error="Invalid location" />)
 
       expect(screen.getByText('Invalid location')).toBeInTheDocument()
     })
@@ -89,9 +81,7 @@ describe('LocationAutocomplete Component', () => {
     })
 
     it('should apply custom className', () => {
-      render(
-        <LocationAutocomplete value="" onChange={mockOnChange} className="custom-class" />
-      )
+      render(<LocationAutocomplete value="" onChange={mockOnChange} className="custom-class" />)
 
       const input = screen.getByPlaceholderText('Enter a location')
       expect(input).toHaveClass('custom-class')
@@ -100,9 +90,7 @@ describe('LocationAutocomplete Component', () => {
 
   describe('Error Styling', () => {
     it('should apply error styling when error prop is provided', () => {
-      render(
-        <LocationAutocomplete value="" onChange={mockOnChange} error="Invalid input" />
-      )
+      render(<LocationAutocomplete value="" onChange={mockOnChange} error="Invalid input" />)
 
       const input = screen.getByPlaceholderText('Enter a location')
       expect(input).toHaveClass('border-red-500')
@@ -132,11 +120,7 @@ describe('LocationAutocomplete Component', () => {
 
     it('should accept optional onInputChange callback', () => {
       render(
-        <LocationAutocomplete
-          value=""
-          onChange={mockOnChange}
-          onInputChange={mockOnInputChange}
-        />
+        <LocationAutocomplete value="" onChange={mockOnChange} onInputChange={mockOnInputChange} />
       )
 
       expect(mockOnInputChange).toBeDefined()
@@ -177,11 +161,7 @@ describe('LocationAutocomplete Component', () => {
     it('should support multiple type filters', () => {
       // Component should accept array of types
       render(
-        <LocationAutocomplete
-          value=""
-          onChange={mockOnChange}
-          types={['(cities)', 'locality']}
-        />
+        <LocationAutocomplete value="" onChange={mockOnChange} types={['(cities)', 'locality']} />
       )
 
       const input = screen.getByPlaceholderText('Enter a location')
@@ -214,7 +194,9 @@ describe('LocationAutocomplete Component', () => {
 
     it('should allow onChange to be called with null', () => {
       // onChange should accept null when input is cleared
-      const handleChange = (location: { address: string; lat: number; lng: number; placeId: string } | null) => {
+      const handleChange = (
+        location: { address: string; lat: number; lng: number; placeId: string } | null
+      ) => {
         // This function signature matches the component's expected callback
         expect(location).toBeNull()
       }
