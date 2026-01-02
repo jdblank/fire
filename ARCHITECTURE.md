@@ -153,15 +153,76 @@ Upload
 
 ## Authentication Flow
 
+### Overview
+
 ```
 1. User clicks "Login"
 2. App redirects to LogTo
 3. User authenticates with LogTo
 4. LogTo redirects back with auth code
 5. App exchanges code for tokens
-6. Session created in Redis
-7. User accesses protected resources
+6. User synced to fire_db with roles
+7. Session created with JWT
+8. User accesses protected resources
 ```
+
+### NextAuth v5 Split Configuration
+
+**Architecture**: Edge-compatible split between provider config and Node.js callbacks.
+
+#### `auth.config.ts` (Edge-Safe)
+
+- **Purpose**: Provider configuration that can run in Edge runtime
+- **Contains**:
+  - LogTo OIDC provider setup
+  - Manual endpoint specification for Docker networking
+  - ES384 JWT algorithm configuration (LogTo uses Elliptic Curve signing)
+  - Edge-compatible callbacks (no database access)
+- **Why Split**: Middleware runs in Edge runtime, can't access Node.js APIs
+
+#### `auth.ts` (Node.js Only)
+
+- **Purpose**: Extends auth.config with Node.js-specific features
+- **Contains**:
+  - Database sync callbacks (user upsert on login)
+  - Role propagation from LogTo to session
+  - Prisma client for user management
+- **Why Separate**: Database operations require Node.js runtime
+
+#### Docker Networking Solution
+
+**Problem**: Container can't reach `localhost:3001` for OIDC discovery.
+
+**Solution**: Manual endpoint specification:
+
+```typescript
+// Browser uses localhost (user-facing)
+authorization: {
+  url: 'http://localhost:3001/oidc/auth'
+}
+
+// Server uses Docker service name (internal)
+token: 'http://logto:3001/oidc/token'
+userinfo: 'http://logto:3001/oidc/me'
+```
+
+**Result**: Production uses OIDC discovery, dev uses manual endpoints.
+
+### Role-Based Access Control (RBAC)
+
+**Roles Defined in LogTo**:
+
+- `admin`: Full system access
+- `editor`: Create/edit content, no user management
+- `user`: Standard user permissions
+
+**Flow**:
+
+1. User assigned role in LogTo admin console
+2. Role included in OIDC `roles` claim
+3. NextAuth maps role to session via `profile()` function
+4. Session includes `user.roles` array
+5. Middleware/API routes check roles for authorization
 
 ## File Upload Flow
 
@@ -234,8 +295,36 @@ Browser automatically refreshes
 
 ### Development
 
-- Database: Regular pg_dump
-- Files: MinIO volume backups
+**Automated System**: See `BACKUP_GUIDE.md` for complete documentation.
+
+**Quick Commands**:
+
+```bash
+# Manual backup
+./scripts/backup-databases.sh
+
+# Restore from backup
+./scripts/restore-databases.sh [timestamp]
+
+# Safe Docker restart (auto-backup)
+./scripts/safe-restart.sh
+```
+
+**What's Backed Up**:
+
+- `fire_db`: Main application database
+- `logto_db`: Authentication database
+- Metadata: Git commit, timestamp, file sizes
+
+**Retention**: Last 7 days kept automatically
+
+**Location**: `backups/` (gitignored SQL files)
+
+**Volumes**: Persistent bind mounts to `.docker-data/`
+
+- `.docker-data/postgres` - Database files
+- `.docker-data/redis` - Cache data
+- `.docker-data/minio` - Object storage
 
 ### Production (Future)
 

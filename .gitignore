@@ -57,3 +57,8 @@ LOGTO_CREDENTIALS.md
 PRODUCTION_CREDENTIALS.md
 *.secrets.md
 *.secrets.txt
+.docker-data/
+
+# Database backups
+backups/*.sql
+logs/backup.log
