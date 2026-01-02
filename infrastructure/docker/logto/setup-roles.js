@@ -159,11 +159,7 @@ async function main() {
 
     const userRole = await createRole(token, 'user', 'Regular platform user with basic access')
 
-    const editorRole = await createRole(
-      token,
-      'editor',
-      'Content editor with elevated permissions'
-    )
+    const editorRole = await createRole(token, 'editor', 'Content editor with elevated permissions')
 
     const adminRole = await createRole(token, 'admin', 'Platform administrator with full access')
 

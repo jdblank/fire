@@ -117,6 +117,9 @@ export async function POST(request: Request) {
       mobilePhone,
       countryCode,
       hometown,
+      hometownLat,
+      hometownLng,
+      hometownPlaceId,
       referredById,
     } = body
 
@@ -148,6 +151,9 @@ export async function POST(request: Request) {
         mobilePhone,
         countryCode,
         hometown,
+        hometownLat: hometownLat ?? null,
+        hometownLng: hometownLng ?? null,
+        hometownPlaceId: hometownPlaceId || null,
         referredById: referredById || null,
         accountStatus: 'PENDING_INVITE',
       },
