@@ -1,10 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
-import { LoadScript } from '@react-google-maps/api'
 import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from 'use-places-autocomplete'
-
-const libraries: 'places'[] = ['places']
 
 export interface LocationData {
   address: string
@@ -24,7 +21,7 @@ interface LocationAutocompleteProps {
   types?: string[] // Optional: restrict to specific place types (e.g., ['(cities)'])
 }
 
-function LocationAutocompleteInner({
+export function LocationAutocomplete({
   value,
   onChange,
   onInputChange,
@@ -43,7 +40,6 @@ function LocationAutocompleteInner({
   } = usePlacesAutocomplete({
     requestOptions: types ? { types } : {}, // Only restrict if types provided
     debounce: 300,
-    callbackName: 'initMap', // Add callback name to avoid conflicts
   })
 
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -165,26 +161,5 @@ function LocationAutocompleteInner({
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       {!ready && <p className="mt-1 text-xs text-gray-500">Loading Google Maps API...</p>}
     </div>
-  )
-}
-
-export function LocationAutocomplete(props: LocationAutocompleteProps) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY
-
-  if (!apiKey) {
-    return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p className="text-sm text-yellow-800">
-          Google Maps API key is not configured. Please set NEXT_PUBLIC_GOOGLE_MAPS_KEY in your
-          environment.
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <LoadScript googleMapsApiKey={apiKey} libraries={libraries}>
-      <LocationAutocompleteInner {...props} />
-    </LoadScript>
   )
 }

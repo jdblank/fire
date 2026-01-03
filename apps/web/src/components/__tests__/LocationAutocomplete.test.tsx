@@ -2,13 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { LocationAutocomplete } from '../LocationAutocomplete'
 
-// Mock @react-google-maps/api
-vi.mock('@react-google-maps/api', () => ({
-  LoadScript: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="load-script">{children}</div>
-  ),
-}))
-
 // Mock use-places-autocomplete
 vi.mock('use-places-autocomplete', () => ({
   default: () => ({
@@ -32,25 +25,7 @@ describe('LocationAutocomplete Component', () => {
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY = 'test-api-key'
   })
 
-  describe('API Key Validation', () => {
-    it('should show error when API key is missing', () => {
-      delete process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY
-
-      render(<LocationAutocomplete value="" onChange={mockOnChange} />)
-
-      expect(screen.getByText(/Google Maps API key is not configured/i)).toBeInTheDocument()
-      expect(screen.getByText(/Please set NEXT_PUBLIC_GOOGLE_MAPS_KEY/i)).toBeInTheDocument()
-    })
-
-    it('should render normally when API key is present', () => {
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY = 'test-api-key'
-
-      render(<LocationAutocomplete value="" onChange={mockOnChange} />)
-
-      expect(screen.getByPlaceholderText('Enter a location')).toBeInTheDocument()
-      expect(screen.getByTestId('load-script')).toBeInTheDocument()
-    })
-  })
+  // API Key validation now handled at Providers level
 
   describe('Component Rendering', () => {
     it('should render with default placeholder', () => {
@@ -205,22 +180,7 @@ describe('LocationAutocomplete Component', () => {
     })
   })
 
-  describe('Component Structure', () => {
-    it('should wrap content in LoadScript component', () => {
-      render(<LocationAutocomplete value="" onChange={mockOnChange} />)
-
-      expect(screen.getByTestId('load-script')).toBeInTheDocument()
-    })
-
-    it('should render input inside LoadScript', () => {
-      render(<LocationAutocomplete value="" onChange={mockOnChange} />)
-
-      const loadScript = screen.getByTestId('load-script')
-      const input = screen.getByPlaceholderText('Enter a location')
-
-      expect(loadScript).toContainElement(input)
-    })
-  })
+  // Component structure tests removed - LoadScript now at app level
 
   describe('Accessibility', () => {
     it('should have text input type', () => {
