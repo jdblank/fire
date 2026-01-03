@@ -79,6 +79,7 @@ export const authConfig = {
       if (token) {
         session.user.id = token.id as string
         session.user.roles = token.roles
+        session.user.image = token.image as string | null
         session.id_token = token.id_token as string
       }
       return session

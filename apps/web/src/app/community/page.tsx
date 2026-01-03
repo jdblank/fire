@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
-import { ReferralNetworkGraph } from '@/components/ReferralNetworkGraph'
+import { CommunityViewToggle } from '@/components/CommunityViewToggle'
 import { NetworkUser } from '@/lib/network-utils'
 
 async function getNetworkData(): Promise<NetworkUser[]> {
@@ -80,7 +80,7 @@ export default async function CommunityPage() {
 
       {/* Network Graph - Full height container */}
       <div style={{ height: 'calc(100vh - 73px)', position: 'relative' }}>
-        <ReferralNetworkGraph users={networkData} />
+        <CommunityViewToggle users={networkData} />
       </div>
     </div>
   )

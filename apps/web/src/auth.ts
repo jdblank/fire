@@ -76,16 +76,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.id_token = account.id_token
       }
 
-      // On subsequent requests, ensure we use the database ID
+      // On subsequent requests, ensure we use the database ID and fetch latest image
       if (token.id && !user) {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id as string },
-            select: { id: true },
+            select: { id: true, image: true },
           })
 
           if (dbUser) {
             token.id = dbUser.id // Ensure we always use the database ID
+            token.image = dbUser.image // Include user's profile image
           }
         } catch (error) {
           console.error('[AUTH JWT] Failed to fetch user from database:', error)
