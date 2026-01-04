@@ -19,9 +19,11 @@ A modern, lightweight social community platform with event management, user prof
 ## Features
 
 - 🔐 **Authentication**: LogTo integration with OIDC
-- 👤 **User Profiles**: Customizable profiles with avatars
+- 🛡️ **Role-Based Access Control (RBAC)**: Three-tier role system (User, Editor, Admin) managed in LogTo with admin UI for role assignment
+- 👤 **User Profiles**: Customizable profiles with avatars and location search
+- 🗺️ **Location Search**: Google Places integration with city-specific search for profiles and unrestricted search for event locations
 - 📰 **News Feed**: Social posting and interactions
-- 📅 **Event Management**: Free and paid event registration
+- 📅 **Event Management**: Free and paid event registration with flexible location types
 - 📚 **Wiki**: Outline-based documentation platform
 - 🐳 **Docker-First**: Complete development environment in containers
 
@@ -40,11 +42,13 @@ A modern, lightweight social community platform with event management, user prof
 ## Environments
 
 ### Development
+
 - **App:** http://app.fire.local:3000
 - **LogTo Admin:** http://localhost:3002/console
 - Run with: `docker-compose up`
 
-### Production  
+### Production
+
 - **App:** https://fire.lemonade.art
 - **LogTo Admin:** https://admin.auth.lemonade.art
 - Auto-deploys from `main` branch via Vercel webhook
@@ -59,17 +63,20 @@ A modern, lightweight social community platform with event management, user prof
 ### Initial Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone <your-repo-url>
    cd fire
    ```
 
 2. **Start all services**:
+
    ```bash
    docker-compose up -d
    ```
 
 3. **Wait for services to be ready** (first time takes 2-3 minutes):
+
    ```bash
    docker-compose logs -f
    ```
@@ -130,6 +137,7 @@ fire/
 ## Database Schema
 
 The platform includes:
+
 - Users and authentication
 - User profiles
 - Posts and comments (news feed)
@@ -142,6 +150,7 @@ The platform includes:
 All environment variables are configured in `docker-compose.yml`. For production, use proper secrets management.
 
 ### Key Variables:
+
 - `DATABASE_URL`: PostgreSQL connection
 - `REDIS_URL`: Redis connection
 - `S3_*`: MinIO/S3 configuration
@@ -164,6 +173,7 @@ npm run test:e2e
 ## CI/CD
 
 GitHub Actions workflows are configured for:
+
 - Linting and testing on PRs
 - Security scanning
 - Docker image building
@@ -192,4 +202,3 @@ MIT
 ## Support
 
 For issues and questions, please open a GitHub issue.
-

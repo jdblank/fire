@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/events - List all events
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
 
     // Build where clause
     const where: any = {}
-    
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
@@ -30,11 +31,11 @@ export async function GET(request: Request) {
         { location: { contains: search, mode: 'insensitive' } },
       ]
     }
-    
+
     if (status) {
       where.status = status
     }
-    
+
     if (eventType) {
       where.eventType = eventType
     }
@@ -48,14 +49,14 @@ export async function GET(request: Request) {
               id: true,
               email: true,
               displayName: true,
-            }
+            },
           },
           _count: {
             select: {
               registrations: true,
               lineItems: true,
-            }
-          }
+            },
+          },
         },
         orderBy: { startDate: 'desc' },
         skip,
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
         limit,
         total,
         pages: Math.ceil(total / limit),
-      }
+      },
     })
   } catch (error) {
     console.error('Error fetching events:', error)
@@ -82,9 +83,9 @@ export async function GET(request: Request) {
 // POST /api/admin/events - Create a new event
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -96,8 +97,12 @@ export async function POST(request: Request) {
       startDate,
       endDate,
       location,
+      locationLat,
+      locationLng,
+      locationPlaceId,
       timezone,
       isOnline,
+      isAllDay,
       eventType,
       requiresDeposit,
       depositAmount,
@@ -107,10 +112,25 @@ export async function POST(request: Request) {
 
     // Validate required fields
     if (!title || !startDate) {
-      return NextResponse.json(
-        { error: 'Title and start date are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Title and start date are required' }, { status: 400 })
+    }
+
+    // Helper function to normalize date to midnight UTC for all-day events
+    const normalizeToMidnightUTC = (date: Date): Date => {
+      const normalized = new Date(date)
+      normalized.setUTCHours(0, 0, 0, 0)
+      return normalized
+    }
+
+    // Process dates - normalize to midnight UTC if all-day event
+    let processedStartDate = new Date(startDate)
+    let processedEndDate = endDate ? new Date(endDate) : null
+
+    if (isAllDay) {
+      processedStartDate = normalizeToMidnightUTC(processedStartDate)
+      if (processedEndDate) {
+        processedEndDate = normalizeToMidnightUTC(processedEndDate)
+      }
     }
 
     // Create event
@@ -119,11 +139,15 @@ export async function POST(request: Request) {
         title,
         description,
         banner: banner || null,
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: processedStartDate,
+        endDate: processedEndDate,
         location: location || null,
+        locationLat: locationLat ?? null,
+        locationLng: locationLng ?? null,
+        locationPlaceId: locationPlaceId || null,
         timezone: timezone || 'America/New_York',
         isOnline: isOnline || false,
+        isAllDay: isAllDay || false,
         eventType: eventType || 'FREE',
         requiresDeposit: requiresDeposit || false,
         depositAmount: depositAmount || null,
@@ -137,9 +161,9 @@ export async function POST(request: Request) {
             id: true,
             email: true,
             displayName: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     return NextResponse.json({ event }, { status: 201 })
@@ -148,4 +172,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

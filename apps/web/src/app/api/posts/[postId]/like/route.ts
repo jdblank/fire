@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 // POST /api/posts/[postId]/like - Like or dislike a post
 export async function POST(
   request: NextRequest,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const { postId } = await params
+    const session = await auth()
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -22,10 +23,10 @@ export async function POST(
     const existing = await prisma.postLike.findUnique({
       where: {
         postId_userId: {
-          postId: params.postId,
+          postId: postId,
           userId: session.user.id,
-        }
-      }
+        },
+      },
     })
 
     if (existing) {
@@ -38,14 +39,14 @@ export async function POST(
       await prisma.$transaction([
         prisma.postLike.update({
           where: { id: existing.id },
-          data: { isLike }
+          data: { isLike },
         }),
         prisma.post.update({
-          where: { id: params.postId },
-          data: existing.isLike 
+          where: { id: postId },
+          data: existing.isLike
             ? { likes: { decrement: 1 }, dislikes: { increment: 1 } } // Was like, now dislike
-            : { dislikes: { decrement: 1 }, likes: { increment: 1 } } // Was dislike, now like
-        })
+            : { dislikes: { decrement: 1 }, likes: { increment: 1 } }, // Was dislike, now like
+        }),
       ])
 
       return NextResponse.json({ success: true, reaction: isLike ? 'like' : 'dislike' })
@@ -55,38 +56,33 @@ export async function POST(
     await prisma.$transaction([
       prisma.postLike.create({
         data: {
-          postId: params.postId,
+          postId: postId,
           userId: session.user.id,
           isLike,
-        }
+        },
       }),
       prisma.post.update({
-        where: { id: params.postId },
-        data: isLike 
-          ? { likes: { increment: 1 } }
-          : { dislikes: { increment: 1 } }
-      })
+        where: { id: postId },
+        data: isLike ? { likes: { increment: 1 } } : { dislikes: { increment: 1 } },
+      }),
     ])
 
     return NextResponse.json({ success: true, reaction: isLike ? 'like' : 'dislike' })
-
   } catch (error) {
     console.error('Error reacting to post:', error)
-    return NextResponse.json(
-      { error: 'Failed to react to post' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to react to post' }, { status: 500 })
   }
 }
 
 // DELETE /api/posts/[postId]/like - Remove reaction from a post
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { postId: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const { postId } = await params
+    const session = await auth()
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -95,10 +91,10 @@ export async function DELETE(
     const existing = await prisma.postLike.findUnique({
       where: {
         postId_userId: {
-          postId: params.postId,
+          postId: postId,
           userId: session.user.id,
-        }
-      }
+        },
+      },
     })
 
     if (!existing) {
@@ -108,24 +104,17 @@ export async function DELETE(
     // Delete reaction and decrement appropriate counter
     await prisma.$transaction([
       prisma.postLike.delete({
-        where: { id: existing.id }
+        where: { id: existing.id },
       }),
       prisma.post.update({
-        where: { id: params.postId },
-        data: existing.isLike
-          ? { likes: { decrement: 1 } }
-          : { dislikes: { decrement: 1 } }
-      })
+        where: { id: postId },
+        data: existing.isLike ? { likes: { decrement: 1 } } : { dislikes: { decrement: 1 } },
+      }),
     ])
 
     return NextResponse.json({ success: true, reaction: null })
-
   } catch (error) {
     console.error('Error removing reaction:', error)
-    return NextResponse.json(
-      { error: 'Failed to remove reaction' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to remove reaction' }, { status: 500 })
   }
 }
-

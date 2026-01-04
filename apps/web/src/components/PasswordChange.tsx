@@ -65,9 +65,7 @@ export function PasswordChange({ onSuccess, onCancel }: PasswordChangeProps) {
     <div className="space-y-6">
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Current Password
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
           <input
             type="password"
             value={currentPassword}
@@ -78,9 +76,7 @@ export function PasswordChange({ onSuccess, onCancel }: PasswordChangeProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            New Password
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
           <input
             type="password"
             value={newPassword}
@@ -129,11 +125,9 @@ export function PasswordChange({ onSuccess, onCancel }: PasswordChangeProps) {
 
       <div className="pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500 text-center">
-          For immediate password reset, use the "Forgot Password" link on the login page
+          For immediate password reset, use the &quot;Forgot Password&quot; link on the login page
         </p>
       </div>
     </div>
   )
 }
-
-

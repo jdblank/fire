@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { PrismaClient } from '@prisma/client'
-import { z } from 'zod'
 
-const prisma = new PrismaClient()
+import { auth } from '@/auth'
+import { z } from 'zod'
+import { hasRole } from '@/lib/utils'
 
 const roleSchema = z.object({
   userId: z.string(),
-  role: z.enum(['USER', 'MODERATOR', 'ADMIN']),
+  role: z.enum(['USER', 'EDITOR', 'ADMIN']),
 })
 
 // Map our role enum to LogTo role names (lowercase)
 const ROLE_MAP = {
-  'USER': 'user',
-  'MODERATOR': 'moderator',
-  'ADMIN': 'admin',
+  USER: 'user',
+  EDITOR: 'editor',
+  ADMIN: 'admin',
 }
 
 // Get M2M access token for LogTo Management API
@@ -44,13 +42,10 @@ async function getM2MToken() {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
-        { status: 403 }
-      )
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 403 })
     }
 
     // Parse and validate request body
@@ -68,10 +63,7 @@ export async function POST(request: NextRequest) {
 
     // Prevent changing your own role
     if (userId === session.user.id) {
-      return NextResponse.json(
-        { error: 'Cannot change your own role' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Cannot change your own role' }, { status: 400 })
     }
 
     // Get M2M token for LogTo Management API
@@ -80,13 +72,13 @@ export async function POST(request: NextRequest) {
 
     // Get all role definitions from LogTo
     const rolesResponse = await fetch(`${logtoEndpoint}/api/roles`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
     const allRoles = await rolesResponse.json()
-    
+
     // Find the role ID for the desired role
     const targetRole = allRoles.find((r: any) => r.name === ROLE_MAP[role])
-    
+
     if (!targetRole) {
       return NextResponse.json(
         { error: `Role ${role} not found in LogTo. Run: npm run logto:setup-roles` },
@@ -96,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Get user's current roles
     const userRolesResponse = await fetch(`${logtoEndpoint}/api/users/${userId}/roles`, {
-      headers: { 'Authorization': `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
     const currentRoles = await userRolesResponse.json()
 
@@ -104,7 +96,7 @@ export async function POST(request: NextRequest) {
     for (const currentRole of currentRoles) {
       await fetch(`${logtoEndpoint}/api/users/${userId}/roles/${currentRole.id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
     }
 
@@ -112,27 +104,17 @@ export async function POST(request: NextRequest) {
     await fetch(`${logtoEndpoint}/api/users/${userId}/roles`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ roleIds: [targetRole.id] }),
     })
 
-    // Update user role in our database (cache)
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { role },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-      },
-    })
+    // Update user role in our database (cache) - REMOVED
+    // Roles are now managed solely in Logto.
 
     return NextResponse.json({
       success: true,
-      user: updatedUser,
       message: `User role updated to ${role} in LogTo. User must log out and back in for changes to take effect.`,
     })
   } catch (error: any) {
@@ -143,4 +125,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

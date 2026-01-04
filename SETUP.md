@@ -10,6 +10,7 @@ chmod +x scripts/setup.sh
 ```
 
 Or manually:
+
 ```bash
 docker-compose up -d
 ```
@@ -41,6 +42,7 @@ docker-compose exec app npm run db:studio
 ### 4. Configure Outline Wiki
 
 1. Generate secret keys:
+
    ```bash
    openssl rand -hex 32  # For SECRET_KEY
    openssl rand -hex 32  # For UTILS_SECRET
@@ -55,6 +57,7 @@ docker-compose exec app npm run db:studio
 ### 5. Verify Everything Works
 
 Visit:
+
 - http://localhost:3000 - Main app should show welcome page
 - http://localhost:3002 - LogTo admin
 - http://localhost:3003 - Outline wiki
@@ -125,6 +128,7 @@ docker-compose up -d
 ### Port conflicts
 
 If ports 3000, 3001, 3002, 3003, 5432, 6379, 9000, or 9001 are in use:
+
 1. Stop the conflicting service
 2. Or edit `docker-compose.yml` to use different ports
 
@@ -140,19 +144,3 @@ Before deploying to production:
 6. **Set up monitoring** and logging
 7. **Review security settings** in all services
 8. **Set NODE_ENV=production**
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

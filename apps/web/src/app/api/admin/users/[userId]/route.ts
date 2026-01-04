@@ -1,18 +1,16 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/users/[userId] - Get user by ID
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -26,7 +24,7 @@ export async function GET(
             displayName: true,
             firstName: true,
             lastName: true,
-          }
+          },
         },
         referrals: {
           select: {
@@ -36,13 +34,13 @@ export async function GET(
             firstName: true,
             lastName: true,
             accountStatus: true,
-          }
+          },
         },
         inviteTokens: {
           orderBy: { createdAt: 'desc' },
           take: 5,
-        }
-      }
+        },
+      },
     })
 
     if (!user) {
@@ -57,15 +55,12 @@ export async function GET(
 }
 
 // PUT /api/admin/users/[userId] - Update user
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -79,14 +74,16 @@ export async function PUT(
       mobilePhone,
       countryCode,
       hometown,
+      hometownLat,
+      hometownLng,
+      hometownPlaceId,
       referredById,
-      role,
       accountStatus,
     } = body
 
     // Check if user exists
     const existing = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!existing) {
@@ -96,14 +93,11 @@ export async function PUT(
     // If email is changing, check it's not taken
     if (email && email !== existing.email) {
       const emailTaken = await prisma.user.findUnique({
-        where: { email }
+        where: { email },
       })
-      
+
       if (emailTaken) {
-        return NextResponse.json(
-          { error: 'Email already in use' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Email already in use' }, { status: 400 })
       }
     }
 
@@ -119,8 +113,10 @@ export async function PUT(
         ...(mobilePhone !== undefined && { mobilePhone }),
         ...(countryCode !== undefined && { countryCode }),
         ...(hometown !== undefined && { hometown }),
+        ...(hometownLat !== undefined && { hometownLat }),
+        ...(hometownLng !== undefined && { hometownLng }),
+        ...(hometownPlaceId !== undefined && { hometownPlaceId }),
         ...(referredById !== undefined && { referredById }),
-        ...(role && { role }),
         ...(accountStatus && { accountStatus }),
       },
       include: {
@@ -129,9 +125,9 @@ export async function PUT(
             id: true,
             email: true,
             displayName: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     return NextResponse.json({ user })
@@ -143,20 +139,20 @@ export async function PUT(
 
 // DELETE /api/admin/users/[userId] - Delete user
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const { userId } = await params
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!user) {
@@ -165,15 +161,12 @@ export async function DELETE(
 
     // Prevent deleting yourself
     if (user.id === session.user.id) {
-      return NextResponse.json(
-        { error: 'Cannot delete your own account' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 })
     }
 
     // Delete user (cascade will handle related records)
     await prisma.user.delete({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     return NextResponse.json({ success: true })

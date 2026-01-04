@@ -1,32 +1,31 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/events/[eventId] - Get event by ID
-export async function GET(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
+    const { eventId } = await params
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId },
+      where: { id: eventId },
       include: {
         createdBy: {
           select: {
             id: true,
             email: true,
             displayName: true,
-          }
+          },
         },
         lineItems: {
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
         registrations: {
           include: {
@@ -37,17 +36,17 @@ export async function GET(
                 displayName: true,
                 firstName: true,
                 lastName: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         _count: {
           select: {
             registrations: true,
             lineItems: true,
-          }
-        }
-      }
+          },
+        },
+      },
     })
 
     if (!event) {
@@ -62,17 +61,15 @@ export async function GET(
 }
 
 // PUT /api/admin/events/[eventId] - Update event
-export async function PUT(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
+    const { eventId } = await params
     const body = await request.json()
     const {
       title,
@@ -81,8 +78,12 @@ export async function PUT(
       startDate,
       endDate,
       location,
+      locationLat,
+      locationLng,
+      locationPlaceId,
       timezone,
       isOnline,
+      isAllDay,
       eventType,
       requiresDeposit,
       depositAmount,
@@ -92,25 +93,52 @@ export async function PUT(
 
     // Check if event exists
     const existing = await prisma.event.findUnique({
-      where: { id: params.eventId }
+      where: { id: eventId },
     })
 
     if (!existing) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
 
+    // Helper function to normalize date to midnight UTC for all-day events
+    const normalizeToMidnightUTC = (date: Date): Date => {
+      const normalized = new Date(date)
+      normalized.setUTCHours(0, 0, 0, 0)
+      return normalized
+    }
+
+    // Determine if this is an all-day event (use provided value or existing)
+    const effectiveIsAllDay = isAllDay !== undefined ? isAllDay : existing.isAllDay
+
+    // Process dates - normalize to midnight UTC if all-day event
+    let processedStartDate = startDate ? new Date(startDate) : undefined
+    let processedEndDate = endDate !== undefined ? (endDate ? new Date(endDate) : null) : undefined
+
+    if (effectiveIsAllDay) {
+      if (processedStartDate) {
+        processedStartDate = normalizeToMidnightUTC(processedStartDate)
+      }
+      if (processedEndDate) {
+        processedEndDate = normalizeToMidnightUTC(processedEndDate)
+      }
+    }
+
     // Update event
     const event = await prisma.event.update({
-      where: { id: params.eventId },
+      where: { id: eventId },
       data: {
         ...(title && { title }),
         ...(description && { description }),
         ...(banner !== undefined && { banner }),
-        ...(startDate && { startDate: new Date(startDate) }),
-        ...(endDate !== undefined && { endDate: endDate ? new Date(endDate) : null }),
+        ...(processedStartDate && { startDate: processedStartDate }),
+        ...(processedEndDate !== undefined && { endDate: processedEndDate }),
         ...(location !== undefined && { location }),
+        ...(locationLat !== undefined && { locationLat }),
+        ...(locationLng !== undefined && { locationLng }),
+        ...(locationPlaceId !== undefined && { locationPlaceId }),
         ...(timezone !== undefined && { timezone }),
         ...(isOnline !== undefined && { isOnline }),
+        ...(isAllDay !== undefined && { isAllDay }),
         ...(eventType && { eventType }),
         ...(requiresDeposit !== undefined && { requiresDeposit }),
         ...(depositAmount !== undefined && { depositAmount }),
@@ -123,12 +151,12 @@ export async function PUT(
             id: true,
             email: true,
             displayName: true,
-          }
+          },
         },
         lineItems: {
-          orderBy: { sortOrder: 'asc' }
+          orderBy: { sortOrder: 'asc' },
         },
-      }
+      },
     })
 
     return NextResponse.json({ event })
@@ -140,24 +168,25 @@ export async function PUT(
 
 // DELETE /api/admin/events/[eventId] - Delete event
 export async function DELETE(
-  request: Request,
-  { params }: { params: { eventId: string } }
+  _request: Request,
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
+    const { eventId } = await params
     // Check if event exists
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId },
+      where: { id: eventId },
       include: {
         _count: {
-          select: { registrations: true }
-        }
-      }
+          select: { registrations: true },
+        },
+      },
     })
 
     if (!event) {
@@ -167,14 +196,16 @@ export async function DELETE(
     // Warn if event has registrations
     if (event._count.registrations > 0) {
       return NextResponse.json(
-        { error: `Cannot delete event with ${event._count.registrations} registrations. Cancel the event instead.` },
+        {
+          error: `Cannot delete event with ${event._count.registrations} registrations. Cancel the event instead.`,
+        },
         { status: 400 }
       )
     }
 
     // Delete event (cascade will handle line items)
     await prisma.event.delete({
-      where: { id: params.eventId }
+      where: { id: eventId },
     })
 
     return NextResponse.json({ success: true })
@@ -183,4 +214,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

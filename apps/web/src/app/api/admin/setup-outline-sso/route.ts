@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import fs from 'fs'
-import path from 'path'
+
+import { auth } from '@/auth'
+import { hasRole } from '@/lib/utils'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 const M2M_APP_ID = process.env.LOGTO_M2M_APP_ID
@@ -13,13 +12,10 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 export async function POST() {
   try {
     // Check authentication and admin role
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized - Admin only' },
-        { status: 403 }
-      )
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
+      return NextResponse.json({ error: 'Unauthorized - Admin only' }, { status: 403 })
     }
 
     console.log('Setting up Outline SSO with LogTo...')
@@ -34,8 +30,8 @@ export async function POST() {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     if (!tokenResponse.ok) {
@@ -50,9 +46,9 @@ export async function POST() {
     console.log('Checking for existing Outline application...')
     const listResponse = await fetch(`${LOGTO_ENDPOINT}/api/applications`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
     })
 
     if (!listResponse.ok) {
@@ -62,19 +58,19 @@ export async function POST() {
 
     const appsData = await listResponse.json()
     console.log('Apps response:', JSON.stringify(appsData).substring(0, 200))
-    
+
     // LogTo returns an array in the response
     const apps = Array.isArray(appsData) ? appsData : []
     let outlineApp = apps.find((app: any) => app.name === 'Outline Wiki')
 
     if (!outlineApp) {
       console.log('Creating new Outline application...')
-      
+
       const createResponse = await fetch(`${LOGTO_ENDPOINT}/api/applications`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: 'Outline Wiki',
@@ -82,9 +78,9 @@ export async function POST() {
           description: 'Community Wiki and Documentation',
           oidcClientMetadata: {
             redirectUris: ['http://localhost:3004/auth/oidc.callback'],
-            postLogoutRedirectUris: ['http://localhost:3004']
-          }
-        })
+            postLogoutRedirectUris: ['http://localhost:3004'],
+          },
+        }),
       })
 
       if (!createResponse.ok) {
@@ -125,10 +121,9 @@ export async function POST() {
         'Configuration created successfully',
         'Add the config to docker-compose.override.yml',
         'Run: docker-compose restart outline',
-        'Visit: http://localhost:3000/wiki'
-      ]
+        'Visit: http://localhost:3000/wiki',
+      ],
     })
-
   } catch (error) {
     console.error('Error setting up Outline SSO:', error)
     return NextResponse.json(
@@ -137,4 +132,3 @@ export async function POST() {
     )
   }
 }
-

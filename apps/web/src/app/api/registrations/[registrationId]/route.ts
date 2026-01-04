@@ -1,22 +1,24 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/registrations/[registrationId] - Get registration details
 export async function GET(
-  request: Request,
-  { params }: { params: { registrationId: string } }
+  _request: Request,
+  { params }: { params: Promise<{ registrationId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const { registrationId } = await params
+    const session = await auth()
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const registration = await prisma.eventRegistration.findUnique({
-      where: { id: params.registrationId },
+      where: { id: registrationId },
       include: {
         event: true,
         user: {
@@ -27,22 +29,22 @@ export async function GET(
             lastName: true,
             displayName: true,
             mobilePhone: true,
-          }
+          },
         },
         lineItems: {
           include: {
-            lineItem: true
+            lineItem: true,
           },
           orderBy: {
-            createdAt: 'asc'
-          }
+            createdAt: 'asc',
+          },
         },
         discounts: {
           orderBy: {
-            createdAt: 'asc'
-          }
-        }
-      }
+            createdAt: 'asc',
+          },
+        },
+      },
     })
 
     if (!registration) {
@@ -50,7 +52,7 @@ export async function GET(
     }
 
     // Security: Only allow user to view their own registration or admins
-    if (registration.userId !== session.user.id && session.user.role !== 'ADMIN') {
+    if (registration.userId !== session.user.id && !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -60,4 +62,3 @@ export async function GET(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

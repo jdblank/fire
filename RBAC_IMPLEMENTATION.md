@@ -20,24 +20,28 @@ This system implements **proper IAM architecture** where LogTo is the single sou
 ## How It Works
 
 ### 1. **LogTo (IAM Layer)**
+
 - ✅ Manages user identities
 - ✅ Defines roles (`admin`, `moderator`, `user`)
 - ✅ Assigns roles to users
 - ✅ Returns roles in authentication responses
 
 ### 2. **NextAuth (Auth Layer)**
+
 - ✅ Authenticates users via LogTo
 - ✅ Fetches user roles from LogTo Management API
 - ✅ Includes roles in JWT token and session
 - ✅ Provides session to app
 
 ### 3. **Next.js App (Authorization Layer)**
+
 - ✅ Reads roles from session
 - ✅ Protects routes based on roles
 - ✅ Shows/hides UI elements based on roles
 - ✅ Manages roles via LogTo Management API
 
 ### 4. **Database (Cache Layer)**
+
 - ✅ Stores user data for queries and relationships
 - ✅ Caches role for faster access (synced from LogTo)
 - ✅ Links users to posts, events, etc.
@@ -47,21 +51,27 @@ This system implements **proper IAM architecture** where LogTo is the single sou
 ## Roles Defined
 
 ### 👤 USER (Default)
+
 **Permissions:**
+
 - View public content
 - Create posts and comments
 - Register for events
 - Edit own profile
 
 ### 👮 MODERATOR
+
 **Permissions:**
+
 - All USER permissions
 - Moderate posts and comments
 - Manage events
 - View moderation dashboard
 
 ### 🔥 ADMIN
+
 **Permissions:**
+
 - All MODERATOR permissions
 - Manage user roles
 - Access admin panel
@@ -81,6 +91,7 @@ npm run logto:setup-roles
 ```
 
 This script:
+
 1. Connects to LogTo Management API
 2. Creates three roles (user, moderator, admin)
 3. Assigns admin role to josh@lemonade.art
@@ -132,7 +143,7 @@ import { authOptions } from '@/lib/auth'
 
 export default async function Page() {
   const session = await getServerSession(authOptions)
-  
+
   if (session?.user.role === 'ADMIN') {
     // Show admin content
   }
@@ -147,7 +158,7 @@ import { useSession } from 'next-auth/react'
 
 export function Component() {
   const { data: session } = useSession()
-  
+
   if (session?.user.role === 'ADMIN') {
     return <AdminFeature />
   }
@@ -162,11 +173,11 @@ import { authOptions } from '@/lib/auth'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
-  
+
   if (session?.user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
-  
+
   // Admin-only logic
 }
 ```
@@ -177,7 +188,7 @@ export async function GET() {
 // middleware.ts
 export async function middleware(request: NextRequest) {
   const session = await getToken({ req: request })
-  
+
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (session?.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/dashboard', request.url))
@@ -191,12 +202,14 @@ export async function middleware(request: NextRequest) {
 ## Features Implemented
 
 ### ✅ Non-Logged-In Landing Page
+
 - Beautiful hero section
 - Feature showcase
 - Call-to-action buttons
 - **Location**: `/apps/web/src/app/page.tsx`
 
 ### ✅ Logged-In Dashboard
+
 - Personalized welcome
 - Role badge display
 - Quick stats (posts, events, connections)
@@ -206,6 +219,7 @@ export async function middleware(request: NextRequest) {
 - **Location**: `/apps/web/src/app/dashboard/page.tsx`
 
 ### ✅ Admin User Management
+
 - List all users with filtering
 - View user details and activity
 - Change user roles via UI
@@ -213,6 +227,7 @@ export async function middleware(request: NextRequest) {
 - **Location**: `/apps/web/src/app/admin/users/page.tsx`
 
 ### ✅ Individual User Management
+
 - Detailed user profile view
 - Role change form with permissions preview
 - Activity summary
@@ -224,6 +239,7 @@ export async function middleware(request: NextRequest) {
 ## Testing Role-Based Access
 
 ### Test as Regular User
+
 1. Create a test account (not josh@lemonade.art)
 2. Log in
 3. Should see:
@@ -232,6 +248,7 @@ export async function middleware(request: NextRequest) {
    - ❌ Cannot access /admin routes
 
 ### Test as Admin
+
 1. Log in as josh@lemonade.art
 2. Should see:
    - ✅ Dashboard with ADMIN badge
@@ -245,11 +262,13 @@ export async function middleware(request: NextRequest) {
 ## Role Management Commands
 
 ### Create Roles (One-time setup)
+
 ```bash
 npm run logto:setup-roles
 ```
 
 ### Promote User to Admin
+
 ```bash
 # Via script
 ./scripts/setup-logto-roles.sh user@example.com
@@ -259,6 +278,7 @@ npm run logto:setup-roles
 ```
 
 ### Check User's Role in LogTo
+
 ```bash
 # Via LogTo console
 http://localhost:3002 → Users → Select user → Roles tab
@@ -269,6 +289,7 @@ http://localhost:3002 → Users → Select user → Roles tab
 ## Security Considerations
 
 ### ✅ Implemented
+
 - Roles managed in IAM system (LogTo)
 - Role checks in API routes
 - Role checks in UI components
@@ -276,6 +297,7 @@ http://localhost:3002 → Users → Select user → Roles tab
 - Admin-only endpoints protected
 
 ### 📋 Recommended
+
 - Add audit log for role changes
 - Implement permission granularity
 - Add role change notifications
@@ -304,6 +326,7 @@ enum UserRole {
 ```
 
 **Why cache roles?**
+
 - ✅ Faster queries (no LogTo API call needed)
 - ✅ Foreign key relationships (posts, events)
 - ✅ Offline reporting
@@ -316,7 +339,7 @@ enum UserRole {
 **User**: josh@lemonade.art  
 **Role**: ADMIN  
 **Assigned**: Via automated script  
-**Status**: Active  
+**Status**: Active
 
 ---
 
@@ -334,16 +357,19 @@ enum UserRole {
 ## Troubleshooting
 
 ### "Role not appearing"
+
 - Log out and log back in (roles loaded on login)
 - Check role in LogTo console
 - Verify M2M app has Management API permissions
 
 ### "Cannot access admin panel"
+
 - Ensure you're logged in as josh@lemonade.art
 - Check session.user.role in console
 - Verify role setup script ran successfully
 
 ### "Role change not working"
+
 - Check M2M credentials in docker-compose.override.yml
 - View app logs: `docker-compose logs app`
 - Verify LogTo Management API is accessible
@@ -354,5 +380,4 @@ enum UserRole {
 **LogTo Integration**: ✅ Management API  
 **Role Assignment**: ✅ Automated  
 **Admin UI**: ✅ Functional  
-**Testing**: ⏳ Ready for testing  
-
+**Testing**: ⏳ Ready for testing

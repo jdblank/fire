@@ -7,6 +7,7 @@ import { formatDateShort } from '@/lib/date-utils'
 interface Event {
   id: string
   title: string
+  isAllDay: boolean
   startDate: string
   endDate: string | null
   location: string | null
@@ -83,7 +84,9 @@ export function EventsTable() {
     }
 
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}
+      >
         {status}
       </span>
     )
@@ -139,13 +142,27 @@ export function EventsTable() {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registrations</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Capacity</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Event
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Date
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Type
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Registrations
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Capacity
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -173,19 +190,26 @@ export function EventsTable() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    <div>{formatDateShort(event.startDate, event.timezone || undefined)}</div>
+                    <div>
+                      {formatDateShort(
+                        event.startDate,
+                        event.timezone || undefined,
+                        event.isAllDay
+                      )}
+                    </div>
                     {event.endDate && (
                       <div className="text-xs text-gray-500">
-                        to {formatDateShort(event.endDate, event.timezone || undefined)}
+                        to{' '}
+                        {formatDateShort(
+                          event.endDate,
+                          event.timezone || undefined,
+                          event.isAllDay
+                        )}
                       </div>
                     )}
                   </td>
-                  <td className="px-4 py-3">
-                    {getTypeBadge(event.eventType)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {getStatusBadge(event.status)}
-                  </td>
+                  <td className="px-4 py-3">{getTypeBadge(event.eventType)}</td>
+                  <td className="px-4 py-3">{getStatusBadge(event.status)}</td>
                   <td className="px-4 py-3 text-sm text-gray-900">
                     {event._count.registrations}
                     {event.maxAttendees && ` / ${event.maxAttendees}`}
@@ -226,4 +250,3 @@ export function EventsTable() {
     </div>
   )
 }
-

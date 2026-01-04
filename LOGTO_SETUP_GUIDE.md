@@ -5,6 +5,7 @@ Follow these steps to configure LogTo authentication for the Fire Platform.
 ## Step 1: Access LogTo Admin Console
 
 Open your browser and go to:
+
 ```
 http://localhost:3002
 ```
@@ -54,6 +55,7 @@ This allows server-side authentication for your Next.js app.
 ### Get M2M Credentials
 
 After creation:
+
 1. You'll see **App ID** and **App Secret**
 2. **COPY THESE IMMEDIATELY** - you'll need them!
 
@@ -91,6 +93,7 @@ This is for user-facing authentication (login/logout).
 ### Configure Web App
 
 After creation:
+
 1. **Copy App ID and App Secret**
 2. Configure **Redirect URIs**:
    - Click **Add URI**
@@ -115,7 +118,7 @@ Web App Secret: <your-web-app-secret-here>
 2. Customize:
    - **Brand color**: Your platform color
    - **Logo**: Upload your logo (optional)
-   - **Sign-in methods**: 
+   - **Sign-in methods**:
      - ✅ Email + Password (enabled by default)
      - ✅ Email verification code (optional)
      - Social logins (optional)
@@ -135,11 +138,11 @@ environment:
   LOGTO_ENDPOINT: http://logto:3001
   LOGTO_APP_ID: <your-web-app-id>
   LOGTO_APP_SECRET: <your-web-app-secret>
-  
+
   # NextAuth Configuration
   NEXTAUTH_URL: http://localhost:3000
   NEXTAUTH_SECRET: <generate-a-random-32-char-string>
-  
+
   # LogTo Management API (M2M)
   LOGTO_M2M_APP_ID: <your-m2m-app-id>
   LOGTO_M2M_APP_SECRET: <your-m2m-app-secret>
@@ -149,6 +152,7 @@ environment:
 ### Generate NEXTAUTH_SECRET
 
 Run this command to generate a secure secret:
+
 ```bash
 openssl rand -base64 32
 ```
@@ -177,16 +181,19 @@ After updating the environment and starting the app:
 ## Troubleshooting
 
 ### "Redirect URI mismatch"
+
 - Check that redirect URIs in LogTo match exactly: `http://localhost:3000/api/auth/callback/logto`
 - No trailing slashes
 - Correct protocol (http vs https)
 
 ### "Invalid credentials"
+
 - Double-check App ID and App Secret
 - Make sure you're using Web App credentials for LOGTO_APP_ID (not M2M)
 - Check for extra spaces or characters
 
 ### "Cannot connect to LogTo"
+
 - Ensure LogTo container is running: `docker-compose ps`
 - Check LogTo is accessible: `curl http://localhost:3001/api/status`
 - View logs: `docker-compose logs logto`
@@ -194,6 +201,7 @@ After updating the environment and starting the app:
 ## Next Steps
 
 Once LogTo is configured:
+
 1. We'll integrate authentication into the Next.js app
 2. Create protected routes and middleware
 3. Build user profile pages
@@ -202,4 +210,3 @@ Once LogTo is configured:
 ---
 
 **Need help?** Check `TESTING.md` for infrastructure validation commands.
-

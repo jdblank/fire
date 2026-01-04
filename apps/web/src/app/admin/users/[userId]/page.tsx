@@ -1,24 +1,25 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/auth'
 import { redirect, notFound } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { UserForm } from '../UserForm'
 import { RegisterUserForm } from './RegisterUserForm'
 import { ClearMfaButton } from './ClearMfaButton'
+import { UserRoleManager } from './UserRoleManager'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/pricing'
 import { formatDateShort } from '@/lib/date-utils'
+import { hasRole } from '@/lib/utils'
 
 export default async function EditUserPage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
   }
 
-  if (session.user.role !== 'ADMIN') {
+  if (!hasRole(session.user, 'admin')) {
     redirect('/dashboard')
   }
 
@@ -31,7 +32,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
           id: true,
           email: true,
           displayName: true,
-        }
+        },
       },
       eventRegistrations: {
         include: {
@@ -45,20 +46,20 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
               timezone: true,
               eventType: true,
               status: true,
-            }
+            },
           },
           lineItems: {
             include: {
-              lineItem: true
-            }
+              lineItem: true,
+            },
           },
           discounts: true,
         },
         orderBy: {
-          createdAt: 'desc'
-        }
-      }
-    }
+          createdAt: 'desc',
+        },
+      },
+    },
   })
 
   if (!user) {
@@ -66,12 +67,13 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
   }
 
   // Group events by type
-  const paidEvents = user.eventRegistrations.filter(r => r.event.eventType === 'PAID')
-  const freeEvents = user.eventRegistrations.filter(r => r.event.eventType === 'FREE')
+  const paidEvents = user.eventRegistrations.filter((r) => r.event.eventType === 'PAID')
+  const freeEvents = user.eventRegistrations.filter((r) => r.event.eventType === 'FREE')
 
   // Calculate total spent
-  const totalSpent = user.eventRegistrations.reduce((sum, reg) => 
-    sum + parseFloat(reg.totalAmount.toString()), 0
+  const totalSpent = user.eventRegistrations.reduce(
+    (sum, reg) => sum + parseFloat(reg.totalAmount.toString()),
+    0
   )
 
   const getPaymentStatusBadge = (status: string) => {
@@ -82,7 +84,9 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
       REFUNDED: 'bg-gray-100 text-gray-800',
     }
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}
+      >
         {status.replace('_', ' ')}
       </span>
     )
@@ -91,38 +95,54 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-5xl space-y-8">
         <div className="mb-8">
-          <Link href="/admin/users" className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block">
+          <Link
+            href="/admin/users"
+            className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block"
+          >
             ← Back to Users
           </Link>
-          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-            User Profile
-          </h1>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">User Profile</h1>
           <p className="text-gray-500">
             {user.displayName || `${user.firstName} ${user.lastName}`.trim()} • {user.email}
           </p>
         </div>
 
         {/* User Profile Form */}
-        <UserForm userId={user.id} initialData={user} />
+        <UserForm
+          userId={user.id}
+          initialData={{
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            displayName: user.displayName,
+            dateOfBirth: user.dateOfBirth,
+            mobilePhone: user.mobilePhone,
+            countryCode: user.countryCode,
+            hometown: user.hometown,
+            hometownLat: user.hometownLat,
+            hometownLng: user.hometownLng,
+            hometownPlaceId: user.hometownPlaceId,
+            referredById: user.referredById,
+          }}
+        />
+
+        {/* User Role Management */}
+        <UserRoleManager userId={user.id} logtoId={user.logtoId} />
 
         {/* Register User for Event Form */}
-        <RegisterUserForm 
-          user={{ id: user.id, dateOfBirth: user.dateOfBirth }} 
-        />
+        <RegisterUserForm user={{ id: user.id, dateOfBirth: user.dateOfBirth }} />
 
         {/* Security Settings Section */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Security Settings
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Security Settings</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
               <div>
                 <p className="font-medium text-gray-900">Two-Factor Authentication</p>
-                <p className="text-sm text-gray-600">Manage user's 2FA settings</p>
+                <p className="text-sm text-gray-600">Manage user&apos;s 2FA settings</p>
               </div>
               <ClearMfaButton userId={user.id} />
             </div>
@@ -162,7 +182,9 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
               {/* Paid Events */}
               {paidEvents.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-3">Paid Events ({paidEvents.length})</h3>
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    Paid Events ({paidEvents.length})
+                  </h3>
                   <div className="space-y-2">
                     {paidEvents.map((registration) => (
                       <div key={registration.id} className="border border-gray-200 rounded-lg p-4">
@@ -175,7 +197,11 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
                               {registration.event.title}
                             </Link>
                             <div className="text-sm text-gray-500 mt-1">
-                              {formatDateShort(registration.event.startDate, registration.event.timezone || undefined)} • {registration.event.location}
+                              {formatDateShort(
+                                registration.event.startDate,
+                                registration.event.timezone || undefined
+                              )}{' '}
+                              • {registration.event.location}
                             </div>
                           </div>
                           <div className="text-right">
@@ -185,7 +211,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
                             {getPaymentStatusBadge(registration.paymentStatus)}
                           </div>
                         </div>
-                        
+
                         {registration.lineItems.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-gray-100">
                             <p className="text-xs text-gray-500 mb-2">Line Items:</p>
@@ -213,7 +239,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
                             )}
                           </div>
                         )}
-                        
+
                         <div className="mt-3 flex gap-2">
                           <Link
                             href={`/registrations/${registration.id}/invoice`}
@@ -231,7 +257,9 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
               {/* Free Events */}
               {freeEvents.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-3">Free Events ({freeEvents.length})</h3>
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    Free Events ({freeEvents.length})
+                  </h3>
                   <div className="space-y-2">
                     {freeEvents.map((registration) => (
                       <div key={registration.id} className="border border-gray-200 rounded-lg p-4">
@@ -244,7 +272,11 @@ export default async function EditUserPage({ params }: { params: Promise<{ userI
                               {registration.event.title}
                             </Link>
                             <div className="text-sm text-gray-500 mt-1">
-                              {formatDateShort(registration.event.startDate, registration.event.timezone || undefined)} • {registration.event.location}
+                              {formatDateShort(
+                                registration.event.startDate,
+                                registration.event.timezone || undefined
+                              )}{' '}
+                              • {registration.event.location}
                             </div>
                           </div>
                           <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded font-medium">

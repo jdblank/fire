@@ -25,6 +25,7 @@ docker-compose up -d postgres redis minio logto outline
 ### 2. Install Node.js (if not installed)
 
 Check if you have Node 20+:
+
 ```bash
 node --version  # Should be v20.x.x or higher
 ```
@@ -47,6 +48,7 @@ pnpm install
 ### 5. Setup Environment
 
 Create `.env.local` in the project root (or it already exists):
+
 ```bash
 # Copy from .env.example
 cp .env.example .env.local
@@ -134,6 +136,7 @@ pnpm db:studio                          # Open Prisma Studio
 ## Troubleshooting
 
 **Can't connect to database:**
+
 ```bash
 # Make sure PostgreSQL is running
 docker ps | grep postgres
@@ -143,6 +146,7 @@ docker exec -it fire-postgres psql -U fireuser -d fire_db
 ```
 
 **Can't connect to LogTo:**
+
 ```bash
 # Check LogTo is running
 docker ps | grep logto
@@ -152,6 +156,7 @@ docker logs fire-logto
 ```
 
 **Port already in use:**
+
 ```bash
 # Find what's using port 3000
 lsof -i :3000
@@ -161,6 +166,7 @@ PORT=3001 pnpm dev
 ```
 
 **Prisma client out of sync:**
+
 ```bash
 # Check if Prisma client is in sync (recommended first step)
 ./scripts/check-prisma-client.sh
@@ -181,4 +187,3 @@ docker-compose restart app
 ---
 
 **This is a battle-tested approach used by many teams!** ✅
-

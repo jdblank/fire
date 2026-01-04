@@ -14,7 +14,7 @@ export function TwoFactorPrompt({ email: _email, onVerified, onCancel }: TwoFact
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!code || code.length !== 6) {
       setError('Please enter a 6-digit code')
       return
@@ -29,13 +29,16 @@ export function TwoFactorPrompt({ email: _email, onVerified, onCancel }: TwoFact
       <div className="mb-4">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
           </svg>
           <span className="font-medium">Two-Factor Authentication Required</span>
         </div>
-        <p className="text-sm text-gray-600">
-          Enter the 6-digit code from your authenticator app
-        </p>
+        <p className="text-sm text-gray-600">Enter the 6-digit code from your authenticator app</p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -52,9 +55,7 @@ export function TwoFactorPrompt({ email: _email, onVerified, onCancel }: TwoFact
           autoComplete="one-time-code"
         />
 
-        {error && (
-          <p className="text-sm text-red-600 mb-4">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
 
         <button
           type="submit"
@@ -75,5 +76,3 @@ export function TwoFactorPrompt({ email: _email, onVerified, onCancel }: TwoFact
     </div>
   )
 }
-
-

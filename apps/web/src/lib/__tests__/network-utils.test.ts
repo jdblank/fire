@@ -5,7 +5,7 @@ describe('Network Utils', () => {
   describe('buildNetworkGraph', () => {
     it('should return empty arrays for no users', () => {
       const result = buildNetworkGraph([])
-      
+
       expect(result.nodes).toEqual([])
       expect(result.edges).toEqual([])
     })
@@ -21,8 +21,8 @@ describe('Network Utils', () => {
           hometown: 'Austin',
           referredById: null,
           accountStatus: 'ACTIVE',
-          paidEventYears: [2024, 2023]
-        }
+          paidEventYears: [2024, 2023],
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -46,7 +46,7 @@ describe('Network Utils', () => {
           image: null,
           hometown: 'Austin',
           referredById: null,
-          accountStatus: 'ACTIVE'
+          accountStatus: 'ACTIVE',
         },
         {
           id: 'user2',
@@ -56,8 +56,8 @@ describe('Network Utils', () => {
           image: null,
           hometown: 'Brooklyn',
           referredById: 'user1',
-          accountStatus: 'ACTIVE'
-        }
+          accountStatus: 'ACTIVE',
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -78,7 +78,7 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: null,
-          accountStatus: 'ACTIVE'
+          accountStatus: 'ACTIVE',
         },
         {
           id: 'user2',
@@ -88,7 +88,7 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: 'user1',
-          accountStatus: 'ACTIVE'
+          accountStatus: 'ACTIVE',
         },
         {
           id: 'user3',
@@ -98,8 +98,8 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: 'user2',
-          accountStatus: 'ACTIVE'
-        }
+          accountStatus: 'ACTIVE',
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -119,8 +119,8 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: null,
-          accountStatus: 'ACTIVE'
-        }
+          accountStatus: 'ACTIVE',
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -138,8 +138,8 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: null,
-          accountStatus: 'ACTIVE'
-        }
+          accountStatus: 'ACTIVE',
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -157,8 +157,8 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: null,
-          accountStatus: 'ACTIVE'
-        }
+          accountStatus: 'ACTIVE',
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -177,7 +177,7 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: null,
-          accountStatus: 'ACTIVE'
+          accountStatus: 'ACTIVE',
         },
         {
           id: 'user2',
@@ -187,8 +187,8 @@ describe('Network Utils', () => {
           image: null,
           hometown: null,
           referredById: null,
-          accountStatus: 'PENDING_INVITE'
-        }
+          accountStatus: 'PENDING_INVITE',
+        },
       ]
 
       const result = buildNetworkGraph(users)
@@ -218,4 +218,3 @@ describe('Network Utils', () => {
     })
   })
 })
-

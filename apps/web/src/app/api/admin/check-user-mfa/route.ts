@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
+import { hasRole } from '@/lib/utils'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 const M2M_APP_ID = process.env.LOGTO_M2M_APP_ID
@@ -9,9 +10,9 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -26,8 +27,8 @@ export async function POST(request: NextRequest) {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
@@ -36,23 +37,17 @@ export async function POST(request: NextRequest) {
     // Get MFA verifications
     const mfaResponse = await fetch(`${LOGTO_ENDPOINT}/api/users/${logtoId}/mfa-verifications`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     })
 
     const mfaData = await mfaResponse.json()
 
     return NextResponse.json({
-      mfaVerifications: mfaData
+      mfaVerifications: mfaData,
     })
-
   } catch (error) {
     console.error('Error checking MFA:', error)
-    return NextResponse.json(
-      { error: 'Failed to check MFA' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to check MFA' }, { status: 500 })
   }
 }
-
-

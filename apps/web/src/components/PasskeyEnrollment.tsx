@@ -7,7 +7,7 @@ interface PasskeyEnrollmentProps {
   onCancel: () => void
 }
 
-export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProps) {
+export function PasskeyEnrollment({ onSuccess: _onSuccess, onCancel }: PasskeyEnrollmentProps) {
   const [step, setStep] = useState<'intro' | 'enrolling' | 'success'>('intro')
   const [error, setError] = useState<string | null>(null)
 
@@ -25,13 +25,12 @@ export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProp
       // This is a placeholder for the actual WebAuthn flow
       setError('Passkey enrollment requires additional WebAuthn implementation. Coming soon!')
       setStep('intro')
-      
+
       // TODO: Implement WebAuthn credential creation
       // 1. Call API to get challenge from LogTo
       // 2. Use navigator.credentials.create()
       // 3. Send attestation to LogTo
       // 4. Verify and store credential
-
     } catch (err) {
       setError((err as Error).message)
       setStep('intro')
@@ -44,12 +43,11 @@ export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProp
         <>
           <div className="text-center">
             <div className="text-5xl mb-4">🔑</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              What are Passkeys?
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">What are Passkeys?</h3>
             <p className="text-gray-600 mb-4">
-              Passkeys let you sign in using your device's biometrics (Face ID, Touch ID, Windows Hello) 
-              or a hardware security key. They're more secure than passwords and easier to use.
+              Passkeys let you sign in using your device&apos;s biometrics (Face ID, Touch ID,
+              Windows Hello) or a hardware security key. They&apos;re more secure than passwords and
+              easier to use.
             </p>
           </div>
 
@@ -79,10 +77,9 @@ export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProp
             </button>
             <button
               onClick={handleEnroll}
-              disabled={step === 'enrolling'}
               className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors font-medium"
             >
-              {step === 'enrolling' ? 'Setting up...' : 'Setup Passkey'}
+              Setup Passkey
             </button>
           </div>
         </>
@@ -91,16 +88,10 @@ export function PasskeyEnrollment({ onSuccess, onCancel }: PasskeyEnrollmentProp
       {step === 'success' && (
         <div className="text-center py-8">
           <div className="text-6xl mb-4">✅</div>
-          <h3 className="text-xl font-semibold text-green-900 mb-2">
-            Passkey Registered!
-          </h3>
-          <p className="text-gray-600">
-            You can now use your biometrics to sign in
-          </p>
+          <h3 className="text-xl font-semibold text-green-900 mb-2">Passkey Registered!</h3>
+          <p className="text-gray-600">You can now use your biometrics to sign in</p>
         </div>
       )}
     </div>
   )
 }
-
-

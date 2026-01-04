@@ -1,11 +1,11 @@
 /**
  * Setup Production LogTo via Management API
- * 
+ *
  * This script:
  * 1. Creates Fire application with correct redirect URIs
  * 2. Applies Fire branding
  * 3. Configures sign-in experience
- * 
+ *
  * Usage: node scripts/setup-production-logto.js
  */
 
@@ -29,8 +29,8 @@ async function setupProductionLogTo() {
       client_id: M2M_APP_ID,
       client_secret: M2M_APP_SECRET,
       resource: 'https://default.logto.app/api',
-      scope: 'all'
-    })
+      scope: 'all',
+    }),
   })
 
   if (!tokenResponse.ok) {
@@ -45,29 +45,23 @@ async function setupProductionLogTo() {
   const appResponse = await fetch(`${LOGTO_ENDPOINT}/api/applications`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${access_token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${access_token}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       name: 'Fire',
       type: 'Traditional',
       description: 'Fire Community Platform',
       oidcClientMetadata: {
-        redirectUris: [
-          `${APP_URL}/api/auth/callback/logto`
-        ],
-        postLogoutRedirectUris: [
-          APP_URL
-        ],
-        corsAllowedOrigins: [
-          APP_URL
-        ]
+        redirectUris: [`${APP_URL}/api/auth/callback/logto`],
+        postLogoutRedirectUris: [APP_URL],
+        corsAllowedOrigins: [APP_URL],
       },
       customClientMetadata: {
         idTokenTtl: 3600,
-        refreshTokenTtl: 1209600
-      }
-    })
+        refreshTokenTtl: 1209600,
+      },
+    }),
   })
 
   if (!appResponse.ok) {
@@ -78,16 +72,16 @@ async function setupProductionLogTo() {
   console.log('✅ Fire application created!')
   console.log(`   App ID: ${app.id}`)
   console.log(`   App Secret: ${app.secret}\n`)
-  
+
   // Save credentials for later
   const credentials = {
     LOGTO_APP_ID: app.id,
-    LOGTO_APP_SECRET: app.secret
+    LOGTO_APP_SECRET: app.secret,
   }
 
   // Step 3: Apply Fire branding
   console.log('3️⃣  Applying Fire branding...')
-  
+
   const customCss = `
     /* Hide LogTo branding */
     footer,
@@ -151,17 +145,17 @@ async function setupProductionLogTo() {
   const brandingResponse = await fetch(`${LOGTO_ENDPOINT}/api/sign-in-exp`, {
     method: 'PATCH',
     headers: {
-      'Authorization': `Bearer ${access_token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${access_token}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       color: {
         primaryColor: '#111827',
         isDarkModeEnabled: false,
-        darkPrimaryColor: '#1f2937'
+        darkPrimaryColor: '#1f2937',
       },
-      customCss: customCss
-    })
+      customCss: customCss,
+    }),
   })
 
   if (!brandingResponse.ok) {
@@ -192,8 +186,7 @@ setupProductionLogTo()
     console.log('✨ All done! Add the environment variables to Vercel and redeploy.')
     process.exit(0)
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('❌ Setup failed:', error.message)
     process.exit(1)
   })
-

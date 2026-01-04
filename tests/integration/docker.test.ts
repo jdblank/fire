@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest'
 describe('Infrastructure Container Health', () => {
   // Detect if we're running inside Docker by checking environment variables
   const isInDocker = process.env.DATABASE_URL?.includes('postgres:5432')
-  
+
   const POSTGRES_HOST = isInDocker ? 'postgres' : 'localhost'
   const REDIS_HOST = isInDocker ? 'redis' : 'localhost'
   const MINIO_HOST = isInDocker ? 'minio' : 'localhost'
@@ -16,9 +16,9 @@ describe('Infrastructure Container Health', () => {
     it('should be running and healthy', async () => {
       const { Client } = await import('pg')
       const client = new Client({
-        connectionString: `postgres://fireuser:firepass@${POSTGRES_HOST}:5432/fire_db`
+        connectionString: `postgres://fireuser:firepass@${POSTGRES_HOST}:5432/fire_db`,
       })
-      
+
       await client.connect()
       const result = await client.query('SELECT version()')
       expect(result.rows[0].version).toContain('PostgreSQL')
@@ -30,7 +30,7 @@ describe('Infrastructure Container Health', () => {
     it('should be running and healthy', async () => {
       const redis = await import('redis')
       const client = redis.createClient({ url: `redis://${REDIS_HOST}:6379` })
-      
+
       await client.connect()
       const pong = await client.ping()
       expect(pong).toBe('PONG')
@@ -67,12 +67,14 @@ describe('Infrastructure Container Health', () => {
     it('should persist data in postgres', async () => {
       const { Client } = await import('pg')
       const client = new Client({
-        connectionString: `postgres://fireuser:firepass@${POSTGRES_HOST}:5432/fire_db`
+        connectionString: `postgres://fireuser:firepass@${POSTGRES_HOST}:5432/fire_db`,
       })
-      
+
       await client.connect()
       // Create a test table, insert data, verify it persists
-      await client.query('CREATE TABLE IF NOT EXISTS health_check (id SERIAL PRIMARY KEY, timestamp TIMESTAMP DEFAULT NOW())')
+      await client.query(
+        'CREATE TABLE IF NOT EXISTS health_check (id SERIAL PRIMARY KEY, timestamp TIMESTAMP DEFAULT NOW())'
+      )
       await client.query('INSERT INTO health_check DEFAULT VALUES')
       const result = await client.query('SELECT COUNT(*) FROM health_check')
       expect(parseInt(result.rows[0].count)).toBeGreaterThan(0)
@@ -83,7 +85,7 @@ describe('Infrastructure Container Health', () => {
     it('should persist data in redis', async () => {
       const redis = await import('redis')
       const client = redis.createClient({ url: `redis://${REDIS_HOST}:6379` })
-      
+
       await client.connect()
       const testKey = `health_check:${Date.now()}`
       await client.set(testKey, 'persistent_data')
@@ -94,4 +96,3 @@ describe('Infrastructure Container Health', () => {
     })
   })
 })
-

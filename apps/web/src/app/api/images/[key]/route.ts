@@ -1,28 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { getSignedImageUrl } from '@/lib/upload-utils'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { key: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
   try {
+    const { key: encodedKey } = await params
     // Check authentication
-    const session = await getServerSession(authOptions)
-    
+    const session = await auth()
+
     if (!session) {
       return new NextResponse('Unauthorized - Please sign in to view images', { status: 401 })
     }
 
     // Decode the key from URL
-    const key = decodeURIComponent(params.key)
-    
+    const key = decodeURIComponent(encodedKey)
+
     // Generate signed URL (expires in 1 hour)
     const signedUrl = await getSignedImageUrl(key)
-    
+
     // Redirect to signed URL
     return NextResponse.redirect(signedUrl)
   } catch (error) {
@@ -30,4 +28,3 @@ export async function GET(
     return new NextResponse('Image not found', { status: 404 })
   }
 }
-

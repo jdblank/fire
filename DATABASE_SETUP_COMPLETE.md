@@ -13,6 +13,7 @@
 Get it from: `PRODUCTION_CREDENTIALS.md` → Railway Database Credentials → PostgreSQL
 
 Format:
+
 ```
 DATABASE_URL=postgresql://postgres:password@ballast.proxy.rlwy.net:55740/fire_db
 ```
@@ -57,8 +58,9 @@ See `VERCEL_PRODUCTION_SETUP.md` for the complete list.
 ## Database Structure
 
 Your `fire_db` database now contains all the tables defined in your Prisma schema:
+
 - User tables
-- Post tables  
+- Post tables
 - Event tables
 - And any other models you've defined
 
@@ -67,6 +69,7 @@ Your `fire_db` database now contains all the tables defined in your Prisma schem
 ## Security Note
 
 ⚠️ **Important:** Database credentials are sensitive. Make sure:
+
 - ✅ Connection string is stored in `PRODUCTION_CREDENTIALS.md` (in `.gitignore`) ✅
 - ✅ Connection string is stored in Vercel environment variables (not in code) ✅
 - ✅ This file (`DATABASE_SETUP_COMPLETE.md`) does NOT contain actual passwords ✅
@@ -76,4 +79,3 @@ Your `fire_db` database now contains all the tables defined in your Prisma schem
 ---
 
 **Your production database is ready! 🎉**
-

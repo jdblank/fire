@@ -19,5 +19,3 @@ vi.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
 }))
-
-

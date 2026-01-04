@@ -1,27 +1,27 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { Header } from '@/components/Header'
 import { prisma } from '@fire/db'
 import Link from 'next/link'
 import { formatDateShort } from '@/lib/date-utils'
+import { hasRole } from '@/lib/utils'
 
 export default async function EventsPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   if (!session) {
     redirect('/login')
   }
 
-  const isAdmin = session.user.role === 'ADMIN'
+  const isAdmin = hasRole(session.user, 'admin')
 
   // Fetch published events
   const events = await prisma.event.findMany({
     where: {
       status: 'PUBLISHED',
       startDate: {
-        gte: new Date() // Only show upcoming events
-      }
+        gte: new Date(), // Only show upcoming events
+      },
     },
     select: {
       id: true,
@@ -32,20 +32,21 @@ export default async function EventsPage() {
       endDate: true,
       location: true,
       timezone: true,
+      isAllDay: true,
       eventType: true,
       maxAttendees: true,
       // Only fetch registration count for admins
       ...(isAdmin && {
         _count: {
           select: {
-            registrations: true
-          }
-        }
-      })
+            registrations: true,
+          },
+        },
+      }),
     },
     orderBy: {
-      startDate: 'asc'
-    }
+      startDate: 'asc',
+    },
   })
 
   // Check which events the user is registered for (exclude cancelled)
@@ -53,29 +54,25 @@ export default async function EventsPage() {
     where: {
       userId: session.user.id,
       status: {
-        not: 'CANCELLED'
-      }
+        not: 'CANCELLED',
+      },
     },
     select: {
       eventId: true,
       paymentStatus: true,
-    }
+    },
   })
 
-  const registeredEventIds = new Set(userRegistrations.map(r => r.eventId))
+  const registeredEventIds = new Set(userRegistrations.map((r) => r.eventId))
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-            Upcoming Events
-          </h1>
-          <p className="text-gray-500">
-            Browse and register for community events
-          </p>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Upcoming Events</h1>
+          <p className="text-gray-500">Browse and register for community events</p>
         </div>
 
         {events.length === 0 ? (
@@ -88,9 +85,10 @@ export default async function EventsPage() {
             {events.map((event) => {
               const isRegistered = registeredEventIds.has(event.id)
               // For admins, check actual count; for users, just check if maxAttendees exists (will check on detail page)
-              const isFull = isAdmin && event._count 
-                ? event.maxAttendees && event._count.registrations >= event.maxAttendees
-                : false
+              const isFull =
+                isAdmin && event._count
+                  ? event.maxAttendees && event._count.registrations >= event.maxAttendees
+                  : false
 
               return (
                 <Link
@@ -100,7 +98,11 @@ export default async function EventsPage() {
                 >
                   {event.banner && (
                     <div className="h-48 bg-gray-200">
-                      <img src={event.banner} alt={event.title} className="w-full h-full object-cover" />
+                      <img
+                        src={event.banner}
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
                   <div className="p-6">
@@ -117,14 +119,19 @@ export default async function EventsPage() {
                       )}
                     </div>
 
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {event.description}
-                    </p>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{event.description}</p>
 
                     <div className="space-y-2 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <span>📅</span>
-                        <span>{formatDateShort(event.startDate, event.timezone || undefined)}</span>
+                        <span>
+                          {formatDateShort(
+                            event.startDate,
+                            event.timezone || undefined,
+                            event.isAllDay
+                          )}
+                          {event.isAllDay && <span className="ml-1 text-gray-500">(All Day)</span>}
+                        </span>
                       </div>
                       {event.location && (
                         <div className="flex items-center gap-2">
@@ -140,9 +147,7 @@ export default async function EventsPage() {
                           ✓ You&apos;re registered
                         </span>
                       ) : isFull ? (
-                        <span className="text-red-600 font-medium text-sm">
-                          Event Full
-                        </span>
+                        <span className="text-red-600 font-medium text-sm">Event Full</span>
                       ) : (
                         <span className="text-blue-600 font-medium text-sm">
                           View Details & Register →
@@ -159,4 +164,3 @@ export default async function EventsPage() {
     </div>
   )
 }
-

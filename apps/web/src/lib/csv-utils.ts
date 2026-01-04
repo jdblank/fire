@@ -104,7 +104,15 @@ export function parseUsersCSV(csvText: string): ParsedCSVResult {
  * Generate CSV template
  */
 export function generateCSVTemplate(): string {
-  const headers = ['firstName', 'lastName', 'email', 'hometown', 'dateOfBirth', 'referredByEmail', 'mobilePhone']
+  const headers = [
+    'firstName',
+    'lastName',
+    'email',
+    'hometown',
+    'dateOfBirth',
+    'referredByEmail',
+    'mobilePhone',
+  ]
   const exampleRow = [
     'John',
     'Doe',
@@ -112,7 +120,7 @@ export function generateCSVTemplate(): string {
     'Austin, TX',
     '1990-01-15',
     'referrer@example.com',
-    '+1-555-123-4567'
+    '+1-555-123-4567',
   ]
 
   return Papa.unparse({
@@ -137,4 +145,37 @@ export function downloadCSVTemplate() {
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Generate Event CSV template
+ */
+export function generateEventCSVTemplate(): string {
+  const headers = ['title', 'startDate', 'endDate', 'description', 'location']
+  const exampleRow = [
+    'Annual Gala',
+    '2025-12-31',
+    '2026-01-01',
+    'A fancy end of year party',
+    'Grand Ballroom',
+  ]
 
+  return Papa.unparse({
+    fields: headers,
+    data: [exampleRow],
+  })
+}
+
+/**
+ * Download Event CSV template
+ */
+export function downloadEventCSVTemplate() {
+  const csv = generateEventCSVTemplate()
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'event-import-template.csv'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}

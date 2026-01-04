@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { LocationAutocomplete, type LocationData } from '@/components/LocationAutocomplete'
 
 interface UserFormProps {
   userId?: string
@@ -21,21 +22,45 @@ export function UserForm({ userId, initialData }: UserFormProps) {
   const [searchingReferrals, setSearchingReferrals] = useState(false)
   const [referralOptions, setReferralOptions] = useState<ReferralOption[]>([])
   const [referralSearch, setReferralSearch] = useState('')
-  
+
   const [formData, setFormData] = useState({
     email: initialData?.email || '',
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
     displayName: initialData?.displayName || '',
-    dateOfBirth: initialData?.dateOfBirth ? new Date(initialData.dateOfBirth).toISOString().split('T')[0] : '',
+    dateOfBirth: initialData?.dateOfBirth
+      ? new Date(initialData.dateOfBirth).toISOString().split('T')[0]
+      : '',
     countryCode: initialData?.countryCode || '+1',
     mobilePhone: initialData?.mobilePhone || '',
     hometown: initialData?.hometown || '',
+    hometownLat: initialData?.hometownLat || null,
+    hometownLng: initialData?.hometownLng || null,
+    hometownPlaceId: initialData?.hometownPlaceId || null,
     referredById: initialData?.referredById || '',
-    role: initialData?.role || 'USER',
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const handleHometownChange = (location: LocationData | null) => {
+    if (location) {
+      setFormData({
+        ...formData,
+        hometown: location.address,
+        hometownLat: location.lat,
+        hometownLng: location.lng,
+        hometownPlaceId: location.placeId,
+      })
+    } else {
+      setFormData({
+        ...formData,
+        hometown: '',
+        hometownLat: null,
+        hometownLng: null,
+        hometownPlaceId: null,
+      })
+    }
+  }
 
   // Search for referral users
   useEffect(() => {
@@ -47,7 +72,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
     const timer = setTimeout(async () => {
       setSearchingReferrals(true)
       try {
-        const response = await fetch(`/api/admin/users?search=${encodeURIComponent(referralSearch)}&limit=10`)
+        const response = await fetch(
+          `/api/admin/users?search=${encodeURIComponent(referralSearch)}&limit=10`
+        )
         if (response.ok) {
           const data = await response.json()
           setReferralOptions(data.users.filter((u: any) => u.id !== userId)) // Exclude self
@@ -84,8 +111,14 @@ export function UserForm({ userId, initialData }: UserFormProps) {
       const data = {
         ...formData,
         // Combine country code and phone number if provided
-        mobilePhone: formData.mobilePhone ? `${formData.countryCode}-${formData.mobilePhone}` : null,
+        mobilePhone: formData.mobilePhone
+          ? `${formData.countryCode}-${formData.mobilePhone}`
+          : null,
         dateOfBirth: formData.dateOfBirth || null,
+        hometown: formData.hometown || null,
+        hometownLat: formData.hometownLat,
+        hometownLng: formData.hometownLng,
+        hometownPlaceId: formData.hometownPlaceId,
         referredById: formData.referredById || null,
       }
 
@@ -100,7 +133,7 @@ export function UserForm({ userId, initialData }: UserFormProps) {
       })
 
       if (response.ok) {
-        const result = await response.json()
+        await response.json()
         alert(userId ? 'User updated successfully!' : 'User created successfully!')
         router.push('/admin/users')
         router.refresh()
@@ -117,7 +150,10 @@ export function UserForm({ userId, initialData }: UserFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-lg border border-gray-200 p-6 space-y-6"
+    >
       {/* Email */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -180,7 +216,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
           placeholder="Leave blank to use First + Last Name"
         />
-        <p className="mt-1 text-sm text-gray-500">This is how the user&apos;s name will appear to others</p>
+        <p className="mt-1 text-sm text-gray-500">
+          This is how the user&apos;s name will appear to others
+        </p>
       </div>
 
       {/* Date of Birth */}
@@ -221,7 +259,9 @@ export function UserForm({ userId, initialData }: UserFormProps) {
             id="mobilePhone"
             type="tel"
             value={formData.mobilePhone}
-            onChange={(e) => setFormData({ ...formData, mobilePhone: e.target.value.replace(/[^0-9-]/g, '') })}
+            onChange={(e) =>
+              setFormData({ ...formData, mobilePhone: e.target.value.replace(/[^0-9-]/g, '') })
+            }
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
             placeholder="555-1234"
           />
@@ -233,14 +273,19 @@ export function UserForm({ userId, initialData }: UserFormProps) {
         <label htmlFor="hometown" className="block text-sm font-medium text-gray-700 mb-2">
           Hometown
         </label>
-        <input
-          id="hometown"
-          type="text"
+        <LocationAutocomplete
           value={formData.hometown}
-          onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-          placeholder="City, State"
+          onChange={handleHometownChange}
+          placeholder="Enter hometown..."
+          error={errors.hometown}
+          types={['(cities)']}
         />
+        <p className="mt-1 text-xs text-gray-500">Search for a city or town using Google Places</p>
+        {formData.hometownLat && formData.hometownLng && (
+          <p className="mt-1 text-xs text-gray-400">
+            Coordinates: {formData.hometownLat.toFixed(6)}, {formData.hometownLng.toFixed(6)}
+          </p>
+        )}
       </div>
 
       {/* Referred By */}
@@ -290,23 +335,6 @@ export function UserForm({ userId, initialData }: UserFormProps) {
         )}
       </div>
 
-      {/* Role */}
-      <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-          Role
-        </label>
-        <select
-          id="role"
-          value={formData.role}
-          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-        >
-          <option value="USER">User</option>
-          <option value="MODERATOR">Moderator</option>
-          <option value="ADMIN">Admin</option>
-        </select>
-      </div>
-
       {/* Actions */}
       <div className="flex gap-4 pt-4 border-t">
         <button
@@ -326,4 +354,3 @@ export function UserForm({ userId, initialData }: UserFormProps) {
     </form>
   )
 }
-

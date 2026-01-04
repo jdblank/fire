@@ -36,17 +36,19 @@ interface Discount {
  */
 export function calculateAge(dateOfBirth: Date | string, atDate?: Date | string): number {
   const dob = typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth
-  const referenceDate = atDate 
-    ? (typeof atDate === 'string' ? new Date(atDate) : atDate)
+  const referenceDate = atDate
+    ? typeof atDate === 'string'
+      ? new Date(atDate)
+      : atDate
     : new Date()
-  
+
   let age = referenceDate.getFullYear() - dob.getFullYear()
   const monthDiff = referenceDate.getMonth() - dob.getMonth()
-  
+
   if (monthDiff < 0 || (monthDiff === 0 && referenceDate.getDate() < dob.getDate())) {
     age--
   }
-  
+
   return age
 }
 
@@ -134,7 +136,7 @@ export function calculateRegistrationTotal(
     discountTotal += discountAmount
     discountBreakdown.push({
       name: discount.name,
-      amount: discountAmount
+      amount: discountAmount,
     })
   }
 
@@ -146,12 +148,12 @@ export function calculateRegistrationTotal(
     discountTotal,
     total,
     breakdown: {
-      lineItems: lineItems.map(item => ({
+      lineItems: lineItems.map((item) => ({
         name: item.name,
-        amount: item.amount
+        amount: item.amount,
       })),
-      discounts: discountBreakdown
-    }
+      discounts: discountBreakdown,
+    },
   }
 }
 
@@ -170,12 +172,12 @@ export function calculateDepositAndBalance(
 } {
   const depositDue = Math.max(0, depositRequired - depositPaid)
   const balanceDue = Math.max(0, totalAmount - depositPaid)
-  
+
   return {
     depositDue,
     balanceDue,
     isDepositPaid: depositPaid >= depositRequired,
-    isFullyPaid: depositPaid >= totalAmount
+    isFullyPaid: depositPaid >= totalAmount,
   }
 }
 
@@ -200,4 +202,3 @@ export function getPaymentStatus(
   if (depositPaid >= totalAmount) return 'FULLY_PAID'
   return 'DEPOSIT_PAID'
 }
-

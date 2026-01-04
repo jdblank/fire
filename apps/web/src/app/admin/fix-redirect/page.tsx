@@ -31,15 +31,15 @@ export default function FixRedirectPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-2xl font-semibold mb-4">Fix OAuth Redirect URI</h1>
-        
+
         <div className="bg-white p-6 rounded-lg border">
           <p className="text-gray-600 mb-4">
             This will update the LogTo application to use the correct NextAuth callback URL.
           </p>
-          
+
           <button
             onClick={fixRedirect}
             disabled={loading}
@@ -50,9 +50,7 @@ export default function FixRedirectPage() {
 
           {result && (
             <div className={`mt-4 p-4 rounded ${result.success ? 'bg-green-50' : 'bg-red-50'}`}>
-              <pre className="text-xs overflow-auto">
-                {JSON.stringify(result, null, 2)}
-              </pre>
+              <pre className="text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>
             </div>
           )}
         </div>
@@ -60,5 +58,3 @@ export default function FixRedirectPage() {
     </div>
   )
 }
-
-

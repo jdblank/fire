@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { formatCurrency } from '@/lib/pricing'
 import { formatDateShort } from '@/lib/date-utils'
 import { ApplyDiscountForm } from './ApplyDiscountForm'
@@ -37,9 +38,12 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
     if (!confirm(`Remove discount "${discountName}"?`)) return
 
     try {
-      const response = await fetch(`/api/registrations/${registrationId}/discounts?discountId=${discountId}`, {
-        method: 'DELETE',
-      })
+      const response = await fetch(
+        `/api/registrations/${registrationId}/discounts?discountId=${discountId}`,
+        {
+          method: 'DELETE',
+        }
+      )
 
       if (response.ok) {
         alert('Discount removed')
@@ -63,8 +67,9 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
   }
 
   // Calculate subtotal (before discounts)
-  const subtotal = registration.lineItems.reduce((sum: number, item: any) => 
-    sum + parseFloat(item.calculatedAmount.toString()), 0
+  const subtotal = registration.lineItems.reduce(
+    (sum: number, item: any) => sum + parseFloat(item.calculatedAmount.toString()),
+    0
   )
 
   return (
@@ -73,18 +78,14 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
       <div className="bg-white rounded-lg border border-gray-200 p-8 mb-6">
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-              Registration Invoice
-            </h1>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-1">Registration Invoice</h1>
             <p className="text-sm text-gray-500">
               Invoice #{registration.id.slice(0, 8).toUpperCase()}
             </p>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-500">Registration Date</p>
-            <p className="font-medium text-gray-900">
-              {formatDateShort(registration.createdAt)}
-            </p>
+            <p className="font-medium text-gray-900">{formatDateShort(registration.createdAt)}</p>
           </div>
         </div>
 
@@ -93,10 +94,14 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
           <h2 className="font-semibold text-gray-900 mb-3">Event Details</h2>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">{registration.event.title}</h3>
           <div className="space-y-1 text-sm text-gray-600">
-            <p>📅 {formatDateShort(registration.event.startDate, registration.event.timezone || undefined)}</p>
-            {registration.event.location && (
-              <p>📍 {registration.event.location}</p>
-            )}
+            <p>
+              📅{' '}
+              {formatDateShort(
+                registration.event.startDate,
+                registration.event.timezone || undefined
+              )}
+            </p>
+            {registration.event.location && <p>📍 {registration.event.location}</p>}
           </div>
         </div>
 
@@ -105,9 +110,9 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
           <h2 className="font-semibold text-gray-900 mb-3">Attendee Information</h2>
           <div className="text-sm">
             <p className="text-gray-900 font-medium">
-              {registration.user.displayName || 
-               `${registration.user.firstName} ${registration.user.lastName}`.trim() ||
-               registration.user.email}
+              {registration.user.displayName ||
+                `${registration.user.firstName} ${registration.user.lastName}`.trim() ||
+                registration.user.email}
             </p>
             <p className="text-gray-600">{registration.user.email}</p>
             {registration.user.mobilePhone && (
@@ -148,7 +153,9 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
                 </tr>
               ))}
               <tr className="border-t-2">
-                <td colSpan={2} className="py-2 text-sm font-medium text-gray-700">Subtotal:</td>
+                <td colSpan={2} className="py-2 text-sm font-medium text-gray-700">
+                  Subtotal:
+                </td>
                 <td className="py-2 text-right text-sm font-semibold text-gray-900">
                   {formatCurrency(subtotal)}
                 </td>
@@ -162,7 +169,7 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-semibold text-gray-900">Discounts</h2>
           </div>
-          
+
           {registration.discounts.length > 0 ? (
             <table className="w-full mb-4">
               <tbody className="divide-y divide-gray-100">
@@ -191,7 +198,7 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
           )}
 
           {isAdmin && (
-            <ApplyDiscountForm 
+            <ApplyDiscountForm
               registrationId={registrationId}
               subtotal={subtotal}
               onSuccess={fetchRegistration}
@@ -242,7 +249,8 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-blue-800 font-medium">Deposit Paid</p>
               <p className="text-sm text-blue-700 mt-1">
-                Balance of {formatCurrency(parseFloat(registration.balanceDue.toString()))} due before event
+                Balance of {formatCurrency(parseFloat(registration.balanceDue.toString()))} due
+                before event
               </p>
             </div>
           )}
@@ -257,12 +265,12 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
 
       {/* Actions */}
       <div className="flex gap-4">
-        <a
+        <Link
           href="/events"
           className="px-6 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors inline-block text-center"
         >
           Back to Events
-        </a>
+        </Link>
         <button
           onClick={() => window.print()}
           className="px-6 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
@@ -273,4 +281,3 @@ export function InvoiceContent({ registrationId, isAdmin }: InvoiceContentProps)
     </>
   )
 }
-

@@ -17,29 +17,34 @@ Last updated: November 18, 2025
 ## What's Working
 
 ✅ **Authentication**
+
 - User registration (email + password)
 - User sign in
 - OAuth flow with LogTo
 - Admin role support
 
 ✅ **Database**
+
 - Railway PostgreSQL (`fire_db`)
 - All Prisma migrations applied
 - Tables created and accessible
 
 ✅ **LogTo Configuration**
+
 - Email-based registration enabled
 - Roles: admin, moderator, user
 - Fire Platform Server M2M app configured
 - Management API access working
 
 ✅ **Vercel Deployment**
+
 - Webhook auto-deploys on push to `main`
 - All environment variables configured
 - Custom domain `fire.lemonade.art` active
 - Latest code deployed
 
 ✅ **CI/CD Pipeline**
+
 ```
 Dev → git push → GitHub → Webhook → Vercel → Production
 ```
@@ -49,18 +54,22 @@ Dev → git push → GitHub → Webhook → Vercel → Production
 ## Key Configuration
 
 ### Environment Variables (Vercel)
+
 All required variables set for Production environment:
+
 - `LOGTO_ENDPOINT`, `LOGTO_ISSUER`, `LOGTO_APP_ID`, `LOGTO_APP_SECRET`
 - `LOGTO_M2M_APP_ID`, `LOGTO_M2M_APP_SECRET`
 - `NEXT_PUBLIC_LOGTO_ENDPOINT`
 - `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`
 
 ### LogTo Roles
+
 - **admin** - Full administrative access
-- **moderator** - Limited admin access  
+- **moderator** - Limited admin access
 - **user** - Default role for new users
 
 ### Admin User
+
 - Email: `josh@lemonade.art`
 - Role: admin
 
@@ -69,6 +78,7 @@ All required variables set for Production environment:
 ## Tests
 
 All 84 tests passing:
+
 - ✅ 23 unit tests
 - ✅ 61 integration tests
 
@@ -98,4 +108,3 @@ See `PRODUCTION_CREDENTIALS.md` (gitignored, local only)
 - Import dev users if needed
 - Set up monitoring/alerts
 - Configure backups
-

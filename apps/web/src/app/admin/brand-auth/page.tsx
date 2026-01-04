@@ -31,21 +31,21 @@ export default function BrandAuthPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="text-2xl font-semibold mb-4">Brand Authentication Pages</h1>
-        
+
         <div className="bg-white p-6 rounded-lg border space-y-4">
           <p className="text-gray-600">
-            This will customize LogTo's login/register pages to match Fire's branding:
+            This will customize LogTo&apos;s login/register pages to match Fire&apos;s branding:
           </p>
-          
+
           <ul className="text-sm text-gray-700 space-y-2 list-disc list-inside">
             <li>Gray-900 primary color (matches Fire)</li>
-            <li>Hide "Powered by Logto" footer</li>
+            <li>Hide &quot;Powered by Logto&quot; footer</li>
             <li>Clean, minimal Fire aesthetic</li>
           </ul>
-          
+
           <button
             onClick={brandLogTo}
             disabled={loading}
@@ -56,9 +56,7 @@ export default function BrandAuthPage() {
 
           {result && (
             <div className={`p-4 rounded ${result.success ? 'bg-green-50' : 'bg-red-50'}`}>
-              <pre className="text-xs overflow-auto">
-                {JSON.stringify(result, null, 2)}
-              </pre>
+              <pre className="text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>
             </div>
           )}
         </div>
@@ -66,5 +64,3 @@ export default function BrandAuthPage() {
     </div>
   )
 }
-
-

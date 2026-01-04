@@ -30,7 +30,7 @@ export function NewsFeed() {
 
   const handleDelete = (postId: string) => {
     // Remove post from state immediately for smooth UX
-    setPosts(posts.filter(p => p.id !== postId))
+    setPosts(posts.filter((p) => p.id !== postId))
   }
 
   if (loading) {
@@ -53,14 +53,8 @@ export function NewsFeed() {
   return (
     <div className="space-y-6">
       {posts.map((post) => (
-        <PostCard 
-          key={post.id} 
-          post={post} 
-          isAdmin={isAdmin}
-          onDelete={handleDelete}
-        />
+        <PostCard key={post.id} post={post} isAdmin={isAdmin} onDelete={handleDelete} />
       ))}
     </div>
   )
 }
-

@@ -23,12 +23,14 @@ Log in with your LogTo admin credentials.
 **Step 2:** Click **Add Social Connector** → Select **Google**
 
 **Step 3:** Get Google OAuth Credentials
+
 - Visit: https://console.cloud.google.com/apis/credentials
 - Create OAuth 2.0 Client ID (Web application)
 - Authorized redirect URIs: `http://localhost:3001/callback/google`
 - Copy Client ID and Client Secret
 
 **Step 4:** Configure in LogTo
+
 - Paste Client ID
 - Paste Client Secret
 - Save
@@ -40,6 +42,7 @@ Log in with your LogTo admin credentials.
 **Step 1:** Go to **Connectors** → **Social** → **Add Social Connector** → **GitHub**
 
 **Step 2:** Get GitHub OAuth App
+
 - Visit: https://github.com/settings/developers
 - New OAuth App
 - Homepage URL: `http://localhost:3000`
@@ -47,6 +50,7 @@ Log in with your LogTo admin credentials.
 - Copy Client ID and Client Secret
 
 **Step 3:** Configure in LogTo
+
 - Paste Client ID
 - Paste Client Secret
 - Save
@@ -56,6 +60,7 @@ Log in with your LogTo admin credentials.
 ### 1.3 Other Social Logins Available
 
 LogTo supports these out-of-the-box (same process):
+
 - **Facebook** - Facebook for Developers
 - **Apple** - Apple Developer (requires paid account)
 - **Discord** - Discord Developer Portal
@@ -78,6 +83,7 @@ LogTo supports these out-of-the-box (same process):
 **Step 4:** Select **Email verification code**
 
 **Step 5:** Configure email connector
+
 - Go to **Connectors** → **Email and SMS** tab
 - Add email connector (SMTP, SendGrid, AWS SES, etc.)
 - For testing: Use LogTo's default connector
@@ -91,6 +97,7 @@ LogTo supports these out-of-the-box (same process):
 **Step 2:** Add **Phone verification code** as sign-in method
 
 **Step 3:** Configure SMS connector
+
 - Go to **Connectors** → **Email and SMS**
 - Add SMS connector (Twilio, AWS SNS, etc.)
 - Requires account with SMS provider
@@ -110,6 +117,7 @@ LogTo supports these out-of-the-box (same process):
 **Step 3:** Enable **Authenticator app OTP**
 
 **Step 4:** Set MFA policy:
+
 - **Optional:** Users can enable if they want
 - **Mandatory:** All users must enable MFA
 - **Conditional:** Required for certain roles
@@ -143,9 +151,10 @@ LogTo supports these out-of-the-box (same process):
 **Go to:** Sign-in Experience → **Branding** tab
 
 Configure:
+
 - **Logo:** Upload your Fire logo
 - **Primary color:** Match your brand
-- **App name:** "Fire" 
+- **App name:** "Fire"
 - **Favicon:** Upload icon
 
 ### 4.2 Sign-in/Sign-up Flow
@@ -153,6 +162,7 @@ Configure:
 **Go to:** Sign-in Experience → **Sign-up and Sign-in** tab
 
 Options:
+
 - **Username required:** Toggle on/off
 - **Email/Phone verification:** Required or optional
 - **Password requirements:** Complexity rules
@@ -163,6 +173,7 @@ Options:
 **Go to:** Sign-in Experience → **Others** tab
 
 Add links to:
+
 - Terms of Service
 - Privacy Policy
 
@@ -174,7 +185,7 @@ Add links to:
 
 - [ ] **Email/Password:** Traditional login still works
 - [ ] **Google OAuth:** Click "Continue with Google"
-- [ ] **GitHub OAuth:** Click "Continue with GitHub"  
+- [ ] **GitHub OAuth:** Click "Continue with GitHub"
 - [ ] **Email Magic Link:** Request verification code
 - [ ] **SMS OTP:** (If configured) Phone verification
 - [ ] **MFA:** Enable TOTP, test login with 2FA code
@@ -220,12 +231,14 @@ Update user dropdown menu to link to LogTo profile:
 ### Social Login
 
 For production, update redirect URIs in each provider:
+
 - Google: `https://yourdomain.com/callback/google`
 - GitHub: `https://yourdomain.com/callback/github`
 
 ### Email Provider
 
 Set up production email service:
+
 - **SendGrid:** Reliable, free tier available
 - **AWS SES:** Cost-effective, requires verification
 - **Postmark:** Great deliverability
@@ -233,6 +246,7 @@ Set up production email service:
 ### SMS Provider
 
 For SMS OTP:
+
 - **Twilio:** Industry standard
 - **AWS SNS:** Good if already on AWS
 - **Vonage:** International coverage
@@ -258,9 +272,6 @@ For SMS OTP:
 ✅ **No code changes needed** - All configuration via LogTo Admin Console  
 ✅ **Production-ready** - LogTo handles security, sessions, tokens  
 ✅ **Flexible** - Enable only what you want  
-✅ **User-friendly** - Clean UI for all auth methods  
+✅ **User-friendly** - Clean UI for all auth methods
 
 Choose the features you want, configure in minutes, and your users get enterprise-grade authentication! 🚀
-
-
-

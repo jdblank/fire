@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { 
-  calculateAge, 
+import {
+  calculateAge,
   calculateLineItemAmount,
   calculateRegistrationTotal,
   calculateDepositAndBalance,
   formatCurrency,
-  getPaymentStatus 
+  getPaymentStatus,
 } from '../../apps/web/src/lib/pricing'
 
 describe('Pricing Calculations', () => {
@@ -13,14 +13,14 @@ describe('Pricing Calculations', () => {
     it('should calculate age correctly', () => {
       const dob = new Date('1990-01-01')
       const age = calculateAge(dob)
-      
+
       expect(age).toBeGreaterThanOrEqual(34)
       expect(age).toBeLessThanOrEqual(35)
     })
 
     it('should handle string dates', () => {
       const age = calculateAge('1975-03-03')
-      
+
       expect(age).toBeGreaterThanOrEqual(49)
       expect(age).toBeLessThanOrEqual(50)
     })
@@ -29,7 +29,7 @@ describe('Pricing Calculations', () => {
       const dob = new Date('1990-01-15')
       const eventDate = new Date('2025-06-01')
       const age = calculateAge(dob, eventDate)
-      
+
       expect(age).toBe(35)
     })
 
@@ -37,13 +37,13 @@ describe('Pricing Calculations', () => {
       const dob = new Date('1990-12-31')
       const eventDate = new Date('2025-06-01')
       const age = calculateAge(dob, eventDate)
-      
+
       expect(age).toBe(34)
     })
 
     it('should handle string dates for both parameters', () => {
       const age = calculateAge('1990-01-15', '2025-06-01')
-      
+
       expect(age).toBe(35)
     })
   })
@@ -59,7 +59,7 @@ describe('Pricing Calculations', () => {
         minAmount: null,
         maxAmount: null,
         multiplier: null,
-        isRequired: true
+        isRequired: true,
       }
 
       const amount = calculateLineItemAmount(lineItem, undefined, 1)
@@ -76,7 +76,7 @@ describe('Pricing Calculations', () => {
         minAmount: 1800,
         maxAmount: 3600,
         multiplier: 60,
-        isRequired: true
+        isRequired: true,
       }
 
       const amount = calculateLineItemAmount(lineItem, 35, 1)
@@ -93,7 +93,7 @@ describe('Pricing Calculations', () => {
         minAmount: 1800,
         maxAmount: 3600,
         multiplier: 60,
-        isRequired: true
+        isRequired: true,
       }
 
       const amount = calculateLineItemAmount(lineItem, 20, 1) // 20 * 60 = 1200, but min is 1800
@@ -110,7 +110,7 @@ describe('Pricing Calculations', () => {
         minAmount: 1800,
         maxAmount: 3600,
         multiplier: 60,
-        isRequired: true
+        isRequired: true,
       }
 
       const amount = calculateLineItemAmount(lineItem, 70, 1) // 70 * 60 = 4200, but max is 3600
@@ -127,7 +127,7 @@ describe('Pricing Calculations', () => {
         minAmount: null,
         maxAmount: null,
         multiplier: null,
-        isRequired: false
+        isRequired: false,
       }
 
       const amount = calculateLineItemAmount(lineItem, undefined, 3)
@@ -149,13 +149,9 @@ describe('Pricing Calculations', () => {
     })
 
     it('should apply fixed discount', () => {
-      const lineItems = [
-        { lineItemId: '1', name: 'Dues', quantity: 1, amount: 2100 },
-      ]
+      const lineItems = [{ lineItemId: '1', name: 'Dues', quantity: 1, amount: 2100 }]
 
-      const discounts = [
-        { name: 'Early Bird', discountType: 'FIXED_AMOUNT', amount: 200 }
-      ]
+      const discounts = [{ name: 'Early Bird', discountType: 'FIXED_AMOUNT', amount: 200 }]
 
       const result = calculateRegistrationTotal(lineItems, discounts)
 
@@ -165,13 +161,9 @@ describe('Pricing Calculations', () => {
     })
 
     it('should apply percentage discount', () => {
-      const lineItems = [
-        { lineItemId: '1', name: 'Dues', quantity: 1, amount: 2000 },
-      ]
+      const lineItems = [{ lineItemId: '1', name: 'Dues', quantity: 1, amount: 2000 }]
 
-      const discounts = [
-        { name: '10% Discount', discountType: 'PERCENTAGE', amount: 10 }
-      ]
+      const discounts = [{ name: '10% Discount', discountType: 'PERCENTAGE', amount: 10 }]
 
       const result = calculateRegistrationTotal(lineItems, discounts)
 
@@ -213,7 +205,7 @@ describe('Pricing Calculations', () => {
   describe('formatCurrency', () => {
     it('should format USD correctly', () => {
       expect(formatCurrency(2100)).toBe('$2,100.00')
-      expect(formatCurrency(550.50)).toBe('$550.50')
+      expect(formatCurrency(550.5)).toBe('$550.50')
     })
   })
 
@@ -231,5 +223,3 @@ describe('Pricing Calculations', () => {
     })
   })
 })
-
-

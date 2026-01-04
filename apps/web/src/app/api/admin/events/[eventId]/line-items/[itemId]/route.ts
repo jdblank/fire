@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // PUT /api/admin/events/[eventId]/line-items/[itemId] - Update line item
 export async function PUT(
   request: Request,
-  { params }: { params: { eventId: string; itemId: string } }
+  { params }: { params: Promise<{ eventId: string; itemId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const { eventId, itemId } = await params
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -32,9 +34,9 @@ export async function PUT(
     // Check if line item exists and belongs to this event
     const existing = await prisma.eventLineItem.findFirst({
       where: {
-        id: params.itemId,
-        eventId: params.eventId
-      }
+        id: itemId,
+        eventId: eventId,
+      },
     })
 
     if (!existing) {
@@ -43,7 +45,7 @@ export async function PUT(
 
     // Update line item
     const lineItem = await prisma.eventLineItem.update({
-      where: { id: params.itemId },
+      where: { id: itemId },
       data: {
         ...(name && { name }),
         ...(description !== undefined && { description }),
@@ -55,7 +57,7 @@ export async function PUT(
         ...(maxAmount !== undefined && { maxAmount }),
         ...(multiplier !== undefined && { multiplier }),
         ...(sortOrder !== undefined && { sortOrder }),
-      }
+      },
     })
 
     return NextResponse.json({ lineItem })
@@ -67,27 +69,28 @@ export async function PUT(
 
 // DELETE /api/admin/events/[eventId]/line-items/[itemId] - Delete line item
 export async function DELETE(
-  request: Request,
-  { params }: { params: { eventId: string; itemId: string } }
+  _request: Request,
+  { params }: { params: Promise<{ eventId: string; itemId: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const { eventId, itemId } = await params
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     // Check if line item exists and belongs to this event
     const lineItem = await prisma.eventLineItem.findFirst({
       where: {
-        id: params.itemId,
-        eventId: params.eventId
+        id: itemId,
+        eventId: eventId,
       },
       include: {
         _count: {
-          select: { registrationLineItems: true }
-        }
-      }
+          select: { registrationLineItems: true },
+        },
+      },
     })
 
     if (!lineItem) {
@@ -97,14 +100,16 @@ export async function DELETE(
     // Warn if line item is used in registrations
     if (lineItem._count.registrationLineItems > 0) {
       return NextResponse.json(
-        { error: `Cannot delete line item used in ${lineItem._count.registrationLineItems} registrations` },
+        {
+          error: `Cannot delete line item used in ${lineItem._count.registrationLineItems} registrations`,
+        },
         { status: 400 }
       )
     }
 
     // Delete line item
     await prisma.eventLineItem.delete({
-      where: { id: params.itemId }
+      where: { id: itemId },
     })
 
     return NextResponse.json({ success: true })
@@ -113,4 +118,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

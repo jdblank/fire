@@ -16,6 +16,7 @@ This guide covers deploying the Fire platform to production.
 Create a `.env.production` file with the following variables:
 
 ### Database
+
 ```bash
 DATABASE_URL=postgres://user:password@host:5432/fire_db
 POSTGRES_USER=fireuser
@@ -24,11 +25,13 @@ POSTGRES_DB=fire_db
 ```
 
 ### Redis
+
 ```bash
 REDIS_URL=redis://host:6379
 ```
 
 ### Authentication
+
 ```bash
 NEXTAUTH_URL=https://yourdomain.com
 NEXTAUTH_SECRET=<generate-strong-secret-min-32-chars>
@@ -38,6 +41,7 @@ LOGTO_APP_SECRET=<your-logto-app-secret>
 ```
 
 ### Storage (S3/MinIO)
+
 ```bash
 S3_ENDPOINT=https://s3.yourdomain.com
 S3_ACCESS_KEY=<access-key>
@@ -48,6 +52,7 @@ S3_PUBLIC_URL=https://cdn.yourdomain.com
 ```
 
 ### Outline Wiki
+
 ```bash
 OUTLINE_API_URL=https://wiki.yourdomain.com
 OUTLINE_API_TOKEN=<outline-api-token>
@@ -67,7 +72,7 @@ services:
       dockerfile: apps/web/Dockerfile.prod
     restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       NODE_ENV: production
       DATABASE_URL: ${DATABASE_URL}
@@ -153,6 +158,7 @@ docker-compose -f docker-compose.prod.yml up -d
 Use Nginx or Caddy as reverse proxy:
 
 **Nginx Configuration**:
+
 ```nginx
 server {
     listen 443 ssl http2;
@@ -175,6 +181,7 @@ server {
 ### 4. Health Checks
 
 Monitor these endpoints:
+
 - `https://yourdomain.com/api/health` - Application health
 - Database connectivity
 - Redis connectivity
@@ -183,6 +190,7 @@ Monitor these endpoints:
 ### 5. Monitoring Setup
 
 Recommended monitoring stack:
+
 - **Application**: Sentry for error tracking
 - **Infrastructure**: Prometheus + Grafana
 - **Logs**: ELK Stack or Loki
@@ -279,16 +287,19 @@ app:
 ## Troubleshooting
 
 ### Container won't start
+
 ```bash
 docker-compose logs app
 ```
 
 ### Database connection issues
+
 ```bash
 docker exec -it fire-postgres psql -U fireuser -d fire_db
 ```
 
 ### High memory usage
+
 ```bash
 docker stats
 ```
@@ -296,5 +307,3 @@ docker stats
 ## Support
 
 For deployment issues, contact the platform team or open an issue.
-
-

@@ -36,7 +36,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
   // Calculate user's age at the time of the selected event
   useEffect(() => {
     if (user.dateOfBirth && selectedEventId) {
-      const selectedEvent = events.find(e => e.id === selectedEventId)
+      const selectedEvent = events.find((e) => e.id === selectedEventId)
       if (selectedEvent) {
         const age = calculateAge(user.dateOfBirth, selectedEvent.startDate)
         setUserAge(age)
@@ -66,7 +66,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
     const amounts = new Map<string, number>()
     let total = 0
 
-    eventLineItems.forEach(item => {
+    eventLineItems.forEach((item) => {
       if (selectedLineItems.has(item.id)) {
         try {
           const amount = calculateLineItemAmount(item, userAge || undefined)
@@ -100,7 +100,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
       if (response.ok) {
         const data = await response.json()
         setEventLineItems(data.lineItems)
-        
+
         // Auto-select required items
         const required = new Set<string>()
         data.lineItems.forEach((item: any) => {
@@ -116,7 +116,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
   }
 
   const toggleLineItem = (itemId: string) => {
-    const item = eventLineItems.find(i => i.id === itemId)
+    const item = eventLineItems.find((i) => i.id === itemId)
     if (item?.isRequired) return
 
     const newSelected = new Set(selectedLineItems)
@@ -139,8 +139,8 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
         return
       }
 
-      const lineItemsData = Array.from(selectedLineItems).map(itemId => {
-        const item = eventLineItems.find(i => i.id === itemId)!
+      const lineItemsData = Array.from(selectedLineItems).map((itemId) => {
+        const item = eventLineItems.find((i) => i.id === itemId)!
         return {
           lineItemId: itemId,
           quantity: 1,
@@ -192,9 +192,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Event Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Event
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Event</label>
           <select
             value={selectedEventId}
             onChange={(e) => setSelectedEventId(e.target.value)}
@@ -212,9 +210,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
         {/* Line Items Selection */}
         {eventLineItems.length > 0 && (
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700">
-              Line Items
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Line Items</label>
             {eventLineItems.map((item) => {
               const isSelected = selectedLineItems.has(item.id)
               const amount = calculatedAmounts.get(item.id) || 0
@@ -223,11 +219,11 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
                 <div
                   key={item.id}
                   className={`border rounded-lg p-3 ${
-                    item.isRequired 
-                      ? 'border-gray-300 bg-gray-50' 
-                      : isSelected 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300 cursor-pointer'
+                    item.isRequired
+                      ? 'border-gray-300 bg-gray-50'
+                      : isSelected
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 cursor-pointer'
                   }`}
                   onClick={() => !item.isRequired && toggleLineItem(item.id)}
                 >
@@ -302,9 +298,7 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Notes
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
@@ -328,4 +322,3 @@ export function RegisterUserForm({ user }: RegisterUserFormProps) {
     </div>
   )
 }
-

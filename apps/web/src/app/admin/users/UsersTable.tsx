@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 interface User {
   id: string
@@ -24,7 +23,6 @@ interface User {
 }
 
 export function UsersTable() {
-  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -75,7 +73,9 @@ export function UsersTable() {
         const data = await response.json()
         // Copy invite URL to clipboard
         await navigator.clipboard.writeText(data.inviteUrl)
-        alert(`Invite link copied to clipboard!\n\nExpires: ${new Date(data.expiresAt).toLocaleString()}`)
+        alert(
+          `Invite link copied to clipboard!\n\nExpires: ${new Date(data.expiresAt).toLocaleString()}`
+        )
         fetchUsers() // Refresh
       } else {
         const error = await response.json()
@@ -117,7 +117,9 @@ export function UsersTable() {
     }
 
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}
+      >
         {status.replace('_', ' ')}
       </span>
     )
@@ -126,12 +128,14 @@ export function UsersTable() {
   const getRoleBadge = (role: string) => {
     const styles = {
       ADMIN: 'bg-purple-100 text-purple-800',
-      MODERATOR: 'bg-blue-100 text-blue-800',
+      EDITOR: 'bg-blue-100 text-blue-800',
       USER: 'bg-gray-100 text-gray-800',
     }
 
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[role as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${styles[role as keyof typeof styles] || 'bg-gray-100 text-gray-800'}`}
+      >
         {role}
       </span>
     )
@@ -172,13 +176,27 @@ export function UsersTable() {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referred By</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referrals</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                User
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Role
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Referred By
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Referrals
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Created
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -200,29 +218,28 @@ export function UsersTable() {
                   <td className="px-4 py-3">
                     <div>
                       <div className="font-medium text-gray-900">
-                        {user.displayName || `${user.firstName} ${user.lastName}`.trim() || 'No name'}
+                        {user.displayName ||
+                          `${user.firstName} ${user.lastName}`.trim() ||
+                          'No name'}
                       </div>
                       <div className="text-sm text-gray-500">{user.email}</div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    {getRoleBadge(user.role)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {getStatusBadge(user.accountStatus)}
-                  </td>
+                  <td className="px-4 py-3">{getRoleBadge(user.role)}</td>
+                  <td className="px-4 py-3">{getStatusBadge(user.accountStatus)}</td>
                   <td className="px-4 py-3 text-sm text-gray-500">
                     {user.referredBy ? (
-                      <Link href={`/admin/users/${user.referredBy.id}`} className="text-gray-900 hover:underline">
+                      <Link
+                        href={`/admin/users/${user.referredBy.id}`}
+                        className="text-gray-900 hover:underline"
+                      >
                         {user.referredBy.displayName || user.referredBy.email}
                       </Link>
                     ) : (
                       '-'
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {user._count.referrals}
-                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-900">{user._count.referrals}</td>
                   <td className="px-4 py-3 text-sm text-gray-500">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
@@ -262,7 +279,8 @@ export function UsersTable() {
         <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
           <div className="text-sm text-gray-500">
             Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-            {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} users
+            {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}{' '}
+            users
           </div>
           <div className="flex gap-2">
             <button
@@ -285,4 +303,3 @@ export function UsersTable() {
     </div>
   )
 }
-

@@ -1,24 +1,21 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // POST /api/admin/users/[userId]/invite - Generate and send invite
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> }
-) {
+export async function POST(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     // Get user
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!user) {
@@ -27,10 +24,7 @@ export async function POST(
 
     // Check if user is already active
     if (user.accountStatus === 'ACTIVE') {
-      return NextResponse.json(
-        { error: 'User account is already active' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'User account is already active' }, { status: 400 })
     }
 
     // Invalidate any existing unused tokens
@@ -41,7 +35,7 @@ export async function POST(
       },
       data: {
         usedAt: new Date(), // Mark as used
-      }
+      },
     })
 
     // Create new invite token (expires in 7 days)
@@ -52,7 +46,7 @@ export async function POST(
       data: {
         userId: userId,
         expiresAt,
-      }
+      },
     })
 
     // TODO: Send email with invite link
@@ -64,7 +58,7 @@ export async function POST(
       inviteToken: inviteToken.token,
       inviteUrl,
       expiresAt: inviteToken.expiresAt,
-      message: 'Invite generated successfully'
+      message: 'Invite generated successfully',
     })
   } catch (error) {
     console.error('Error generating invite:', error)

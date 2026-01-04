@@ -32,9 +32,11 @@ model User {
   mobilePhone   String?   // Full phone number with country code
   countryCode   String?   // e.g., "+1", "+44"
   hometown      String?
-  
+  hometownLat   Float?
+  hometownLng   Float?
+  hometownPlaceId String?
+
   // Account management
-  role          UserRole  @default(USER)
   accountStatus AccountStatus @default(PENDING_INVITE)
   
   // Referral system (self-referential)
@@ -64,20 +66,13 @@ model User {
   @@index([email])
   @@index([logtoId])
   @@index([username])
-  @@index([role])
   @@index([accountStatus])
   @@index([referredById])
   @@map("users")
 }
 
 // Note: Passwords are stored in LogTo, not our database
-
-// User roles enum
-enum UserRole {
-  USER        // Regular user
-  MODERATOR   // Can moderate content
-  ADMIN       // Full admin access
-}
+// Note: User roles are managed in LogTo, not our database
 
 // Account status enum
 enum AccountStatus {
@@ -208,11 +203,19 @@ model Event {
   description String   @db.Text
   banner      String?
   
-  // Date and location
+  // Date and time
+  // For "Date Only" events (isAllDay=true), startDate/endDate store dates at midnight UTC
+  // For "Specific Time" events (isAllDay=false), startDate/endDate store the exact datetime
   startDate   DateTime
   endDate     DateTime?
   timezone    String?  // e.g., "America/New_York", "America/Los_Angeles"
+  isAllDay    Boolean  @default(false) // true = Date Only event, false = Specific Time event
+  
+  // Location
   location    String?
+  locationLat Float?
+  locationLng Float?
+  locationPlaceId String?
   isOnline    Boolean  @default(false)
   
   // Event type and pricing
@@ -464,7 +467,3 @@ model Upload {
   @@index([uploadedBy])
   @@map("uploads")
 }
-
-
-
-

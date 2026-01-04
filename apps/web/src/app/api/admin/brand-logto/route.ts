@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
+import { hasRole } from '@/lib/utils'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 const M2M_APP_ID = process.env.LOGTO_M2M_APP_ID
@@ -9,9 +10,9 @@ const MANAGEMENT_API_RESOURCE = 'https://default.logto.app/api'
 
 export async function POST() {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -24,8 +25,8 @@ export async function POST() {
         client_id: M2M_APP_ID!,
         client_secret: M2M_APP_SECRET!,
         resource: MANAGEMENT_API_RESOURCE,
-        scope: 'all'
-      })
+        scope: 'all',
+      }),
     })
 
     const tokenData = await tokenResponse.json()
@@ -33,9 +34,9 @@ export async function POST() {
 
     // Get current sign-in experience
     const getResponse = await fetch(`${LOGTO_ENDPOINT}/api/sign-in-exp`, {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
+      headers: { Authorization: `Bearer ${accessToken}` },
     })
-    
+
     const currentExp = await getResponse.json()
 
     // Custom CSS to hide "Powered by Logto" and match Fire branding
@@ -114,8 +115,8 @@ export async function POST() {
     const updateResponse = await fetch(`${LOGTO_ENDPOINT}/api/sign-in-exp`, {
       method: 'PATCH',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         ...currentExp,
@@ -123,18 +124,21 @@ export async function POST() {
         color: {
           primaryColor: '#111827', // Fire gray-900
           isDarkModeEnabled: false,
-          darkPrimaryColor: '#1f2937' // Fire gray-800
+          darkPrimaryColor: '#1f2937', // Fire gray-800
         },
-        customCss: customCss
-      })
+        customCss: customCss,
+      }),
     })
 
     if (!updateResponse.ok) {
       const error = await updateResponse.text()
-      return NextResponse.json({
-        success: false,
-        error: error
-      }, { status: 500 })
+      return NextResponse.json(
+        {
+          success: false,
+          error: error,
+        },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({
@@ -144,10 +148,9 @@ export async function POST() {
         primaryColor: '#111827 (gray-900)',
         removedLogoBranding: true,
         hiddenPoweredBy: true,
-        customCss: true
-      }
+        customCss: true,
+      },
     })
-
   } catch (error) {
     console.error('Error branding LogTo:', error)
     return NextResponse.json(
@@ -156,4 +159,3 @@ export async function POST() {
     )
   }
 }
-

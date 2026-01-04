@@ -20,9 +20,9 @@ export function CancelRegistrationButton({ registrationId }: CancelRegistrationB
       const response = await fetch(`/api/registrations/${registrationId}/cancel`, {
         method: 'POST',
       })
-      
+
       const data = await response.json()
-      
+
       if (response.ok) {
         alert(data.message)
         window.location.reload()
@@ -46,4 +46,3 @@ export function CancelRegistrationButton({ registrationId }: CancelRegistrationB
     </button>
   )
 }
-

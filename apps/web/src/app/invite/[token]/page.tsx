@@ -3,10 +3,11 @@ import { prisma } from '@fire/db'
 import { InviteAcceptForm } from './InviteAcceptForm'
 import Link from 'next/link'
 
-export default async function InviteAcceptPage({ params }: { params: { token: string } }) {
+export default async function InviteAcceptPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   // Validate token
   const inviteToken = await prisma.inviteToken.findUnique({
-    where: { token: params.token },
+    where: { token },
     include: {
       user: {
         select: {
@@ -16,9 +17,9 @@ export default async function InviteAcceptPage({ params }: { params: { token: st
           lastName: true,
           displayName: true,
           accountStatus: true,
-        }
-      }
-    }
+        },
+      },
+    },
   })
 
   if (!inviteToken) {
@@ -31,9 +32,7 @@ export default async function InviteAcceptPage({ params }: { params: { token: st
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-4">✅</div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Invite Already Used
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Invite Already Used</h1>
           <p className="text-gray-500 mb-8">
             This invite link has already been used. If you have an account, please sign in.
           </p>
@@ -54,9 +53,7 @@ export default async function InviteAcceptPage({ params }: { params: { token: st
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-4">⏰</div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Invite Expired
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Invite Expired</h1>
           <p className="text-gray-500 mb-8">
             This invite link has expired. Please contact an administrator for a new invite.
           </p>
@@ -75,26 +72,22 @@ export default async function InviteAcceptPage({ params }: { params: { token: st
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Welcome to Fire!
-          </h1>
-          <p className="text-gray-500">
-            Set your password to complete your account setup
-          </p>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Welcome to Fire!</h1>
+          <p className="text-gray-500">Set your password to complete your account setup</p>
         </div>
 
         {/* User Info Card */}
         <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
           <div className="text-sm text-gray-500 mb-1">Setting up account for:</div>
           <div className="font-semibold text-gray-900">
-            {inviteToken.user.displayName || `${inviteToken.user.firstName} ${inviteToken.user.lastName}`.trim()}
+            {inviteToken.user.displayName ||
+              `${inviteToken.user.firstName} ${inviteToken.user.lastName}`.trim()}
           </div>
           <div className="text-sm text-gray-600">{inviteToken.user.email}</div>
         </div>
 
-        <InviteAcceptForm token={params.token} user={inviteToken.user} />
+        <InviteAcceptForm token={token} user={inviteToken.user} />
       </div>
     </div>
   )
 }
-

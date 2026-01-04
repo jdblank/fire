@@ -28,11 +28,7 @@ export function AuthButton() {
   }, [])
 
   if (loading) {
-    return (
-      <div className="px-4 py-2 text-sm text-muted-foreground">
-        Loading...
-      </div>
-    )
+    return <div className="px-4 py-2 text-sm text-muted-foreground">Loading...</div>
   }
 
   if (user) {
@@ -40,15 +36,9 @@ export function AuthButton() {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           {user.picture && (
-            <img
-              src={user.picture}
-              alt={user.name || 'User'}
-              className="h-8 w-8 rounded-full"
-            />
+            <img src={user.picture} alt={user.name || 'User'} className="h-8 w-8 rounded-full" />
           )}
-          <span className="text-sm font-medium">
-            {user.name || user.email || 'User'}
-          </span>
+          <span className="text-sm font-medium">{user.name || user.email || 'User'}</span>
         </div>
         <Link
           href="/api/auth/signout"
@@ -69,4 +59,3 @@ export function AuthButton() {
     </Link>
   )
 }
-

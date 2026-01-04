@@ -50,7 +50,7 @@ function LoginForm() {
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-gray-900 font-medium hover:underline">
             Sign up
           </Link>
@@ -62,7 +62,11 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>
+      }
+    >
       <LoginForm />
     </Suspense>
   )

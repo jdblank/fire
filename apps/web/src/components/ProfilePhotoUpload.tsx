@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 interface ProfilePhotoUploadProps {
   currentImage?: string | null
-  onUploadSuccess: (url: string) => void
+  onUploadSuccess?: (url: string) => void
 }
 
 export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePhotoUploadProps) {
@@ -63,7 +63,7 @@ export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePho
       }
 
       const data = await response.json()
-      onUploadSuccess(data.upload.url)
+      onUploadSuccess?.(data.upload.url)
       setPreview(null)
     } catch (err) {
       setError((err as Error).message)
@@ -80,12 +80,7 @@ export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePho
       <div className="mb-4">
         {displayImage ? (
           <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
-            <Image
-              src={displayImage}
-              alt="Profile"
-              fill
-              className="object-cover"
-            />
+            <Image src={displayImage} alt="Profile" fill className="object-cover" />
             {uploading && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="text-white text-sm">Uploading...</div>
@@ -107,26 +102,21 @@ export function ProfilePhotoUpload({ currentImage, onUploadSuccess }: ProfilePho
         onChange={handleFileSelect}
         className="hidden"
       />
-      
+
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
+        className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm"
       >
         {uploading ? 'Uploading...' : currentImage ? 'Change Photo' : 'Upload Photo'}
       </button>
 
       {/* Error Message */}
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
       {/* Helper Text */}
-      <p className="mt-2 text-xs text-gray-500 text-center">
-        JPEG, PNG or WebP • Max 5MB
-      </p>
+      <p className="mt-2 text-xs text-gray-500 text-center">JPEG, PNG or WebP • Max 5MB</p>
     </div>
   )
 }
-

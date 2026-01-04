@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { searchCities, type City } from '@/lib/cities'
+import { LocationAutocomplete, type LocationData } from '@/components/LocationAutocomplete'
 
 interface EventFormProps {
   eventId?: string
@@ -13,16 +13,39 @@ interface EventFormProps {
 export function EventForm({ eventId, initialData }: EventFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [citySearch, setCitySearch] = useState(initialData?.location || '')
-  const [cityResults, setCityResults] = useState<City[]>([])
-  const [showCityResults, setShowCityResults] = useState(false)
-  
+
+  // Helper to format date for input fields
+  const formatDateForInput = (date: string | Date | undefined, isAllDay: boolean): string => {
+    if (!date) return ''
+    const d = new Date(date)
+
+    if (isAllDay) {
+      // For all-day events, we store as midnight UTC.
+      // To show in a date input, we need YYYY-MM-DD of that UTC date.
+      return d.toISOString().slice(0, 10)
+    }
+
+    // For timed events, we want to show the date/time in the user's local timezone
+    // as it would appear in a datetime-local input (YYYY-MM-DDTHH:mm).
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    const hours = String(d.getHours()).padStart(2, '0')
+    const minutes = String(d.getMinutes()).padStart(2, '0')
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`
+  }
+
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
-    startDate: initialData?.startDate ? new Date(initialData.startDate).toISOString().slice(0, 16) : '',
-    endDate: initialData?.endDate ? new Date(initialData.endDate).toISOString().slice(0, 16) : '',
+    isAllDay: initialData?.isAllDay || false,
+    startDate: formatDateForInput(initialData?.startDate, initialData?.isAllDay || false),
+    endDate: formatDateForInput(initialData?.endDate, initialData?.isAllDay || false),
     location: initialData?.location || '',
+    locationLat: initialData?.locationLat || null,
+    locationLng: initialData?.locationLng || null,
+    locationPlaceId: initialData?.locationPlaceId || null,
     timezone: initialData?.timezone || 'America/New_York',
     isOnline: initialData?.isOnline || false,
     eventType: initialData?.eventType || 'FREE',
@@ -31,31 +54,27 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
     maxAttendees: initialData?.maxAttendees?.toString() || '',
     status: initialData?.status || 'DRAFT',
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const handleCitySearch = (query: string) => {
-    setCitySearch(query)
-    setFormData({ ...formData, location: query })
-    
-    if (query.length >= 2) {
-      const results = searchCities(query)
-      setCityResults(results)
-      setShowCityResults(true)
+  const handleLocationChange = (location: LocationData | null) => {
+    if (location) {
+      setFormData({
+        ...formData,
+        location: location.address,
+        locationLat: location.lat,
+        locationLng: location.lng,
+        locationPlaceId: location.placeId,
+      })
     } else {
-      setCityResults([])
-      setShowCityResults(false)
+      setFormData({
+        ...formData,
+        location: '',
+        locationLat: null,
+        locationLng: null,
+        locationPlaceId: null,
+      })
     }
-  }
-
-  const selectCity = (city: City) => {
-    setCitySearch(city.displayName)
-    setFormData({ 
-      ...formData, 
-      location: city.displayName,
-      timezone: city.timezone 
-    })
-    setShowCityResults(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,9 +98,13 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       const data = {
         title: formData.title,
         description: formData.description,
+        isAllDay: formData.isAllDay,
         startDate: formData.startDate,
         endDate: formData.endDate || null,
         location: formData.location || null,
+        locationLat: formData.locationLat,
+        locationLng: formData.locationLng,
+        locationPlaceId: formData.locationPlaceId,
         timezone: formData.timezone,
         isOnline: formData.isOnline,
         eventType: formData.eventType,
@@ -102,7 +125,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       })
 
       if (response.ok) {
-        const result = await response.json()
+        await response.json()
         alert(eventId ? 'Event updated successfully!' : 'Event created successfully!')
         router.push('/admin/events')
         router.refresh()
@@ -123,7 +146,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Basic Information */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
-        
+
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -179,16 +202,50 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Date and Location */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Date & Location</h2>
-        
+
+        {/* All Day Toggle */}
+        <div className="flex items-center gap-2">
+          <input
+            id="isAllDay"
+            type="checkbox"
+            checked={formData.isAllDay}
+            onChange={(e) => {
+              const isAllDay = e.target.checked
+              // Convert date format when toggling
+              const convertDate = (dateStr: string): string => {
+                if (!dateStr) return ''
+                if (isAllDay) {
+                  // Converting to date-only: take first 10 chars (YYYY-MM-DD)
+                  return dateStr.slice(0, 10)
+                } else {
+                  // Converting to datetime: append default time
+                  return dateStr.length === 10 ? `${dateStr}T09:00` : dateStr
+                }
+              }
+              setFormData({
+                ...formData,
+                isAllDay,
+                startDate: convertDate(formData.startDate),
+                endDate: convertDate(formData.endDate),
+              })
+            }}
+            className="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
+          />
+          <label htmlFor="isAllDay" className="text-sm font-medium text-gray-700">
+            All Day Event
+          </label>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-4">
           {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
-              Start Date & Time <span className="text-red-500">*</span>
+              {formData.isAllDay ? 'Start Date' : 'Start Date & Time'}{' '}
+              <span className="text-red-500">*</span>
             </label>
             <input
               id="startDate"
-              type="datetime-local"
+              type={formData.isAllDay ? 'date' : 'datetime-local'}
               value={formData.startDate}
               onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
               className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 ${errors.startDate ? 'border-red-500' : 'border-gray-300'}`}
@@ -199,11 +256,11 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
           {/* End Date */}
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
-              End Date & Time
+              {formData.isAllDay ? 'End Date' : 'End Date & Time'}
             </label>
             <input
               id="endDate"
-              type="datetime-local"
+              type={formData.isAllDay ? 'date' : 'datetime-local'}
               value={formData.endDate}
               onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
@@ -212,41 +269,24 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
         </div>
 
         {/* Location */}
-        <div className="relative">
+        <div>
           <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
             Location
           </label>
-          <input
-            id="location"
-            type="text"
-            value={citySearch}
-            onChange={(e) => handleCitySearch(e.target.value)}
-            onFocus={() => citySearch.length >= 2 && setShowCityResults(true)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
-            placeholder="Search city..."
-            autoComplete="off"
+          <LocationAutocomplete
+            value={formData.location}
+            onChange={handleLocationChange}
+            placeholder="Enter event location..."
+            error={errors.location}
           />
-          
-          {/* City Results Dropdown */}
-          {showCityResults && cityResults.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              {cityResults.map((city, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => selectCity(city)}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                >
-                  <div className="font-medium text-gray-900">{city.displayName}</div>
-                  <div className="text-xs text-gray-500">{city.timezone}</div>
-                </button>
-              ))}
-            </div>
-          )}
-          
           <p className="mt-1 text-xs text-gray-500">
-            Timezone: {formData.timezone}
+            Search for a city, address, or venue using Google Places
           </p>
+          {formData.locationLat && formData.locationLng && (
+            <p className="mt-1 text-xs text-gray-400">
+              Coordinates: {formData.locationLat.toFixed(6)}, {formData.locationLng.toFixed(6)}
+            </p>
+          )}
         </div>
 
         {/* Online Event */}
@@ -267,7 +307,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Pricing */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Pricing</h2>
-        
+
         {/* Event Type */}
         <div>
           <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-2">
@@ -283,7 +323,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
             <option value="PAID">Paid Event</option>
           </select>
           <p className="mt-1 text-sm text-gray-500">
-            {formData.eventType === 'PAID' 
+            {formData.eventType === 'PAID'
               ? 'Pricing will be configured with line items after creating the event'
               : 'Free events have no registration fees'}
           </p>
@@ -307,7 +347,10 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
 
             {formData.requiresDeposit && (
               <div>
-                <label htmlFor="depositAmount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="depositAmount"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Deposit Amount ($)
                 </label>
                 <input
@@ -332,7 +375,7 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {/* Capacity */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
         <h2 className="text-lg font-semibold text-gray-900">Capacity</h2>
-        
+
         <div>
           <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-700 mb-2">
             Maximum Attendees
@@ -373,11 +416,11 @@ export function EventForm({ eventId, initialData }: EventFormProps) {
       {eventId && formData.eventType === 'PAID' && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-900">
-            💡 After saving, scroll down to manage line items (dues, deposits, supplements) for this paid event.
+            💡 After saving, scroll down to manage line items (dues, deposits, supplements) for this
+            paid event.
           </p>
         </div>
       )}
     </form>
   )
 }
-

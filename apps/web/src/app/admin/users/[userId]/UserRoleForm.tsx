@@ -28,7 +28,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
 
       setMessage('Role updated successfully!')
       router.refresh()
-      
+
       setTimeout(() => setMessage(''), 3000)
     } catch (error: any) {
       setMessage(`Error: ${error.message}`)
@@ -40,9 +40,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          User Role
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">User Role</label>
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
@@ -50,7 +48,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
           disabled={loading}
         >
           <option value="USER">User</option>
-          <option value="MODERATOR">Moderator</option>
+          <option value="EDITOR">Editor</option>
           <option value="ADMIN">Admin</option>
         </select>
       </div>
@@ -65,7 +63,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
               <li>Access community features</li>
             </>
           )}
-          {role === 'MODERATOR' && (
+          {role === 'EDITOR' && (
             <>
               <li>All user permissions</li>
               <li>Moderate posts and comments</li>
@@ -74,7 +72,7 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
           )}
           {role === 'ADMIN' && (
             <>
-              <li>All moderator permissions</li>
+              <li>All editor permissions</li>
               <li>Manage user roles</li>
               <li>Access admin panel</li>
               <li>Full platform control</li>
@@ -92,11 +90,13 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
       </button>
 
       {message && (
-        <div className={`p-3 rounded-lg text-sm font-medium ${
-          message.startsWith('Error') 
-            ? 'bg-red-100 text-red-700 border border-red-200' 
-            : 'bg-green-100 text-green-700 border border-green-200'
-        }`}>
+        <div
+          className={`p-3 rounded-lg text-sm font-medium ${
+            message.startsWith('Error')
+              ? 'bg-red-100 text-red-700 border border-red-200'
+              : 'bg-green-100 text-green-700 border border-green-200'
+          }`}
+        >
           {message}
         </div>
       )}
@@ -104,11 +104,11 @@ export function UserRoleForm({ userId, currentRole }: { userId: string; currentR
       {role !== currentRole && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
           <p className="text-sm text-yellow-800">
-            ⚠️ You are about to change this user's role from <strong>{currentRole}</strong> to <strong>{role}</strong>
+            ⚠️ You are about to change this user&apos;s role from <strong>{currentRole}</strong> to{' '}
+            <strong>{role}</strong>
           </p>
         </div>
       )}
     </form>
   )
 }
-

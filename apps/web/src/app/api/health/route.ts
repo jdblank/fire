@@ -9,15 +9,18 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const checkEnv = url.searchParams.get('env') === 'true'
-  
+
   // If ?env=true, return environment variable check (skip database)
   if (checkEnv) {
     const dbUrl = process.env.DATABASE_URL || 'NOT SET'
     // Show first part of URL for debugging (but hide password)
-    const dbUrlPreview = dbUrl !== 'NOT SET' 
-      ? dbUrl.split('@')[0] + '@' + (dbUrl.includes('@') ? dbUrl.split('@')[1].split('/')[0] + '/...' : 'hidden')
-      : 'NOT SET'
-    
+    const dbUrlPreview =
+      dbUrl !== 'NOT SET'
+        ? dbUrl.split('@')[0] +
+          '@' +
+          (dbUrl.includes('@') ? dbUrl.split('@')[1].split('/')[0] + '/...' : 'hidden')
+        : 'NOT SET'
+
     return NextResponse.json({
       message: 'Environment variables check',
       environment: {
@@ -34,31 +37,34 @@ export async function GET(request: Request) {
       timestamp: new Date().toISOString(),
     })
   }
-  
+
   // Normal health check
   try {
     // Check database connection
     await prisma.$queryRaw`SELECT 1`
-    
+
     return NextResponse.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       services: {
         app: 'ok',
-        database: 'ok'
+        database: 'ok',
       },
       // Hint about env check
-      _hint: 'Add ?env=true to check environment variables'
+      _hint: 'Add ?env=true to check environment variables',
     })
   } catch (error: any) {
-    return NextResponse.json({
-      status: 'unhealthy',
-      error: 'Database connection failed',
-      errorMessage: error?.message || 'Unknown error',
-      timestamp: new Date().toISOString(),
-      // Hint about env check
-      _hint: 'Add ?env=true to check environment variables',
-      _note: 'This error usually means DATABASE_URL is missing or invalid'
-    }, { status: 503 })
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        error: 'Database connection failed',
+        errorMessage: error?.message || 'Unknown error',
+        timestamp: new Date().toISOString(),
+        // Hint about env check
+        _hint: 'Add ?env=true to check environment variables',
+        _note: 'This error usually means DATABASE_URL is missing or invalid',
+      },
+      { status: 503 }
+    )
   }
 }

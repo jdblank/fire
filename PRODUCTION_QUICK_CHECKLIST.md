@@ -7,6 +7,7 @@
 ## Pre-Deployment Checklist
 
 ### Railway Services
+
 - [ ] Postgres service running
 - [ ] Redis service running (if using)
 - [ ] LogTo service running
@@ -14,12 +15,14 @@
 - [ ] LogTo admin accessible at `https://admin.auth.lemonade.art`
 
 ### LogTo Configuration
+
 - [ ] "Fire" application created in LogTo
 - [ ] Redirect URI set: `https://fire.lemonade.art/api/auth/callback/logto`
 - [ ] App ID and Secret copied
 - [ ] Admin user can log in to LogTo console
 
 ### Vercel Environment Variables
+
 - [ ] `NODE_ENV=production`
 - [ ] `NEXTAUTH_URL=https://fire.lemonade.art`
 - [ ] `NEXTAUTH_SECRET=<generated>`
@@ -34,6 +37,7 @@
 - [ ] All values have **no quotes, no spaces**
 
 ### Vercel Deployment
+
 - [ ] Project connected to GitHub
 - [ ] Latest code deployed
 - [ ] Custom domain configured: `fire.lemonade.art`
@@ -44,6 +48,7 @@
 ## Post-Deployment Verification
 
 ### Test Authentication
+
 - [ ] Visit `https://fire.lemonade.art`
 - [ ] Click "Sign In"
 - [ ] Redirects to `https://auth.lemonade.art` ✅
@@ -52,18 +57,21 @@
 - [ ] User is logged in ✅
 
 ### Test Registration
+
 - [ ] Click "Sign Up"
 - [ ] Redirects to LogTo registration ✅
 - [ ] Can create account ✅
 - [ ] Redirects back to app ✅
 
 ### Check Logs
+
 - [ ] Vercel logs show no errors
 - [ ] No `auth.fire.local` references
 - [ ] No validation errors
 - [ ] No database connection errors
 
 ### Test Features
+
 - [ ] Dashboard loads
 - [ ] Posts display (if any)
 - [ ] Events page works
@@ -74,19 +82,25 @@
 ## Common Issues & Quick Fixes
 
 ### ❌ Still seeing `auth.fire.local`
+
 **Fix:** Environment variables not loaded
+
 1. Verify all vars set for **Production**
 2. Check variable names are exact
 3. Redeploy Vercel
 
 ### ❌ "Invalid client credentials"
+
 **Fix:** Wrong LogTo credentials
+
 1. Verify `LOGTO_APP_ID` matches LogTo
 2. Verify `LOGTO_APP_SECRET` includes `#internal:` prefix
 3. Check redirect URI in LogTo
 
 ### ❌ "Database connection failed"
+
 **Fix:** Wrong database URL
+
 1. Use **PUBLIC** connection string (not internal)
 2. Verify Railway Postgres is running
 3. Check connection string format
@@ -109,9 +123,8 @@ Run this to check production setup:
 ✅ No errors in Vercel logs  
 ✅ All features functional  
 ✅ Database connected  
-✅ LogTo connected  
+✅ LogTo connected
 
 ---
 
 **If all checks pass, production is ready! 🎉**
-

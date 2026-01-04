@@ -11,7 +11,6 @@ export default function SetupAuthPage() {
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
-
   const handleSetup = async () => {
     setLoading(true)
     setError(null)
@@ -41,9 +40,7 @@ export default function SetupAuthPage() {
       <div className="min-h-screen bg-gray-50">
         <Header user={session?.user} />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-red-600">
-            Admin access required
-          </div>
+          <div className="text-center text-red-600">Admin access required</div>
         </div>
       </div>
     )
@@ -52,10 +49,13 @@ export default function SetupAuthPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={session.user} />
-      
+
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-8">
-          <Link href="/admin/users" className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block">
+          <Link
+            href="/admin/users"
+            className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block"
+          >
             ← Back to Admin
           </Link>
           <h1 className="text-3xl font-semibold text-gray-900 mb-2">
@@ -68,21 +68,26 @@ export default function SetupAuthPage() {
 
         <div className="bg-white rounded-lg border border-gray-200 p-8">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
-              Features to Enable:
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Features to Enable:</h2>
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-center gap-2">
                 <span className="text-purple-600">📧</span>
-                <span><strong>Email Passwordless</strong> - Sign in with verification codes (no password)</span>
+                <span>
+                  <strong>Email Passwordless</strong> - Sign in with verification codes (no
+                  password)
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-green-600">🔐</span>
-                <span><strong>Two-Factor Authentication</strong> - TOTP, Passkeys, backup codes</span>
+                <span>
+                  <strong>Two-Factor Authentication</strong> - TOTP, Passkeys, backup codes
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">🔑</span>
-                <span><strong>Passkeys (WebAuthn MFA)</strong> - Face ID, Touch ID for 2FA</span>
+                <span>
+                  <strong>Passkeys (WebAuthn MFA)</strong> - Face ID, Touch ID for 2FA
+                </span>
               </li>
             </ul>
           </div>
@@ -92,7 +97,11 @@ export default function SetupAuthPage() {
             disabled={loading || result !== null}
             className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {loading ? 'Configuring...' : result ? 'Already Configured' : 'Enable Authentication Features'}
+            {loading
+              ? 'Configuring...'
+              : result
+                ? 'Already Configured'
+                : 'Enable Authentication Features'}
           </button>
 
           {error && (
@@ -104,9 +113,7 @@ export default function SetupAuthPage() {
 
           {result && (
             <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg space-y-4">
-              <p className="text-green-800 font-medium text-lg">
-                ✅ {result.message}
-              </p>
+              <p className="text-green-800 font-medium text-lg">✅ {result.message}</p>
 
               {result.results?.features && result.results.features.length > 0 && (
                 <div>
@@ -166,18 +173,30 @@ export default function SetupAuthPage() {
               <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-3">
                 <div>
                   <p className="font-medium text-gray-900">✅ Email Passwordless Login</p>
-                  <p className="text-gray-600">Users can sign in by receiving a verification code via email (no password needed)</p>
+                  <p className="text-gray-600">
+                    Users can sign in by receiving a verification code via email (no password
+                    needed)
+                  </p>
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">✅ Two-Factor Authentication</p>
-                  <p className="text-gray-600">Users can optionally enable TOTP (Google Authenticator), Passkeys (WebAuthn), or backup codes for additional security</p>
+                  <p className="text-gray-600">
+                    Users can optionally enable TOTP (Google Authenticator), Passkeys (WebAuthn), or
+                    backup codes for additional security
+                  </p>
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">✅ Passkeys (WebAuthn)</p>
-                  <p className="text-gray-600">Available as MFA option - users can use Face ID, Touch ID, or security keys for 2FA</p>
+                  <p className="text-gray-600">
+                    Available as MFA option - users can use Face ID, Touch ID, or security keys for
+                    2FA
+                  </p>
                 </div>
                 <div className="pt-3 border-t border-gray-300">
-                  <p className="text-gray-700"><strong>Note:</strong> Social logins (Google/GitHub) require OAuth app setup and will be configured separately.</p>
+                  <p className="text-gray-700">
+                    <strong>Note:</strong> Social logins (Google/GitHub) require OAuth app setup and
+                    will be configured separately.
+                  </p>
                 </div>
               </div>
             </div>
@@ -187,4 +206,3 @@ export default function SetupAuthPage() {
     </div>
   )
 }
-

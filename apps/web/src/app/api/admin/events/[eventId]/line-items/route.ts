@@ -1,23 +1,22 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
+import { hasRole } from '@/lib/utils'
 
 // GET /api/admin/events/[eventId]/line-items - List all line items for an event
-export async function GET(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const { eventId } = await params
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     const lineItems = await prisma.eventLineItem.findMany({
-      where: { eventId: params.eventId },
-      orderBy: { sortOrder: 'asc' }
+      where: { eventId: eventId },
+      orderBy: { sortOrder: 'asc' },
     })
 
     return NextResponse.json({ lineItems })
@@ -28,14 +27,12 @@ export async function GET(
 }
 
 // POST /api/admin/events/[eventId]/line-items - Create a new line item
-export async function POST(
-  request: Request,
-  { params }: { params: { eventId: string } }
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ eventId: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session || session.user.role !== 'ADMIN') {
+    const { eventId } = await params
+    const session = await auth()
+
+    if (!session || !hasRole(session.user, 'admin')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
@@ -63,7 +60,7 @@ export async function POST(
 
     // Verify event exists
     const event = await prisma.event.findUnique({
-      where: { id: params.eventId }
+      where: { id: eventId },
     })
 
     if (!event) {
@@ -74,9 +71,9 @@ export async function POST(
     let order = sortOrder
     if (order === undefined || order === null) {
       const maxOrder = await prisma.eventLineItem.findFirst({
-        where: { eventId: params.eventId },
+        where: { eventId: eventId },
         orderBy: { sortOrder: 'desc' },
-        select: { sortOrder: true }
+        select: { sortOrder: true },
       })
       order = (maxOrder?.sortOrder || 0) + 1
     }
@@ -84,7 +81,7 @@ export async function POST(
     // Create line item
     const lineItem = await prisma.eventLineItem.create({
       data: {
-        eventId: params.eventId,
+        eventId: eventId,
         name,
         description: description || null,
         lineItemType,
@@ -95,7 +92,7 @@ export async function POST(
         maxAmount: maxAmount || null,
         multiplier: multiplier || null,
         sortOrder: order,
-      }
+      },
     })
 
     return NextResponse.json({ lineItem }, { status: 201 })
@@ -104,4 +101,3 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

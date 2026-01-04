@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { uploadImage, validateImage } from '@/lib/upload-utils'
 import { prisma } from '@fire/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await auth()
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const formData = await request.formData()
     const file = formData.get('file') as File | null
-    const type = formData.get('type') as string || 'avatar'
+    const type = (formData.get('type') as string) || 'avatar'
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // For production, use proxied URL instead of direct MinIO URL
     const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL
-    const displayUrl = isProduction 
+    const displayUrl = isProduction
       ? `${process.env.NEXTAUTH_URL}/api/images/${encodeURIComponent(key)}`
       : url
 
@@ -80,16 +80,14 @@ export async function POST(request: NextRequest) {
         hasBucket: !!process.env.S3_BUCKET,
         hasAccessKey: !!process.env.S3_ACCESS_KEY,
         hasSecretKey: !!process.env.S3_SECRET_KEY,
-      }
+      },
     })
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to upload image',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     )
   }
 }
-
-

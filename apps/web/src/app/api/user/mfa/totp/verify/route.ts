@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+
+import { auth } from '@/auth'
 import { prisma } from '@fire/db'
 
 const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
@@ -8,8 +8,8 @@ const LOGTO_ENDPOINT = process.env.LOGTO_ENDPOINT || 'http://logto:3001'
 // POST /api/user/mfa/totp/verify - Verify TOTP code and enable 2FA
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    
+    const session = await auth()
+
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     // Get user's LogTo ID
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { logtoId: true }
+      select: { logtoId: true },
     })
 
     if (!user?.logtoId) {
@@ -34,19 +34,16 @@ export async function POST(request: NextRequest) {
 
     // Try the interaction endpoint (user-level, not M2M)
     // This is typically used during login flow
-    const verifyResponse = await fetch(
-      `${LOGTO_ENDPOINT}/api/verifications/totp/verify`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          code,
-          verificationRecordId: verificationId
-        })
-      }
-    )
+    const verifyResponse = await fetch(`${LOGTO_ENDPOINT}/api/verifications/totp/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        code,
+        verificationRecordId: verificationId,
+      }),
+    })
 
     const responseText = await verifyResponse.text()
     console.log('Interaction verify response:', verifyResponse.status, responseText)
@@ -59,17 +56,15 @@ export async function POST(request: NextRequest) {
       debug: {
         verifyAttempted: true,
         verifyStatus: verifyResponse.status,
-        verifyResponse: responseText
-      }
+        verifyResponse: responseText,
+      },
     })
-
   } catch (error) {
     console.error('TOTP verification error:', error)
     // Still return success since TOTP was created
     return NextResponse.json({
       success: true,
-      message: 'Two-factor authentication is set up! Log out and back in to test it.'
+      message: 'Two-factor authentication is set up! Log out and back in to test it.',
     })
   }
 }
-
