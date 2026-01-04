@@ -63,29 +63,35 @@ An experimental 3D force-directed graph visualization for the community referral
 ## Known Issues & Blockers
 
 ### 1. WebGL Requirement
+
 - **Issue**: Requires GPU/WebGL support which is not available in containerized environments (e.g., Codespaces, Docker)
 - **Impact**: 3D view shows fallback message in environments without GPU access
 - **Workaround**: WebGL detection implemented with graceful fallback UI
 
 ### 2. Performance Concerns
+
 - **Issue**: Large graphs (100+ nodes) may experience performance degradation
 - **Status**: Not fully tested at scale
 - **Mitigation**: Collapse functionality helps reduce visible nodes
 
 ### 3. Mobile Experience
+
 - **Issue**: 3D navigation can be challenging on mobile devices (touch controls for rotate/pan/zoom)
 - **Status**: Not optimized for mobile UX
 - **Component Name**: Despite being named "CommunityMobile", it's actually not mobile-optimized
 
 ### 4. Loading Times
+
 - **Issue**: Three.js and react-force-graph-3d add ~500KB to bundle size
 - **Mitigation**: Dynamic import with SSR disabled (`next/dynamic`)
 
 ### 5. Incomplete Testing
+
 - **Issue**: No automated tests written for 3D components
 - **Status**: Manual testing only
 
 ### 6. Browser Compatibility
+
 - **Issue**: Older browsers may not support WebGL 2
 - **Mitigation**: WebGL detection with fallback to 2D view
 
@@ -116,6 +122,7 @@ CommunityViewToggle (Parent)
 ```
 
 This also pulled in transitive dependencies:
+
 - `d3-force-3d`
 - `3d-force-graph`
 - `ngraph.forcelayout`
@@ -124,18 +131,21 @@ This also pulled in transitive dependencies:
 ## Recommendations for Future Work
 
 ### High Priority
+
 1. **Performance Testing**: Test with networks of 500+ users
 2. **Mobile Optimization**: Improve touch controls and UI for mobile devices
 3. **Accessibility**: Add keyboard navigation and screen reader support
 4. **Testing**: Write integration tests for 3D components
 
 ### Medium Priority
+
 5. **Loading States**: Better UX during graph initialization
 6. **Search/Filter**: Add ability to search for specific users in 3D view
 7. **Export**: Allow users to export 3D visualization as image/video
 8. **Customization**: User preferences for colors, node size, force strength
 
 ### Low Priority
+
 9. **VR Support**: Explore WebXR for immersive viewing
 10. **Animation Presets**: Different layout algorithms (radial, spiral, etc.)
 
@@ -168,11 +178,13 @@ To resume development on the 3D chart:
 **Should we keep or remove the 3D feature?**
 
 **Keep if:**
+
 - Users love it in environments with GPU support
 - Provides unique value over 2D view
 - Performance is acceptable at scale
 
 **Remove if:**
+
 - Low adoption due to WebGL requirement
 - Performance issues at scale
 - Maintenance burden too high
